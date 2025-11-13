@@ -10,10 +10,9 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
+import { Picker } from '@react-native-picker/picker'; 
 import styles from '../styles/SignUpStyle';
 
-// For mobile, use your computer's IP address instead of localhost
-// Example: const API_BASE_URL = 'http://192.168.1.100:8080/api';
 const API_BASE_URL = 'http://localhost:8080/api';
 
 export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin }) {
@@ -77,9 +76,7 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin }) {
   };
 
   const handleSignUp = async () => {
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setLoading(true);
     try {
@@ -99,9 +96,7 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin }) {
 
       const response = await fetch(`${API_BASE_URL}/createUser`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(signUpData),
       });
 
@@ -112,21 +107,16 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin }) {
           {
             text: 'OK',
             onPress: () => {
-              if (onSignUpSuccess) {
-                onSignUpSuccess(data.newUser);
-              }
-
-              if (onSwitchToLogin) {
-                onSwitchToLogin();
-              }
+              if (onSignUpSuccess) onSignUpSuccess(data.newUser);
+              if (onSwitchToLogin) onSwitchToLogin();
             },
           },
         ]);
-        
+
       } else {
         Alert.alert('Sign Up Failed', data.message || 'Failed to create account. Please try again.');
       }
-
+      
     } catch (error) {
       console.error('Sign up error:', error);
       Alert.alert('Error', 'Network error. Please check your connection and try again.');
@@ -141,10 +131,7 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin }) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
-      <ScrollView 
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.formContainer}>
           <Text style={styles.title}>Sign Up</Text>
 
@@ -175,14 +162,20 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin }) {
             editable={!loading}
           />
 
-          <TextInput
-            style={styles.input}
-            placeholder="Gender * (e.g., Male, Female)"
-            placeholderTextColor="#999"
-            value={formData.gender}
-            onChangeText={(value) => handleInputChange('gender', value)}
-            editable={!loading}
-          />
+          <View style={styles.pickerContainer}>
+            <Text style={styles.label}>Gender *</Text>
+            <Picker
+              selectedValue={formData.gender}
+              onValueChange={(value) => handleInputChange('gender', value)}
+              enabled={!loading}
+              style={styles.picker}
+            >
+              <Picker.Item label="Select Gender" value="" />
+              <Picker.Item label="Male" value="Male" />
+              <Picker.Item label="Female" value="Female" />
+              <Picker.Item label="Other" value="Other" />
+            </Picker>
+          </View>
 
           <TextInput
             style={styles.input}
@@ -194,14 +187,21 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin }) {
             editable={!loading}
           />
 
-          <TextInput
-            style={styles.input}
-            placeholder="Civil Status (e.g., Single, Married)"
-            placeholderTextColor="#999"
-            value={formData.civil_status}
-            onChangeText={(value) => handleInputChange('civil_status', value)}
-            editable={!loading}
-          />
+          <View style={styles.pickerContainer}>
+            <Text style={styles.label}>Civil Status</Text>
+            <Picker
+              selectedValue={formData.civil_status}
+              onValueChange={(value) => handleInputChange('civil_status', value)}
+              enabled={!loading}
+              style={styles.picker}
+            >
+              <Picker.Item label="Select Civil Status" value="" />
+              <Picker.Item label="Single" value="Single" />
+              <Picker.Item label="Married" value="Married" />
+              <Picker.Item label="Widowed" value="Widowed" />
+              <Picker.Item label="Divorced" value="Divorced" />
+            </Picker>
+          </View>
 
           <TextInput
             style={styles.input}

@@ -5,7 +5,7 @@ import {
   ScrollView,
 } from 'react-native';
 import styles from '../styles/DonationsStyle';
-import CustomNavbar from './CustomNavbar';
+import CustomNavbar from '../customs/CustomNavbar';
 
 export default function DonationsScreen({ user, onNavigate }) {
   return (

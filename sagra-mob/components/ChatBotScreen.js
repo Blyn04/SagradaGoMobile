@@ -5,7 +5,7 @@ import {
   ScrollView,
 } from 'react-native';
 import styles from '../styles/ChatBotStyle';
-import CustomNavbar from './CustomNavbar';
+import CustomNavbar from '../customs/CustomNavbar';
 
 export default function ChatBotScreen({ user, onNavigate }) {
   return (

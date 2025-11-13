@@ -10,10 +10,9 @@ import {
   Platform,
 } from 'react-native';
 import styles from '../styles/LoginStyle';
+import ForgotPasswordModal from './ForgotPasswordModal';
 
 const API_BASE_URL = 'http://localhost:8080/api';
-
-import ForgotPasswordModal from './ForgotPasswordModal';
 
 export default function LoginScreen({ onLoginSuccess, onSwitchToSignUp }) {
   const [email, setEmail] = useState('');

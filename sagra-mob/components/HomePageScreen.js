@@ -6,7 +6,7 @@ import {
   ScrollView,
 } from 'react-native';
 import styles from '../styles/HomePageStyle';
-import CustomNavbar from './CustomNavbar';
+import CustomNavbar from '../customs/CustomNavbar';
 
 export default function HomePageScreen({ user, onLogout, onNavigate }) {
   const shortcuts = [

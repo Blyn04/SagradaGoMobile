@@ -9,7 +9,7 @@ import {
   Platform,
 } from 'react-native';
 import styles from '../styles/ProfileStyle';
-import CustomNavbar from './CustomNavbar';
+import CustomNavbar from '../customs/CustomNavbar';
 
 export default function Profile({ user, onNavigate, onLogout }) {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
