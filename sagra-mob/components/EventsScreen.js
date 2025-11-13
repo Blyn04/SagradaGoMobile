@@ -4,27 +4,27 @@ import {
   Text,
   ScrollView,
 } from 'react-native';
-import styles from '../styles/BookingStyle';
+import styles from '../styles/EventsStyle';
 import CustomNavbar from './CustomNavbar';
 
-export default function BookingScreen({ user, onNavigate }) {
+export default function EventsScreen({ user, onNavigate }) {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
         <View style={styles.header}>
-          <Text style={styles.title}>Booking</Text>
-          <Text style={styles.subtitle}>Book your visit or reservation</Text>
+          <Text style={styles.title}>Events</Text>
+          <Text style={styles.subtitle}>Upcoming events and activities</Text>
         </View>
 
         <View style={styles.content}>
           <Text style={styles.contentText}>
-            Booking functionality will be displayed here.
+            Events will be displayed here.
           </Text>
         </View>
       </ScrollView>
 
       <CustomNavbar
-        currentScreen="BookingScreen"
+        currentScreen="EventsScreen"
         onNavigate={onNavigate}
       />
     </View>

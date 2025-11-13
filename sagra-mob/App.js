@@ -9,6 +9,8 @@ import AnnouncementsScreen from './components/AnnouncementsScreen';
 import VirtualTourScreen from './components/VirtualTourScreen';
 import Profile from './components/Profile';
 import ChatBotScreen from './components/ChatBotScreen';
+import EventsScreen from './components/EventsScreen';
+import BookingScreen from './components/BookingScreen';
 
 export default function App() {
   const [showSignUp, setShowSignUp] = useState(false);
@@ -75,6 +77,20 @@ export default function App() {
       case 'AnnouncementsScreen':
         return (
           <AnnouncementsScreen 
+            user={currentUser} 
+            onNavigate={handleNavigate}
+          />
+        );
+      case 'EventsScreen':
+        return (
+          <EventsScreen 
+            user={currentUser} 
+            onNavigate={handleNavigate}
+          />
+        );
+      case 'BookingScreen':
+        return (
+          <BookingScreen 
             user={currentUser} 
             onNavigate={handleNavigate}
           />

@@ -9,7 +9,8 @@ import styles from '../styles/NavbarStyle';
 export default function CustomNavbar({ currentScreen, onNavigate }) {
   const navItems = [
     { id: 'home', label: 'Home', screen: 'HomePageScreen' },
-    { id: 'donation', label: 'Donation', screen: 'DonationsScreen' },
+    { id: 'events', label: 'Events', screen: 'EventsScreen' },
+    { id: 'booking', label: 'Booking', screen: 'BookingScreen' },
     { id: 'virtualtour', label: 'Virtual Tour', screen: 'VirtualTourScreen' },
     { id: 'profile', label: 'Profile', screen: 'ProfileScreen' },
   ];
