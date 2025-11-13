@@ -7,6 +7,8 @@ import HomePageScreen from './components/HomePageScreen';
 import DonationsScreen from './components/DonationsScreen';
 import AnnouncementsScreen from './components/AnnouncementsScreen';
 import VirtualTourScreen from './components/VirtualTourScreen';
+import Profile from './components/Profile';
+import ChatBotScreen from './components/ChatBotScreen';
 
 export default function App() {
   const [showSignUp, setShowSignUp] = useState(false);
@@ -84,11 +86,25 @@ export default function App() {
             onNavigate={handleNavigate}
           />
         );
+      case 'ProfileScreen':
+        return (
+          <Profile 
+            user={currentUser} 
+            onNavigate={handleNavigate}
+            onLogout={handleLogout}
+          />
+        );
+      case 'ChatBotScreen':
+        return (
+          <ChatBotScreen 
+            user={currentUser} 
+            onNavigate={handleNavigate}
+          />
+        );
       default:
         return (
           <HomePageScreen 
             user={currentUser} 
-            onLogout={handleLogout}
             onNavigate={handleNavigate}
           />
         );

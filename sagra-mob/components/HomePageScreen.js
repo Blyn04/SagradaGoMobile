@@ -49,9 +49,6 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
               {user.first_name} {user.last_name}
             </Text>
           )}
-          {user && user.email && (
-            <Text style={styles.userEmail}>{user.email}</Text>
-          )}
         </View>
 
         <View style={styles.shortcutsContainer}>
@@ -74,19 +71,19 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
             ))}
           </View>
         </View>
-
-        <TouchableOpacity
-          style={styles.logoutButton}
-          onPress={onLogout}
-        >
-          <Text style={styles.logoutButtonText}>Logout</Text>
-        </TouchableOpacity>
       </ScrollView>
 
       <CustomNavbar
         currentScreen="HomePageScreen"
         onNavigate={onNavigate}
       />
+
+      <TouchableOpacity
+        style={styles.floatingButton}
+        onPress={() => handleShortcutPress('ChatBotScreen')}
+      >
+        <Text style={styles.floatingButtonText}>💬</Text>
+      </TouchableOpacity>
     </View>
   );
 }

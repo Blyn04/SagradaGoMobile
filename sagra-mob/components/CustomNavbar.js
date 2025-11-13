@@ -10,8 +10,8 @@ export default function CustomNavbar({ currentScreen, onNavigate }) {
   const navItems = [
     { id: 'home', label: 'Home', screen: 'HomePageScreen' },
     { id: 'donation', label: 'Donation', screen: 'DonationsScreen' },
-    { id: 'announcement', label: 'Announcement', screen: 'AnnouncementsScreen' },
     { id: 'virtualtour', label: 'Virtual Tour', screen: 'VirtualTourScreen' },
+    { id: 'profile', label: 'Profile', screen: 'ProfileScreen' },
   ];
 
   return (
