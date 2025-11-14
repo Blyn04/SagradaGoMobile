@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import styles from '../styles/LoginStyle';
 import ForgotPasswordModal from './ForgotPasswordModal';
+import { Ionicons } from "@expo/vector-icons";
 
 const API_BASE_URL = 'http://localhost:8080/api';
 
@@ -77,30 +78,39 @@ export default function LoginScreen({ onLoginSuccess, onSwitchToSignUp }) {
       style={styles.container}
     >
       <View style={styles.formContainer}>
-        <Text style={styles.title}>Login</Text>
+        <Text style={styles.title}>Welcome!</Text>
+        <Text style={styles.subtitle}>Sign In to continue</Text>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          placeholderTextColor="#999"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoCorrect={false}
-          editable={!loading}
-        />
+        <View style={styles.inputContainer}>
+          <Ionicons name="mail-outline" size={20} color="#999" style={styles.inputIcon} />
 
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          placeholderTextColor="#999"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          autoCapitalize="none"
-          editable={!loading}
-        />
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            placeholderTextColor="#999"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+            editable={!loading}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Ionicons name="lock-closed-outline" size={20} color="#999" style={styles.inputIcon} />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            placeholderTextColor="#999"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            autoCapitalize="none"
+            editable={!loading}
+          />
+        </View>
 
         <TouchableOpacity
           style={[styles.button, loading && styles.buttonDisabled]}

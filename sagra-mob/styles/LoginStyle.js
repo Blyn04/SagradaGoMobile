@@ -11,39 +11,53 @@ const styles = StyleSheet.create({
   formContainer: {
     width: '100%',
     maxWidth: 400,
-    backgroundColor: '#fff',
     borderRadius: 10,
     padding: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    // shadowColor: '#000',
+    // shadowOffset: {
+    //   width: 0,
+    //   height: 2,
+    // },
+    // shadowOpacity: 0.25,
+    // shadowRadius: 3.84,
+    // elevation: 5,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 30,
-    textAlign: 'center',
+    fontSize: 30,
+    fontFamily: 'Poppins_700Bold',
+    textAlign: 'left',
     color: '#333',
   },
-  input: {
-    height: 50,
+  subtitle: {
+    fontSize: 16,
+    fontFamily: 'Poppins_400Regular',
+    marginBottom: 30,
+    textAlign: 'left',
+    color: '#666',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
     paddingHorizontal: 15,
     marginBottom: 15,
+  },
+  inputIcon: {
+    marginRight: 10,
+  },
+  input: {
+    flex: 1,
+    height: 50,
     fontSize: 16,
-    backgroundColor: '#fff',
+    fontFamily: 'Poppins_400Regular',
+    color: '#333',
   },
   button: {
     backgroundColor: '#007AFF',
-    height: 50,
-    borderRadius: 8,
+    height: 45,
+    borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 10,
@@ -53,8 +67,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 16,
+    fontFamily: 'Poppins_600SemiBold',
   },
   forgotPasswordButton: {
     marginTop: 15,
@@ -63,6 +77,7 @@ const styles = StyleSheet.create({
   forgotPasswordText: {
     color: '#007AFF',
     fontSize: 14,
+    fontFamily: 'Poppins_500Medium',
   },
   switchButton: {
     marginTop: 15,
@@ -71,10 +86,11 @@ const styles = StyleSheet.create({
   switchText: {
     color: '#666',
     fontSize: 14,
+    fontFamily: 'Poppins_500Medium',
   },
   switchTextBold: {
     color: '#007AFF',
-    fontWeight: 'bold',
+    fontFamily: 'Poppins_700Bold',
   },
   // Modal Styles (Forgot Password)
   modalOverlay: {
