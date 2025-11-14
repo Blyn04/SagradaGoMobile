@@ -13,7 +13,7 @@ export default function EventsScreen({ user, onNavigate }) {
       <ScrollView style={styles.scrollView}>
         <View style={styles.header}>
           <Text style={styles.title}>Events</Text>
-          <Text style={styles.subtitle}>Upcoming events and activities</Text>
+          <Text style={styles.subtitle}>Upcoming events and activities.</Text>
         </View>
 
         <View style={styles.content}>

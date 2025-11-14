@@ -15,13 +15,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 32,
-    fontWeight: 'bold',
     color: '#333',
-    marginBottom: 10,
+    fontFamily: 'Poppins_700Bold'
   },
   subtitle: {
     fontSize: 16,
     color: '#666',
+    fontFamily: 'Poppins_500Medium'
   },
   content: {
     flex: 1,
@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     textAlign: 'center',
+    fontFamily: 'Poppins_500Medium'
   },
 });
 
