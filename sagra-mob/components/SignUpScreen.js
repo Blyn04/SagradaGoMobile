@@ -15,7 +15,7 @@ import {
 import { Picker } from '@react-native-picker/picker';
 import styles from '../styles/SignUpStyle';
 import { Ionicons } from "@expo/vector-icons";
-import CustomPicker from './CustomPicker';
+import CustomPicker from '../customs/CustomPicker';
 
 const API_BASE_URL = 'http://localhost:8080/api';
 
