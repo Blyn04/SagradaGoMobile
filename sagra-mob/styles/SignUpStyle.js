@@ -5,14 +5,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
-
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
-
   formContainer: {
     width: '100%',
     maxWidth: 400,
@@ -28,7 +26,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-
   title: {
     fontSize: 28,
     fontWeight: 'bold',
@@ -36,7 +33,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#333',
   },
-
   input: {
     height: 50,
     borderWidth: 1,
@@ -47,7 +43,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#fff',
   },
-
   button: {
     backgroundColor: '#007AFF',
     height: 50,
@@ -59,46 +54,22 @@ const styles = StyleSheet.create({
   buttonDisabled: {
     opacity: 0.6,
   },
-
   buttonText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
   },
-
   switchButton: {
     marginTop: 15,
     alignItems: 'center',
   },
-
   switchText: {
     color: '#666',
     fontSize: 14,
   },
-
   switchTextBold: {
     color: '#007AFF',
     fontWeight: 'bold',
-  },
-
-  pickerContainer: {
-    marginBottom: 15,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    backgroundColor: '#fff',
-  },
-
-  picker: {
-    height: 50,
-    color: '#000',
-  },
-
-  label: {
-    marginLeft: 10,
-    marginTop: 5,
-    fontWeight: '500',
-    color: '#333',
   },
 });
 

@@ -17,7 +17,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 5,
   },
-
   navItem: {
     flex: 1,
     alignItems: 'center',
@@ -27,11 +26,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     gap: 4,
   },
-
   navItemActive: {
     backgroundColor: '#f0f7ff',
   },
-
   navText: {
     fontSize: 11,
     color: '#666',
@@ -39,7 +36,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 2,
   },
-  
   navTextActive: {
     color: '#007AFF',
     fontWeight: 'bold',

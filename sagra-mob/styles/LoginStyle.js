@@ -8,7 +8,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
     padding: 20,
   },
-  
   formContainer: {
     width: '100%',
     maxWidth: 400,
@@ -24,7 +23,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-
   title: {
     fontSize: 28,
     fontWeight: 'bold',
@@ -32,7 +30,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#333',
   },
-
   input: {
     height: 50,
     borderWidth: 1,
@@ -43,7 +40,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#fff',
   },
-
   button: {
     backgroundColor: '#007AFF',
     height: 50,
@@ -52,42 +48,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
   },
-  
   buttonDisabled: {
     opacity: 0.6,
   },
-
   buttonText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
   },
-
   forgotPasswordButton: {
     marginTop: 15,
     alignItems: 'center',
   },
-
   forgotPasswordText: {
     color: '#007AFF',
     fontSize: 14,
   },
-
   switchButton: {
     marginTop: 15,
     alignItems: 'center',
   },
-
   switchText: {
     color: '#666',
     fontSize: 14,
   },
-
   switchTextBold: {
     color: '#007AFF',
     fontWeight: 'bold',
   },
-
+  // Modal Styles (Forgot Password)
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -95,7 +84,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
-
   modalContent: {
     backgroundColor: '#fff',
     borderRadius: 10,
@@ -111,21 +99,18 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-
   modalTitle: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
     color: '#333',
   },
-
   modalSubtitle: {
     fontSize: 14,
     color: '#666',
     marginBottom: 20,
     lineHeight: 20,
   },
-
   modalInput: {
     height: 50,
     borderWidth: 1,
@@ -136,13 +121,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#fff',
   },
-
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     gap: 10,
   },
-
   modalButton: {
     flex: 1,
     height: 50,
@@ -150,23 +133,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
   cancelButton: {
     backgroundColor: '#f0f0f0',
     marginRight: 5,
   },
-
   cancelButtonText: {
     color: '#333',
     fontSize: 16,
     fontWeight: '600',
   },
-  
   submitButton: {
     backgroundColor: '#007AFF',
     marginLeft: 5,
   },
-  
   submitButtonText: {
     color: '#fff',
     fontSize: 16,
