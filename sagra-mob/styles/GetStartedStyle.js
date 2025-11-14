@@ -12,7 +12,7 @@ export default StyleSheet.create({
         fontSize: 50,
         fontFamily: 'Poppins_700Bold',
         color: '#333',
-        marginBottom: -10,
+        marginBottom: -5,
     },
     subtitle: {
         fontSize: 15,
