@@ -39,9 +39,39 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     borderRadius: 8,
     paddingHorizontal: 15,
-    marginBottom: 15,
+    marginBottom: 5,
     fontSize: 16,
     backgroundColor: '#fff',
+  },
+  inputError: {
+    borderColor: '#ff3b30',
+    borderWidth: 1.5,
+  },
+  errorText: {
+    color: '#ff3b30',
+    fontSize: 12,
+    marginBottom: 10,
+    marginTop: -5,
+    marginLeft: 5,
+  },
+  pickerContainer: {
+    marginBottom: 5,
+  },
+  label: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 5,
+  },
+  picker: {
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    marginBottom: 5,
+  },
+  pickerError: {
+    borderColor: '#ff3b30',
+    borderWidth: 1.5,
   },
   button: {
     backgroundColor: '#007AFF',

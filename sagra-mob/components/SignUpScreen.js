@@ -29,10 +29,116 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin }) {
     confirmPassword: '',
     uid: '',
   });
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
   const [loading, setLoading] = useState(false);
+
+  const validateField = (field, value) => {
+    let error = '';
+
+    switch (field) {
+      case 'first_name':
+        if (!value.trim()) {
+          error = 'First name is required';
+
+        } else if (value.trim().length < 2) {
+          error = 'First name must be at least 2 characters';
+        }
+        break;
+
+      case 'last_name':
+        if (!value.trim()) {
+          error = 'Last name is required';
+
+        } else if (value.trim().length < 2) {
+          error = 'Last name must be at least 2 characters';
+        }
+        break;
+        
+      case 'gender':
+        if (!value.trim()) {
+          error = 'Gender is required';
+        }
+        break;
+
+      case 'contact_number':
+        if (!value.trim()) {
+          error = 'Contact number is required';
+          
+        } else if (!/^[0-9+\-\s()]+$/.test(value)) {
+          error = 'Please enter a valid contact number';
+
+        } else if (value.replace(/[^0-9]/g, '').length < 10) {
+          error = 'Contact number must be at least 10 digits';
+        }
+        break;
+
+      case 'birthday':
+        if (!value.trim()) {
+          error = 'Birthday is required';
+
+        } else if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+          error = 'Please use format YYYY-MM-DD';
+
+        } else {
+          const date = new Date(value);
+          const today = new Date();
+          if (isNaN(date.getTime())) {
+            error = 'Please enter a valid date';
+
+          } else if (date > today) {
+            error = 'Birthday cannot be in the future';
+          }
+        }
+        break;
+
+      case 'email':
+        if (!value.trim()) {
+          error = 'Email is required';
+
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())) {
+          error = 'Please enter a valid email address';
+        }
+        break;
+
+      case 'password':
+        if (!value) {
+          error = 'Password is required';
+
+        } else if (value.length < 6) {
+          error = 'Password must be at least 6 characters long';
+        }
+        break;
+
+      case 'confirmPassword':
+        if (!value) {
+          error = 'Please confirm your password';
+
+        } else if (value !== formData.password) {
+          error = 'Passwords do not match';
+        }
+        break;
+
+      default:
+        break;
+    }
+
+    return error;
+  };
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+
+    if (touched[field] || errors[field]) {
+      const error = validateField(field, value);
+      setErrors(prev => ({ ...prev, [field]: error }));
+    }
+  };
+
+  const handleBlur = (field) => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+    const error = validateField(field, formData[field]);
+    setErrors(prev => ({ ...prev, [field]: error }));
   };
 
   const generateUID = () => {
@@ -40,35 +146,28 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin }) {
   };
 
   const validateForm = () => {
-    const fields = [
-      { key: 'first_name', label: 'First name' },
-      { key: 'last_name', label: 'Last name' },
-      { key: 'gender', label: 'Gender' },
-      { key: 'contact_number', label: 'Contact number' },
-      { key: 'birthday', label: 'Birthday' },
-      { key: 'email', label: 'Email' },
-      { key: 'password', label: 'Password' },
-    ];
+    const fields = ['first_name', 'last_name', 'gender', 'contact_number', 'birthday', 'email', 'password', 'confirmPassword'];
+    let hasErrors = false;
+    const newErrors = {};
 
-    for (let { key, label } of fields) {
-      if (!formData[key]?.trim()) {
-        Alert.alert('Error', `${label} is required`);
-        return false;
+    const newTouched = {};
+    fields.forEach(field => {
+      newTouched[field] = true;
+    });
+    setTouched(newTouched);
+
+    fields.forEach(field => {
+      const error = validateField(field, formData[field]);
+      if (error) {
+        newErrors[field] = error;
+        hasErrors = true;
       }
-    }
+    });
 
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
-      Alert.alert('Error', 'Please enter a valid email address');
-      return false;
-    }
+    setErrors(newErrors);
 
-    if (formData.password.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters long');
-      return false;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
+    if (hasErrors) {
+      Alert.alert('Error', 'Please fix the errors in the form');
       return false;
     }
 
@@ -136,13 +235,15 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin }) {
           <Text style={styles.title}>Sign Up</Text>
 
           <TextInput
-            style={styles.input}
+            style={[styles.input, errors.first_name && styles.inputError]}
             placeholder="First Name *"
             placeholderTextColor="#999"
             value={formData.first_name}
             onChangeText={(value) => handleInputChange('first_name', value)}
+            onBlur={() => handleBlur('first_name')}
             editable={!loading}
           />
+          {errors.first_name && <Text style={styles.errorText}>{errors.first_name}</Text>}
 
           <TextInput
             style={styles.input}
@@ -154,21 +255,26 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin }) {
           />
 
           <TextInput
-            style={styles.input}
+            style={[styles.input, errors.last_name && styles.inputError]}
             placeholder="Last Name *"
             placeholderTextColor="#999"
             value={formData.last_name}
             onChangeText={(value) => handleInputChange('last_name', value)}
+            onBlur={() => handleBlur('last_name')}
             editable={!loading}
           />
+          {errors.last_name && <Text style={styles.errorText}>{errors.last_name}</Text>}
 
           <View style={styles.pickerContainer}>
             <Text style={styles.label}>Gender *</Text>
             <Picker
               selectedValue={formData.gender}
-              onValueChange={(value) => handleInputChange('gender', value)}
+              onValueChange={(value) => {
+                handleInputChange('gender', value);
+                setTouched(prev => ({ ...prev, gender: true }));
+              }}
               enabled={!loading}
-              style={styles.picker}
+              style={[styles.picker, errors.gender && styles.pickerError]}
             >
               <Picker.Item label="Select Gender" value="" />
               <Picker.Item label="Male" value="Male" />
@@ -176,16 +282,19 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin }) {
               <Picker.Item label="Other" value="Other" />
             </Picker>
           </View>
+          {errors.gender && <Text style={styles.errorText}>{errors.gender}</Text>}
 
           <TextInput
-            style={styles.input}
+            style={[styles.input, errors.contact_number && styles.inputError]}
             placeholder="Contact Number *"
             placeholderTextColor="#999"
             value={formData.contact_number}
             onChangeText={(value) => handleInputChange('contact_number', value)}
+            onBlur={() => handleBlur('contact_number')}
             keyboardType="phone-pad"
             editable={!loading}
           />
+          {errors.contact_number && <Text style={styles.errorText}>{errors.contact_number}</Text>}
 
           <View style={styles.pickerContainer}>
             <Text style={styles.label}>Civil Status</Text>
@@ -204,47 +313,77 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin }) {
           </View>
 
           <TextInput
-            style={styles.input}
+            style={[styles.input, errors.birthday && styles.inputError]}
             placeholder="Birthday * (YYYY-MM-DD)"
             placeholderTextColor="#999"
             value={formData.birthday}
             onChangeText={(value) => handleInputChange('birthday', value)}
+            onBlur={() => handleBlur('birthday')}
             editable={!loading}
           />
+          {errors.birthday && <Text style={styles.errorText}>{errors.birthday}</Text>}
 
           <TextInput
-            style={styles.input}
+            style={[styles.input, errors.email && styles.inputError]}
             placeholder="Email *"
             placeholderTextColor="#999"
             value={formData.email}
             onChangeText={(value) => handleInputChange('email', value)}
+            onBlur={() => handleBlur('email')}
             keyboardType="email-address"
             autoCapitalize="none"
             autoCorrect={false}
             editable={!loading}
           />
+          {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
 
           <TextInput
-            style={styles.input}
+            style={[styles.input, errors.password && styles.inputError]}
             placeholder="Password *"
             placeholderTextColor="#999"
             value={formData.password}
-            onChangeText={(value) => handleInputChange('password', value)}
+            onChangeText={(value) => {
+              setFormData(prev => {
+                const newData = { ...prev, password: value };
+
+                if (touched.confirmPassword || errors.confirmPassword) {
+                  let confirmError = '';
+                  if (!newData.confirmPassword) {
+                    confirmError = 'Please confirm your password';
+
+                  } else if (value !== newData.confirmPassword) {
+                    confirmError = 'Passwords do not match';
+                  }
+                  
+                  setErrors(prev => ({ ...prev, confirmPassword: confirmError }));
+                }
+                return newData;
+              });
+
+              if (touched.password || errors.password) {
+                const error = validateField('password', value);
+                setErrors(prev => ({ ...prev, password: error }));
+              }
+            }}
+            onBlur={() => handleBlur('password')}
             secureTextEntry
             autoCapitalize="none"
             editable={!loading}
           />
+          {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
 
           <TextInput
-            style={styles.input}
+            style={[styles.input, errors.confirmPassword && styles.inputError]}
             placeholder="Confirm Password *"
             placeholderTextColor="#999"
             value={formData.confirmPassword}
             onChangeText={(value) => handleInputChange('confirmPassword', value)}
+            onBlur={() => handleBlur('confirmPassword')}
             secureTextEntry
             autoCapitalize="none"
             editable={!loading}
           />
+          {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
 
           <TouchableOpacity
             style={[styles.button, loading && styles.buttonDisabled]}
