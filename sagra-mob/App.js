@@ -96,6 +96,7 @@ export default function App() {
           <LoginScreen
             onLoginSuccess={handleLoginSuccess}
             onSwitchToSignUp={() => setCurrentScreen('SignUpScreen')}
+            onBack={() => setCurrentScreen('GetStarted')}
           />
         );
       }

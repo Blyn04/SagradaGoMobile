@@ -15,7 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 const API_BASE_URL = 'http://localhost:8080/api';
 
-export default function LoginScreen({ onLoginSuccess, onSwitchToSignUp }) {
+export default function LoginScreen({ onLoginSuccess, onSwitchToSignUp, onBack }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -77,6 +77,10 @@ export default function LoginScreen({ onLoginSuccess, onSwitchToSignUp }) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
+      <TouchableOpacity style={styles.backButton} onPress={onBack}>
+        <Ionicons name="chevron-back" size={28} color="#333" />
+      </TouchableOpacity>
+
       <View style={styles.formContainer}>
         <Text style={styles.title}>Welcome!</Text>
         <Text style={styles.subtitle}>Sign In to continue</Text>
@@ -113,14 +117,14 @@ export default function LoginScreen({ onLoginSuccess, onSwitchToSignUp }) {
         </View>
 
         <TouchableOpacity
-          style={[styles.button, loading && styles.buttonDisabled]}
+          style={[styles.yellowButton, loading && styles.buttonDisabled]}
           onPress={handleLogin}
           disabled={loading}
         >
           {loading ? (
             <ActivityIndicator color="#fff" />
           ) : (
-            <Text style={styles.buttonText}>Login</Text>
+            <Text style={styles.yellowButtonText}>Login</Text>
           )}
         </TouchableOpacity>
 

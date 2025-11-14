@@ -13,26 +13,19 @@ const styles = StyleSheet.create({
     maxWidth: 400,
     borderRadius: 10,
     padding: 20,
-    // shadowColor: '#000',
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 2,
-    // },
-    // shadowOpacity: 0.25,
-    // shadowRadius: 3.84,
-    // elevation: 5,
   },
   title: {
     fontSize: 30,
     fontFamily: 'Poppins_700Bold',
-    textAlign: 'left',
+    textAlign: 'center',
     color: '#333',
+    marginBottom: -5,
   },
   subtitle: {
     fontSize: 16,
     fontFamily: 'Poppins_400Regular',
     marginBottom: 30,
-    textAlign: 'left',
+    textAlign: 'center',
     color: '#666',
   },
   inputContainer: {
@@ -54,30 +47,50 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins_400Regular',
     color: '#333',
   },
-  button: {
-    backgroundColor: '#007AFF',
-    height: 45,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 10,
+  backButton: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    padding: 6,
+    zIndex: 10,
+  },
+  yellowButton: {
+    backgroundColor: '#FFC942',
+    paddingVertical: 9,
+    borderRadius: 20,
+    marginVertical: 5,
+    width: '100%'
+  },
+  darkButton: {
+    backgroundColor: '#424242',
+    paddingVertical: 10,
+    borderRadius: 20,
+    marginVertical: 5,
+    width: '100%'
+  },
+  yellowButtonText: {
+    fontSize: 16,
+    fontFamily: 'Poppins_700Bold',
+    color: '#424242',
+    textAlign: 'center',
+  },
+  darkButtonText: {
+    fontSize: 16,
+    fontFamily: 'Poppins_700Bold',
+    color: '#fff',
+    textAlign: 'center',
   },
   buttonDisabled: {
     opacity: 0.6,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontFamily: 'Poppins_600SemiBold',
   },
   forgotPasswordButton: {
     marginTop: 15,
     alignItems: 'center',
   },
   forgotPasswordText: {
-    color: '#007AFF',
+    color: '#424242',
     fontSize: 14,
-    fontFamily: 'Poppins_500Medium',
+    fontFamily: 'Poppins_700Bold',
   },
   separatorContainer: {
     flexDirection: 'row',
@@ -104,7 +117,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins_500Medium',
   },
   switchTextBold: {
-    color: '#007AFF',
+    color: '#424242',
     fontFamily: 'Poppins_700Bold',
   },
   // Modal Styles (Forgot Password)
