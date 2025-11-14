@@ -19,23 +19,30 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
       title: 'Donation',
       description: 'Make a donation',
       screen: 'DonationsScreen',
-      color: '#FF6B6B',
+      color: '#FFC942',
+      hints: ['Help a family', 'Support a cause'],
+      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=80&q=80',
     },
     {
       id: 'announcement',
       title: 'Announcement',
       description: 'View announcements',
       screen: 'AnnouncementsScreen',
-      color: '#4ECDC4',
+      color: '#d89d09ff',
+      hints: ['News & Updates', 'Community Alerts'],
+      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=80&q=80',
     },
     {
       id: 'virtualtour',
       title: 'Virtual Tour',
       description: 'Explore virtually',
       screen: 'VirtualTourScreen',
-      color: '#95E1D3',
+      color: '#705104ff',
+      hints: ['Explore Locations', '360° Experience'],
+      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=80&q=80',
     },
   ];
+
 
   const upcomingEvents = [
     {
@@ -128,25 +135,45 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
           </TouchableOpacity>
         </ScrollView>
 
-
-        {/* Render Section Content */}
         {selectedSection === 'Quick Access' && (
           <View style={styles.shortcutsContainer}>
-            <Text style={styles.sectionTitle}>Quick Access</Text>
-            <View style={styles.shortcutsGrid}>
+            <Text style={styles.title}>Explore our Services</Text>
+            <View style={styles.shortcutsColumn}>
               {shortcuts.map((shortcut) => (
                 <TouchableOpacity
                   key={shortcut.id}
                   style={[styles.shortcutCard, { borderLeftColor: shortcut.color }]}
                   onPress={() => handleShortcutPress(shortcut.screen)}
                 >
-                  <View style={[styles.shortcutIcon, { backgroundColor: shortcut.color }]}>
-                    <Text style={styles.shortcutIconText}>{shortcut.title.charAt(0)}</Text>
+                  <View style={styles.shortcutArrowContainer}>
+                    <Ionicons
+                      name="arrow-forward-outline"
+                      size={20}
+                      color="#444"
+                      style={{ transform: [{ rotate: '-45deg' }] }}
+                    />
+                  </View>
+
+                  {shortcut.image && (
+                    <Image
+                      source={{ uri: shortcut.image }}
+                      style={{ width: '100%', height: 100, borderRadius: 10, marginBottom: 8 }}
+                      resizeMode="cover"
+                    />
+                  )}
+
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 8 }}>
+                    {shortcut.hints.map((hint, index) => (
+                      <Text key={index} style={[styles.shortcutHint, { marginRight: 5, marginBottom: 5 }]}>
+                        {hint}
+                      </Text>
+                    ))}
                   </View>
                   <Text style={styles.shortcutTitle}>{shortcut.title}</Text>
                   <Text style={styles.shortcutDescription}>{shortcut.description}</Text>
                 </TouchableOpacity>
               ))}
+
             </View>
           </View>
         )}

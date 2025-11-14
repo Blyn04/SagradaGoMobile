@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     color: '#f9f9f9',
   },
   title: {
-    fontSize: 35,
+    fontSize: 22,
     color: '#424242',
     fontFamily: 'Poppins_700Bold',
   },
@@ -50,33 +50,48 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     paddingHorizontal: 20,
   },
-  sectionTitle: {
-    fontSize: 18,
-    color: '#333',
-    marginBottom: 15,
-    fontFamily: 'Poppins_600SemiBold',
-  },
-  shortcutsGrid: {
-    flexDirection: 'row',
+  shortcutsColumn: {
+    flexDirection: 'column',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    marginTop: 10,
   },
   shortcutCard: {
-    width: '48%',
+    width: '100%',
     backgroundColor: '#fff',
-    borderRadius: 12,
+    borderRadius: 15,
     padding: 15,
     marginBottom: 15,
     borderLeftWidth: 4,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowColor: '#000000a9',
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 3,
+    position: 'relative',
   },
+
+  shortcutArrowContainer: {
+    position: 'absolute',
+    bottom: 20,
+    right: 10,
+    width: 40,
+    height: 40,
+    borderRadius: 50,
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000000a9',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 2.65,
+    elevation: 5,
+    zIndex: 1,
+  },
+
   shortcutIcon: {
     width: 50,
     height: 50,
@@ -85,21 +100,40 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
+
   shortcutIconText: {
     fontSize: 24,
-    fontWeight: 'bold',
     color: '#fff',
+    fontFamily: 'Poppins_600SemiBold',
   },
-  shortcutTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 5,
-  },
-  shortcutDescription: {
+
+  shortcutHint: {
     fontSize: 12,
-    color: '#666',
+    color: '#636363ff',
+    fontFamily: 'Poppins_500Medium',
+    marginVertical: 5,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(204, 204, 204, 0.91)',
+    borderRadius: 20,
+    alignSelf: 'flex-start',
   },
+
+  shortcutTitle: {
+    fontSize: 18,
+    fontFamily: 'Poppins_700Bold',
+    color: '#333',
+    marginLeft: 5,
+  },
+
+  shortcutDescription: {
+    fontSize: 14,
+    color: '#666',
+    fontFamily: 'Poppins_500Medium',
+    marginLeft: 5,
+  },
+
   logoutButton: {
     backgroundColor: '#007AFF',
     height: 50,
