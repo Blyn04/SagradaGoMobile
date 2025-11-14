@@ -132,6 +132,14 @@ export default function LoginScreen({ onLoginSuccess, onSwitchToSignUp }) {
           <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
         </TouchableOpacity>
 
+        <View style={styles.separatorContainer}>
+          <View style={styles.line} />
+          <View>
+            <Text style={styles.separatorText}>OR</Text>
+          </View>
+          <View style={styles.line} />
+        </View>
+
         <TouchableOpacity
           style={styles.switchButton}
           onPress={onSwitchToSignUp}

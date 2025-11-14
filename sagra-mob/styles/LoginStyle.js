@@ -79,8 +79,23 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Poppins_500Medium',
   },
+  separatorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 30,
+  },
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#999',
+  },
+  separatorText: {
+    marginHorizontal: 10,
+    fontFamily: 'Poppins_500Medium',
+    color: '#999',
+    fontSize: 14,
+  },
   switchButton: {
-    marginTop: 15,
     alignItems: 'center',
   },
   switchText: {
