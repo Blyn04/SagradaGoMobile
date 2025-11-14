@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
+  Image
 } from 'react-native';
 import styles from '../styles/LoginStyle';
 import ForgotPasswordModal from './ForgotPasswordModal';
@@ -18,6 +19,8 @@ const API_BASE_URL = 'http://localhost:8080/api';
 export default function LoginScreen({ onLoginSuccess, onSwitchToSignUp, onBack }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
 
@@ -82,6 +85,11 @@ export default function LoginScreen({ onLoginSuccess, onSwitchToSignUp, onBack }
       </TouchableOpacity>
 
       <View style={styles.formContainer}>
+        <Image
+          source={require('../assets/sagrada.png')}
+          style={{ width: 100, height: 100, marginBottom: 10, alignSelf: 'center' }}
+          resizeMode="contain"
+        />
         <Text style={styles.title}>Welcome!</Text>
         <Text style={styles.subtitle}>Sign In to continue</Text>
 
@@ -105,15 +113,24 @@ export default function LoginScreen({ onLoginSuccess, onSwitchToSignUp, onBack }
           <Ionicons name="lock-closed-outline" size={20} color="#999" style={styles.inputIcon} />
 
           <TextInput
-            style={styles.input}
+            style={[styles.input, { flex: 1 }]}
             placeholder="Password"
             placeholderTextColor="#999"
             value={password}
             onChangeText={setPassword}
-            secureTextEntry
+            secureTextEntry={!showPassword}
             autoCapitalize="none"
             editable={!loading}
           />
+
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+            <Ionicons
+              name={showPassword ? "eye-outline" : "eye-off-outline"}
+              size={22}
+              color="#999"
+              style={{ paddingHorizontal: 4 }}
+            />
+          </TouchableOpacity>
         </View>
 
         <TouchableOpacity
