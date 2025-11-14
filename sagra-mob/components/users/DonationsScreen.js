@@ -4,7 +4,7 @@ import {
   Text,
   ScrollView,
 } from 'react-native';
-import styles from '../../styles/DonationsStyle';
+import styles from '../../styles/users/DonationsStyle';
 import CustomNavbar from '../../customs/CustomNavbar';
 
 export default function DonationsScreen({ user, onNavigate }) {

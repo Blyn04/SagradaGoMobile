@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   Animated,
 } from 'react-native';
-import styles from '../../styles/VirtualTourStyle';
+import styles from '../../styles/users/VirtualTourStyle';
 import CustomNavbar from '../../customs/CustomNavbar';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');

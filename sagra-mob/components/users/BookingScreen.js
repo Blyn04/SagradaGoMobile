@@ -4,7 +4,7 @@ import {
   Text,
   ScrollView,
 } from 'react-native';
-import styles from '../../styles/BookingStyle';
+import styles from '../../styles/users/BookingStyle';
 import CustomNavbar from '../../customs/CustomNavbar';
 
 export default function BookingScreen({ user, onNavigate }) {

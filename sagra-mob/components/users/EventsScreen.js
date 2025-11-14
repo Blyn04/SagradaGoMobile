@@ -4,7 +4,7 @@ import {
   Text,
   ScrollView,
 } from 'react-native';
-import styles from '../../styles/EventsStyle';
+import styles from '../../styles/users/EventsStyle';
 import CustomNavbar from '../../customs/CustomNavbar';
 
 export default function EventsScreen({ user, onNavigate }) {

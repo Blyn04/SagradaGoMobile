@@ -8,7 +8,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import styles from '../../styles/ChatBotStyle';
+import styles from '../../styles/users/ChatBotStyle';
 import CustomNavbar from '../../customs/CustomNavbar';
 
 export default function ChatBotScreen({ user, onNavigate }) {

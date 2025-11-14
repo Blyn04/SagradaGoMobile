@@ -4,7 +4,7 @@ import {
   Text,
   ScrollView,
 } from 'react-native';
-import styles from '../../styles/AnnouncementsStyle';
+import styles from '../../styles/users/AnnouncementsStyle';
 import CustomNavbar from '../../customs/CustomNavbar';
 
 export default function AnnouncementsScreen({ user, onNavigate }) {
