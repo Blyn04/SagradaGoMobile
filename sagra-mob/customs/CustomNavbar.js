@@ -1,9 +1,5 @@
-import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { View, Text, TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import styles from '../styles/NavbarStyle';
 
@@ -16,33 +12,58 @@ export default function CustomNavbar({ currentScreen, onNavigate }) {
     { id: 'profile', label: 'Profile', screen: 'ProfileScreen', icon: 'person' },
   ];
 
+  const liftAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.spring(liftAnim, {
+      toValue: 1,
+      friction: 5,
+      tension: 100,
+      useNativeDriver: true,
+    }).start();
+  }, [currentScreen]);
+
   return (
     <View style={styles.navbar}>
-      {navItems.map((item) => (
-        <TouchableOpacity
-          key={item.id}
-          style={[
-            styles.navItem,
-            currentScreen === item.screen && styles.navItemActive
-          ]}
-          onPress={() => onNavigate(item.screen)}
-        >
-          <Ionicons
-            name={currentScreen === item.screen ? item.icon : `${item.icon}-outline`}
-            size={24}
-            color={currentScreen === item.screen ? '#007AFF' : '#666'}
-          />
-          <Text
-            style={[
-              styles.navText,
-              currentScreen === item.screen && styles.navTextActive
-            ]}
+      {navItems.map((item, index) => {
+        const isActive = currentScreen === item.screen;
+
+        const animatedStyle = {
+          transform: [
+            {
+              translateY: isActive
+                ? liftAnim.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, -2],
+                })
+                : 0,
+            },
+          ],
+        };
+
+        return (
+          <TouchableOpacity
+            key={item.id}
+            style={styles.navItem}
+            onPress={() => onNavigate(item.screen)}
+            activeOpacity={0.7}
           >
-            {item.label}
-          </Text>
-        </TouchableOpacity>
-      ))}
+            <Animated.View
+              style={[
+                styles.iconWrapper,
+                isActive && styles.navItemActive,
+                animatedStyle,
+              ]}
+            >
+              <Ionicons
+                name={isActive ? item.icon : `${item.icon}-outline`}
+                size={24}
+                color={isActive ? '#a8862fff' : '#666'}
+              />
+            </Animated.View>
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 }
-
