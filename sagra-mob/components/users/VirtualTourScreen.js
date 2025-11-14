@@ -13,16 +13,15 @@ import styles from '../../styles/VirtualTourStyle';
 import CustomNavbar from '../../customs/CustomNavbar';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const IMAGE_WIDTH = SCREEN_WIDTH * 2; 
+const IMAGE_WIDTH = SCREEN_WIDTH * 3; 
 
 export default function VirtualTourScreen({ user, onNavigate }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
-  // Start at center position - image is 2x width, so center it
-  const initialOffset = -SCREEN_WIDTH / 2;
+  const initialOffset = -SCREEN_WIDTH;
   const translateX = useRef(new Animated.Value(initialOffset)).current;
-  const lastOffset = useRef(initialOffset);
+  const currentPosition = useRef(initialOffset); 
   const panResponderRef = useRef(null);
 
   const tourImages = [
@@ -46,23 +45,29 @@ export default function VirtualTourScreen({ user, onNavigate }) {
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponder: () => true,
-    onPanResponderGrant: () => {
-      translateX.setOffset(lastOffset.current);
-      translateX.setValue(0);
+    onPanResponderGrant: (evt, gestureState) => {
+      translateX.stopAnimation((value) => {
+        currentPosition.current = value;
+      });
     },
     onPanResponderMove: (evt, gestureState) => {
-      const maxTranslate = SCREEN_WIDTH / 2; // Can move half screen width in each direction
-      const minTranslate = -SCREEN_WIDTH / 2;
-      const newValue = gestureState.dx + lastOffset.current;
-      const clampedValue = Math.max(minTranslate, Math.min(maxTranslate, newValue));
-      translateX.setValue(clampedValue - lastOffset.current);
+      const maxTranslate = 0;
+      const minTranslate = -SCREEN_WIDTH * 2; 
+      
+      const newPosition = currentPosition.current - gestureState.dx;
+      const clampedPosition = Math.max(minTranslate, Math.min(maxTranslate, newPosition));
+      
+      translateX.setValue(clampedPosition);
     },
+
     onPanResponderRelease: (evt, gestureState) => {
-      const maxTranslate = SCREEN_WIDTH / 2;
-      const minTranslate = -SCREEN_WIDTH / 2;
-      const newOffset = gestureState.dx + lastOffset.current;
-      lastOffset.current = Math.max(minTranslate, Math.min(maxTranslate, newOffset));
-      translateX.flattenOffset();
+      const maxTranslate = 0;
+      const minTranslate = -SCREEN_WIDTH * 2;
+      const finalPosition = currentPosition.current - gestureState.dx;
+      const clampedFinal = Math.max(minTranslate, Math.min(maxTranslate, finalPosition));
+      
+      currentPosition.current = clampedFinal;
+      translateX.setValue(clampedFinal);
     },
   });
 
@@ -73,8 +78,13 @@ export default function VirtualTourScreen({ user, onNavigate }) {
   const handleNextImage = () => {
     setCurrentImageIndex((prev) => {
       const nextIndex = (prev + 1) % tourImages.length;
-      lastOffset.current = initialOffset;
-      translateX.setValue(initialOffset);
+      currentPosition.current = initialOffset;
+      Animated.timing(translateX, {
+        toValue: initialOffset,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+
       setImageError(false);
       return nextIndex;
     });
@@ -83,8 +93,13 @@ export default function VirtualTourScreen({ user, onNavigate }) {
   const handlePrevImage = () => {
     setCurrentImageIndex((prev) => {
       const prevIndex = (prev - 1 + tourImages.length) % tourImages.length;
-      lastOffset.current = initialOffset;
-      translateX.setValue(initialOffset);
+      currentPosition.current = initialOffset;
+      Animated.timing(translateX, {
+        toValue: initialOffset,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+      
       setImageError(false);
       return prevIndex;
     });
@@ -119,13 +134,15 @@ export default function VirtualTourScreen({ user, onNavigate }) {
                 <Image
                   source={currentImage.image}
                   style={styles.panoramaImage}
-                  resizeMode="cover"
+                  resizeMode="stretch"
                   onError={() => {
                     console.error('Image load error:', currentImage.name);
                     setImageError(true);
                   }}
-                  onLoad={() => {
+                  onLoad={(event) => {
                     console.log('Image loaded:', currentImage.name);
+                    const { width, height } = event.nativeEvent.source;
+                    console.log('Image dimensions:', width, 'x', height);
                     setImageError(false);
                     setImageLoaded(true);
                   }}
