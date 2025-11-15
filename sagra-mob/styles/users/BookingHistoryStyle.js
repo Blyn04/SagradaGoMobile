@@ -3,7 +3,6 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9f9f9',
   },
 
   scrollView: {
@@ -19,43 +18,78 @@ const styles = StyleSheet.create({
   backButton: {
     width: 40,
     height: 40,
-    borderRadius: 20,
-    backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
   },
 
   title: {
-    fontSize: 28,
-    fontFamily: 'Poppins_700Bold',
-    color: '#222',
     marginBottom: 8,
   },
 
   subtitle: {
-    fontSize: 14,
-    fontFamily: 'Poppins_400Regular',
-    color: '#666',
     marginBottom: 20,
   },
 
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 40,
+  filterContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
   },
 
-  contentText: {
-    fontSize: 16,
-    fontFamily: 'Poppins_400Regular',
-    color: '#666',
+  filterButton: {
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 8,
+  },
+
+  bookingsContainer: {
+    marginBottom: 20,
+  },
+
+  bookingCard: {
+    padding: 16,
+    marginBottom: 12,
+  },
+
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+  },
+
+  cardHeaderLeft: {
+    flex: 1,
+  },
+
+  sacramentName: {
+    marginBottom: 4,
+  },
+
+  cardDivider: {
+    height: 1,
+    marginVertical: 12,
+  },
+
+  cardDetails: {
+    marginTop: 4,
+  },
+
+  detailRow: {
+    marginBottom: 8,
+  },
+
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 60,
+  },
+
+  emptyText: {
+    marginTop: 16,
     textAlign: 'center',
   },
 });
