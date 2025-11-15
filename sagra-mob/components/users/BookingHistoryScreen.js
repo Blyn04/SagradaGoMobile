@@ -71,6 +71,7 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isConfirmModalVisible, setIsConfirmModalVisible] = useState(false);
 
   const filteredBookings = useMemo(() => {
     if (selectedFilter === 'all') {
@@ -97,6 +98,25 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
   const closeModal = () => {
     setIsModalVisible(false);
     setSelectedBooking(null);
+  };
+
+  const handleCancelBooking = () => {
+    setIsConfirmModalVisible(true);
+  };
+
+  const handleConfirmCancel = () => {
+    // TODO: Implement cancel booking API call
+    console.log('Cancel booking:', selectedBooking.id);
+    // After successful cancellation, you might want to:
+    // - Update the booking status in the list
+    // - Close the modal
+    // - Show a success message
+    setIsConfirmModalVisible(false);
+    closeModal();
+  };
+
+  const handleCancelConfirm = () => {
+    setIsConfirmModalVisible(false);
   };
 
   return (
@@ -330,8 +350,76 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
                       </>
                     )}
                 </ScrollView>
+
+                {selectedBooking.status === 'pending' && (
+                  <>
+                    <View style={styles.modalDivider} />
+                    <TouchableOpacity
+                      style={styles.modalCancelButton}
+                      onPress={handleCancelBooking}
+                    >
+                      <Text style={styles.modalCancelButtonText}>Cancel Booking</Text>
+                    </TouchableOpacity>
+                  </>
+                )}
               </>
             )}
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={isConfirmModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={handleCancelConfirm}
+      >
+        <View style={styles.modalOverlay}>
+          <TouchableOpacity
+            style={styles.modalOverlayTouchable}
+            activeOpacity={1}
+            onPress={handleCancelConfirm}
+          />
+          <View 
+            style={styles.confirmModalContent}
+            onStartShouldSetResponder={() => true}
+          >
+            <View style={styles.confirmModalHeader}>
+              <Text style={styles.confirmModalTitle}>Confirm Cancellation</Text>
+            </View>
+
+            <View style={styles.modalDivider} />
+
+            <View style={styles.confirmModalBody}>
+              <Text style={styles.confirmModalText}>
+                Are you sure you want to cancel this booking?
+              </Text>
+              {selectedBooking && (
+                <Text style={styles.confirmModalSubtext}>
+                  {selectedBooking.sacrament} - {formatDate(selectedBooking.date)} at {selectedBooking.time}
+                </Text>
+              )}
+            </View>
+
+            <View style={styles.modalDivider} />
+
+            <View style={styles.confirmModalButtons}>
+              <TouchableOpacity
+                style={styles.confirmModalButton}
+                onPress={handleCancelConfirm}
+              >
+                <Text style={styles.confirmModalButtonText}>No, Keep Booking</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.confirmModalButton, styles.confirmModalButtonPrimary]}
+                onPress={handleConfirmCancel}
+              >
+                <Text style={[styles.confirmModalButtonText, styles.confirmModalButtonTextPrimary]}>
+                  Yes, Cancel Booking
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
