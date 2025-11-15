@@ -132,12 +132,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.55)',
     justifyContent: 'center',
     alignItems: 'center',
+
   },
 
   modalOverlayInner: {
     flex: 1,
     justifyContent: 'center',
-    padding: 20,
+    padding: 30,
     width: '100%',
   },
 
@@ -147,7 +148,7 @@ const styles = StyleSheet.create({
     paddingVertical: 30,
     paddingHorizontal: 20,
     width: '100%',
-    maxWidth: 400,
+    maxWidth: 350,
     shadowColor: '#000',
     shadowOpacity: 0.25,
     shadowOffset: { width: 0, height: 5 },
@@ -198,7 +199,7 @@ const styles = StyleSheet.create({
   },
 
   logoutConfirmButton: {
-    backgroundColor: '#FF3B30',
+    backgroundColor: '#424242',
   },
 
   logoutConfirmButtonText: {
@@ -207,48 +208,31 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins_600SemiBold',
   },
 
-  editButton: {
-    backgroundColor: '#3478f6',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  editButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontFamily: 'Poppins_600SemiBold',
-  },
   scrollContent: {
     padding: 20,
     paddingBottom: 60,
   },
-  backButton: {
-    paddingTop: 10,
-  },
+
   formContainer: {
     marginTop: 20,
   },
-  logo: {
-    width: 100,
-    height: 100,
-    alignSelf: "center",
-    marginBottom: 10,
-  },
+
   title: {
     fontFamily: "Poppins_700Bold",
-    fontSize: 26,
+    fontSize: 30,
     textAlign: "center",
     marginTop: 5,
+    marginBottom: -5,
   },
+
   subtitle: {
     fontFamily: "Poppins_400Regular",
-    fontSize: 14,
+    fontSize: 16,
     textAlign: "center",
     color: "#666",
     marginBottom: 20,
   },
+
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -258,14 +242,17 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginTop: 12,
   },
+
   inputIcon: {
     marginRight: 6,
   },
+
   input: {
     flex: 1,
     fontFamily: "Poppins_500Medium",
     fontSize: 15,
   },
+
   yellowButton: {
     backgroundColor: '#FFC942',
     paddingVertical: 9,
@@ -273,6 +260,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     width: '100%'
   },
+
   darkButton: {
     backgroundColor: '#424242',
     paddingVertical: 10,
@@ -280,12 +268,14 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     width: '100%'
   },
+
   yellowButtonText: {
     fontSize: 16,
     fontFamily: 'Poppins_700Bold',
     color: '#424242',
     textAlign: 'center',
   },
+
   darkButtonText: {
     fontSize: 16,
     fontFamily: 'Poppins_700Bold',
