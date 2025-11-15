@@ -20,6 +20,7 @@ import { auth } from '../config/FireBaseConfig';
 import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
+  deleteUser,
 } from "firebase/auth";
 import { API_BASE_URL } from '../config/API';
 
@@ -223,10 +224,6 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
     }
   };
 
-  const generateUID = () => {
-    return 'UID' + Date.now() + Math.random().toString(36).substr(2, 9);
-  };
-
   const validateForm = () => {
     const fields = ['first_name', 'last_name', 'gender', 'contact_number', 'birthday', 'email', 'password', 'confirmPassword'];
     let hasErrors = false;
@@ -283,7 +280,6 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
       const uid = user.uid;
 
       await sendEmailVerification(user);
-      Alert.alert('Success', 'Account created successfully! Please verify your email.');
 
       const signUpData = {
         first_name: formData.first_name.trim(),
@@ -298,18 +294,69 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
         uid: uid
       };
 
-      const response = await fetch(`${API_BASE_URL}/createUser`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(signUpData),
-      });
+      let response;
+      let data;
+      
+      console.log('Attempting to create user in MongoDB via:', `${API_BASE_URL}/createUser`);
+      
+      try {
+        response = await fetch(`${API_BASE_URL}/createUser`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(signUpData),
+        });
 
-      const data = await response.json();
+        console.log('API Response status:', response.status);
+
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          data = await response.json();
+          console.log('API Response data:', data);
+
+        } else {
+          const text = await response.text();
+          console.error('Non-JSON response:', text);
+          data = { message: 'Server returned an invalid response' };
+        }
+
+      } catch (fetchError) {
+        console.error('API Network Error:', fetchError);
+
+        try {
+          await deleteUser(user);
+          console.log('Firebase user rolled back due to network error');
+          
+        } catch (deleteError) {
+          console.error('Error deleting Firebase user:', deleteError);
+        }
+
+        Alert.alert(
+          'Network Error', 
+          'Failed to connect to server. Please check your internet connection and try again. Your account was not created.'
+        );
+
+        return;
+      }
 
       if (response.ok) {
+        Alert.alert('Success', 'Account created successfully! Please verify your email.');
         if (onSwitchToLogin) onSwitchToLogin();
+
       } else {
-        Alert.alert('Error', data.message || 'Failed to create account. Please try again.');
+        console.error('MongoDB creation failed:', data.message);
+
+        try {
+          await deleteUser(user);
+          console.log('Firebase user rolled back due to MongoDB failure');
+
+        } catch (deleteError) {
+          console.error('Error deleting Firebase user:', deleteError);
+        }
+        
+        Alert.alert(
+          'Error', 
+          data.message || 'Failed to create account in database. Please try again.'
+        );
       }
 
     } catch (error) {
