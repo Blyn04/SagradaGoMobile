@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
   fullscreenLocationName: {
     color: '#fff',
     fontSize: 24,
-    fontWeight: 'bold',
+    fontFamily: 'Poppins_700Bold',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     paddingHorizontal: 20,
     paddingVertical: 10,
