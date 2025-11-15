@@ -69,28 +69,11 @@ const requirements = {
   ],
 };
 
-const months = [
-  'All Months',
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
-
 export default function BookingScreen({ user, onNavigate }) {
   const [selectedSacrament, setSelectedSacrament] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isBookingModalVisible, setIsBookingModalVisible] = useState(false);
   const [bookingSacrament, setBookingSacrament] = useState(null);
-  const [selectedMonth, setSelectedMonth] = useState('All Months');
 
   const handleRequirements = (sacramentName) => {
     setSelectedSacrament(sacramentName);
@@ -113,18 +96,8 @@ export default function BookingScreen({ user, onNavigate }) {
   };
 
   const filteredSacraments = useMemo(() => {
-    let filtered = sacraments;
-
-    if (selectedMonth !== 'All Months') {
-      filtered = sacraments.filter((sacrament) => {
-        const dateParts = sacrament.minDate.split(' ');
-        const monthName = dateParts[0]; // e.g., "October"
-        return monthName === selectedMonth;
-      });
-    }
-
-    return filtered.sort((a, b) => a.name.localeCompare(b.name));
-  }, [selectedMonth]);
+    return sacraments.sort((a, b) => a.name.localeCompare(b.name));
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -137,20 +110,6 @@ export default function BookingScreen({ user, onNavigate }) {
           />
           <Text style={styles.title}>Select a Sacrament</Text>
           <Text style={styles.subtitle}>Choose a sacrament to view its requirements.</Text>
-        </View>
-
-        <View style={styles.filterContainer}>
-          <Text style={styles.filterLabel}>Filter by Month:</Text>
-
-          <CustomPicker
-            selectedValue={selectedMonth}
-            onValueChange={(itemValue) => setSelectedMonth(itemValue)}
-            options={months.map((month) => ({
-              label: month,
-              value: month,
-            }))}
-            placeholder="Select Month"
-          />
         </View>
 
         <View style={styles.content}>
@@ -186,7 +145,7 @@ export default function BookingScreen({ user, onNavigate }) {
           ) : (
             <View style={styles.noResultsContainer}>
               <Text style={styles.noResultsText}>
-                No sacraments found for {selectedMonth}.
+                No sacraments found.
               </Text>
             </View>
           )}
