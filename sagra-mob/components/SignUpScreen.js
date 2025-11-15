@@ -259,24 +259,20 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
 
   const handleSignUp = async () => {
     try {
-      // Validate required fields (matching web version)
       if (!formData.email || !formData.password || !formData.first_name || !formData.last_name) {
         Alert.alert('Error', 'Please fill out all required fields.');
         return;
       }
 
-      // Check password match (matching web version)
       if (formData.password !== formData.confirmPassword) {
         Alert.alert('Error', 'Passwords do not match!');
         return;
       }
 
-      // Run full form validation
       if (!validateForm()) return;
 
       setLoading(true);
 
-      // Create user with Firebase Auth first (matching web version)
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         formData.email.trim(),
@@ -286,11 +282,9 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
       const user = userCredential.user;
       const uid = user.uid;
 
-      // Send email verification (matching web version)
       await sendEmailVerification(user);
       Alert.alert('Success', 'Account created successfully! Please verify your email.');
 
-      // Then call API to create user in database (matching web version)
       const signUpData = {
         first_name: formData.first_name.trim(),
         middle_name: formData.middle_name.trim(),
@@ -321,6 +315,7 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
     } catch (error) {
       console.error('Signup Error:', error.message);
       Alert.alert('Error', error.message || 'Network error. Please check your connection and try again.');
+      
     } finally {
       setLoading(false);
     }
