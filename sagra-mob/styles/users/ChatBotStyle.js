@@ -3,7 +3,6 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   chatbotMainContainer: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
   },
 
   chatbotScrollView: {
@@ -23,16 +22,15 @@ const styles = StyleSheet.create({
 
   chatbotTitleText: {
     fontSize: 28,
-    fontWeight: '700',
+    fontFamily: 'Poppins_700Bold',
     color: '#1a1a1a',
-    marginBottom: 8,
     letterSpacing: 0.5,
   },
 
   chatbotSubtitleText: {
     fontSize: 15,
+    fontFamily: 'Poppins_500Medium',
     color: '#6c757d',
-    fontWeight: '400',
   },
 
   chatbotMessagesContainer: {
@@ -47,17 +45,14 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     marginBottom: 12,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
   },
 
   chatbotUserMessageBubble: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#424242',
     alignSelf: 'flex-end',
     borderBottomRightRadius: 4,
   },
@@ -72,16 +67,16 @@ const styles = StyleSheet.create({
 
   chatbotUserMessageText: {
     fontSize: 15,
+    fontFamily: 'Poppins_500Medium',
     color: '#ffffff',
     lineHeight: 20,
-    fontWeight: '400',
   },
 
   chatbotBotMessageText: {
     fontSize: 15,
+    fontFamily: 'Poppins_500Medium',
     color: '#1a1a1a',
     lineHeight: 20,
-    fontWeight: '400',
   },
 
   chatbotInputWrapper: {
@@ -93,10 +88,7 @@ const styles = StyleSheet.create({
     borderTopColor: '#e0e0e0',
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: -2,
-    },
+    shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 5,
@@ -109,6 +101,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 12,
     fontSize: 15,
+    fontFamily: 'Poppins_500Medium',
     color: '#1a1a1a',
     marginRight: 10,
     borderWidth: 1,
@@ -117,17 +110,14 @@ const styles = StyleSheet.create({
   },
 
   chatbotSendButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#424242',
     borderRadius: 24,
     paddingHorizontal: 24,
     paddingVertical: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#007AFF',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowColor: '#424242',
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 3,
@@ -136,7 +126,7 @@ const styles = StyleSheet.create({
   chatbotSendButtonText: {
     color: '#ffffff',
     fontSize: 15,
-    fontWeight: '600',
+    fontFamily: 'Poppins_600SemiBold',
     letterSpacing: 0.5,
   },
 
@@ -146,13 +136,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 40,
   },
-  
+
   chatbotContentText: {
     fontSize: 16,
+    fontFamily: 'Poppins_-',
     color: '#6c757d',
     textAlign: 'center',
   },
 });
 
 export default styles;
-

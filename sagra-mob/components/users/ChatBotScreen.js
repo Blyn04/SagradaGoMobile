@@ -24,16 +24,38 @@ export default function ChatBotScreen({ user, onNavigate }) {
     return "Sorry, I don't understand. Can you rephrase?";
   };
 
+  const formatTime = (date) => {
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
+    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+    return `${formattedHours}:${formattedMinutes} ${ampm}`;
+  };
+
   const sendMessage = () => {
     if (!inputText.trim()) return;
 
     const messageText = inputText.trim();
-    const userMsg = { id: Date.now(), text: messageText, sender: 'user' };
+    const now = new Date();
+
+    const userMsg = {
+      id: Date.now(),
+      text: messageText,
+      sender: 'user',
+      timeSent: formatTime(now),
+    };
     setMessages(prev => [...prev, userMsg]);
     setInputText('');
 
     setTimeout(() => {
-      const botMsg = { id: Date.now() + 1, text: getBotResponse(messageText), sender: 'bot' };
+      const botNow = new Date();
+      const botMsg = {
+        id: Date.now() + 1,
+        text: getBotResponse(messageText),
+        sender: 'bot',
+        timeSent: formatTime(botNow),
+      };
       setMessages(prev => [...prev, botMsg]);
     }, 500);
   };
@@ -52,7 +74,7 @@ export default function ChatBotScreen({ user, onNavigate }) {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.chatbotHeaderContainer}>
-            <Text style={styles.chatbotTitleText}>Chat Bot</Text>
+            <Text style={styles.chatbotTitleText}>SagradaBot</Text>
             <Text style={styles.chatbotSubtitleText}>Ask me anything!</Text>
           </View>
 
@@ -62,11 +84,31 @@ export default function ChatBotScreen({ user, onNavigate }) {
                 key={msg.id}
                 style={[
                   styles.chatbotMessageBubble,
-                  msg.sender === 'user' ? styles.chatbotUserMessageBubble : styles.chatbotBotMessageBubble,
+                  msg.sender === 'user'
+                    ? styles.chatbotUserMessageBubble
+                    : styles.chatbotBotMessageBubble,
                 ]}
               >
-                <Text style={msg.sender === 'user' ? styles.chatbotUserMessageText : styles.chatbotBotMessageText}>
+                <Text
+                  style={
+                    msg.sender === 'user'
+                      ? styles.chatbotUserMessageText
+                      : styles.chatbotBotMessageText
+                  }
+                >
                   {msg.text}
+                </Text>
+
+                <Text
+                  style={{
+                    fontFamily: 'Poppins_400Regular',
+                    fontSize: 10,
+                    color: msg.sender === 'user' ? '#f9f9f9' : '#424242',
+                    marginTop: 4,
+                    alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start',
+                  }}
+                >
+                  {msg.timeSent}
                 </Text>
               </View>
             ))}
@@ -92,6 +134,5 @@ export default function ChatBotScreen({ user, onNavigate }) {
 
       <CustomNavbar currentScreen="ChatBotScreen" onNavigate={onNavigate} />
     </>
-
   );
 }
