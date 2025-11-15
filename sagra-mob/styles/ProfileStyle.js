@@ -223,6 +223,29 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
 
+  bookingHistoryButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    marginTop: 20,
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+
+  bookingHistoryButtonText: {
+    flex: 1,
+    fontSize: 16,
+    fontFamily: 'Poppins_600SemiBold',
+    color: '#424242',
+  },
+
 });
 
 export default styles;

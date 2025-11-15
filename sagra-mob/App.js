@@ -14,6 +14,7 @@ import Profile from './components/Profile';
 import ChatBotScreen from './components/users/ChatBotScreen';
 import EventsScreen from './components/users/EventsScreen';
 import BookingScreen from './components/users/BookingScreen';
+import BookingHistoryScreen from './components/users/BookingHistoryScreen';
 
 import {
   useFonts,
@@ -159,6 +160,13 @@ export default function App() {
       case 'ChatBotScreen':
         return (
           <ChatBotScreen user={currentUser} onNavigate={handleNavigate}
+          />
+        );
+      case 'BookingHistoryScreen':
+        return (
+          <BookingHistoryScreen
+            user={currentUser}
+            onNavigate={handleNavigate}
           />
         );
       default:
