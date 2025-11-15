@@ -42,6 +42,8 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
     return `${user.first_name?.charAt(0) || ''}${user.last_name?.charAt(0) || ''}`.toUpperCase();
   };
 
+  const fullName = `${user.first_name || ''} ${user.middle_name || ''} ${user.last_name || ''}`;
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -52,6 +54,14 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        <TouchableOpacity
+          style={styles.logoutButtonTop}
+          onPress={() => setShowLogoutModal(true)}
+        >
+          <Ionicons name="log-out-outline" size={20} color="#424242" style={{ marginRight: 5 }} />
+          <Text style={styles.logoutButtonTextTop}>Logout</Text>
+        </TouchableOpacity>
+
         <View style={styles.formContainer}>
           <View style={styles.avatarWrapper}>
             <View style={styles.avatarCircle}>
@@ -59,12 +69,8 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
             </View>
           </View>
 
-          <Text style={styles.title}>
-            {isEditing ? "Edit Profile" : "Profile Details"}
-          </Text>
-          <Text style={styles.subtitle}>
-            {isEditing ? "Update your information" : "Your personal information"}
-          </Text>
+          <Text style={styles.title}>{fullName}</Text>
+          <Text style={styles.subtitle}>{user.email || ""}</Text>
 
           <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
             <View style={[styles.inputContainer, { flex: 1, marginRight: 10 }]}>
@@ -171,7 +177,6 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
               <Text style={styles.yellowButtonText}>Save Changes</Text>
             </TouchableOpacity>
           )}
-
         </View>
       </ScrollView>
 
@@ -179,6 +184,40 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
         currentScreen="ProfileScreen"
         onNavigate={onNavigate}
       />
+
+      <Modal
+        visible={showLogoutModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowLogoutModal(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setShowLogoutModal(false)}
+        >
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Confirm Logout</Text>
+            <Text style={styles.modalSubtitle}>Are you sure you want to logout?</Text>
+
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={[styles.modalButton, styles.cancelButton]}
+                onPress={() => setShowLogoutModal(false)}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.modalButton, styles.logoutConfirmButton]}
+                onPress={handleLogoutConfirm}
+              >
+                <Text style={styles.logoutConfirmButtonText}>Logout</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </KeyboardAvoidingView>
   );
 }

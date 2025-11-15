@@ -22,6 +22,22 @@ const styles = StyleSheet.create({
     color: '#222',
   },
 
+  logoutButtonTop: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    alignSelf: "flex-end",
+    marginTop: 30,
+  },
+
+  logoutButtonTextTop: {
+    color: "#424242",
+    fontSize: 16,
+    fontFamily: 'Poppins_600SemiBold'
+  },
+
   // PROFILE CARD
   profileSection: {
     backgroundColor: '#fff',
@@ -212,7 +228,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   formContainer: {
-    marginTop: 50,
+    marginTop: 20,
   },
   logo: {
     width: 100,
