@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0,0,0,0.6)',
   },
 
   modalOverlayTouchable: {
@@ -165,44 +165,41 @@ const styles = StyleSheet.create({
   modalContent: {
     width: '90%',
     maxWidth: 400,
-    maxHeight: '80%',
+    maxHeight: '85%',
     padding: 20,
     backgroundColor: '#fff',
     borderRadius: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.25,
     shadowRadius: 8,
-    elevation: 8,
+    elevation: 10,
   },
 
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
   },
 
   modalTitle: {
     flex: 1,
-    marginRight: 16,
-    fontSize: 24,
+    fontSize: 22,
     fontFamily: 'Poppins_700Bold',
     color: '#222',
   },
 
   modalCloseButton: {
     padding: 4,
-    minWidth: 32,
-    minHeight: 32,
     justifyContent: 'center',
     alignItems: 'center',
   },
 
   modalDivider: {
     height: 1,
-    marginVertical: 12,
     backgroundColor: '#e0e0e0',
+    marginVertical: 10,
   },
 
   modalScrollView: {
@@ -217,14 +214,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
+    paddingVertical: 6,
   },
 
   modalLabel: {
     flex: 1,
     fontSize: 14,
     fontFamily: 'Poppins_600SemiBold',
-    color: '#666',
+    color: '#444',
   },
 
   modalValue: {
@@ -240,17 +237,19 @@ const styles = StyleSheet.create({
   },
 
   modalNotes: {
-    marginTop: 8,
+    marginTop: 4,
+    fontSize: 13,
+    fontFamily: 'Poppins_400Regular',
+    color: '#555',
   },
 
   modalCancelButton: {
     paddingVertical: 12,
-    paddingHorizontal: 20,
-    marginTop: 8,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 12,
     backgroundColor: '#f44336',
-    borderRadius: 8,
+    borderRadius: 10,
   },
 
   modalCancelButtonText: {
@@ -269,70 +268,69 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
-    elevation: 8,
-  },
-
-  confirmModalHeader: {
-    marginBottom: 16,
+    elevation: 10,
   },
 
   confirmModalTitle: {
-    marginBottom: 0,
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: 'Poppins_700Bold',
     color: '#222',
+    textAlign: 'center',
+    width: '80%',
+    alignSelf: 'center'
   },
 
-  confirmModalBody: {
-    paddingVertical: 8,
+  confirmModalTextContainer: {
+    backgroundColor: '#f5f5f5ff',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginVertical: 12,
+    alignItems: 'center',
   },
 
   confirmModalText: {
-    marginBottom: 12,
-    fontSize: 16,
+    fontSize: 18,
     fontFamily: 'Poppins_400Regular',
     color: '#333',
-  },
-
-  confirmModalSubtext: {
-    marginTop: 8,
-    fontSize: 14,
-    fontFamily: 'Poppins_500Medium',
-    color: '#666',
+    textAlign: 'center',
   },
 
   confirmModalButtons: {
     flexDirection: 'row',
-    marginTop: 8,
+    justifyContent: 'space-between',
+    marginTop: 10,
   },
 
   confirmModalButton: {
     flex: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    paddingVertical: 8,
+    marginHorizontal: 4,
     alignItems: 'center',
     justifyContent: 'center',
-    marginHorizontal: 4,
-    backgroundColor: '#f5f5f5',
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: '#f5f5f5',
+    backgroundColor: '#f5f5f5',
   },
 
   confirmModalButtonPrimary: {
-    backgroundColor: '#f44336',
-    borderColor: '#f44336',
+    backgroundColor: '#FFC942',
+    borderColor: '#FFC942',
   },
 
   confirmModalButtonText: {
     fontSize: 14,
-    fontFamily: 'Poppins_600SemiBold',
-    color: '#666',
+    fontFamily: 'Poppins_700Bold',
+    color: '#424242',
   },
 
   confirmModalButtonTextPrimary: {
-    color: '#fff',
+    color: '#424242',
   },
+
 });
 
 export default styles;

@@ -237,7 +237,7 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
 
       <Modal
         visible={isModalVisible}
-        transparent={true}
+        transparent
         animationType="fade"
         onRequestClose={closeModal}
       >
@@ -247,92 +247,56 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
             activeOpacity={1}
             onPress={closeModal}
           />
-          <View
-            style={styles.modalContent}
-            onStartShouldSetResponder={() => true}
-          >
+          <View style={styles.modalContent} onStartShouldSetResponder={() => true}>
             {selectedBooking && (
               <>
                 <View style={styles.modalHeader}>
                   <Text style={styles.modalTitle}>{selectedBooking.sacrament}</Text>
-                  <TouchableOpacity
-                    style={styles.modalCloseButton}
-                    onPress={closeModal}
-                  >
-                    <Ionicons name="close" size={24} />
+                  <TouchableOpacity style={styles.modalCloseButton} onPress={closeModal}>
+                    <Ionicons name="close" size={24} color="#333" />
                   </TouchableOpacity>
                 </View>
-
-                <View style={styles.modalDivider} />
 
                 <ScrollView
                   style={styles.modalScrollView}
                   contentContainerStyle={styles.modalDetails}
                   showsVerticalScrollIndicator={false}
                 >
-                  <View style={styles.modalDetailRow}>
-                    <Text style={styles.modalLabel}>Booking ID</Text>
-                    <Text style={styles.modalValue}>{selectedBooking.id}</Text>
-                  </View>
-
-                  <View style={styles.modalDivider} />
-
-                  <View style={styles.modalDetailRow}>
-                    <Text style={styles.modalLabel}>Sacrament</Text>
-                    <Text style={styles.modalValue}>{selectedBooking.sacrament}</Text>
-                  </View>
-
-                  <View style={styles.modalDivider} />
-
-                  <View style={styles.modalDetailRow}>
-                    <Text style={styles.modalLabel}>Status</Text>
-                    <Text style={styles.modalValue}>
-                      {selectedBooking.status.charAt(0).toUpperCase() + selectedBooking.status.slice(1)}
-                    </Text>
-                  </View>
-
-                  <View style={styles.modalDivider} />
-
-                  <View style={styles.modalDetailRow}>
-                    <Text style={styles.modalLabel}>Date</Text>
-                    <Text style={styles.modalValue}>{formatDate(selectedBooking.date)}</Text>
-                  </View>
-
-                  <View style={styles.modalDivider} />
-
-                  <View style={styles.modalDetailRow}>
-                    <Text style={styles.modalLabel}>Time</Text>
-                    <Text style={styles.modalValue}>{selectedBooking.time}</Text>
-                  </View>
-
-                  <View style={styles.modalDivider} />
-
-                  <View style={styles.modalDetailRow}>
-                    <Text style={styles.modalLabel}>Booked on</Text>
-                    <Text style={styles.modalValue}>{formatDate(selectedBooking.bookingDate)}</Text>
-                  </View>
+                  {[
+                    { label: "Booking ID", value: selectedBooking.id },
+                    { label: "Sacrament", value: selectedBooking.sacrament },
+                    { label: "Status", value: selectedBooking.status.charAt(0).toUpperCase() + selectedBooking.status.slice(1) },
+                    { label: "Date", value: formatDate(selectedBooking.date), icon: "calendar-outline" },
+                    { label: "Time", value: selectedBooking.time, icon: "time-outline" },
+                    { label: "Booked on", value: formatDate(selectedBooking.bookingDate), icon: "calendar-outline" },
+                  ].map((item, idx) => (
+                    <React.Fragment key={idx}>
+                      <View style={styles.modalDetailRow}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+                          {item.icon && <Ionicons name={item.icon} size={16} color="#666" style={{ marginRight: 6 }} />}
+                          <Text style={styles.modalLabel}>{item.label}</Text>
+                        </View>
+                        <Text style={styles.modalValue}>{item.value}</Text>
+                      </View>
+                      <View style={styles.modalDivider} />
+                    </React.Fragment>
+                  ))}
 
                   {selectedBooking.notes && (
-                    <>
-                      <View style={styles.modalDivider} />
-                      <View style={styles.modalNotesContainer}>
-                        <Text style={styles.modalLabel}>Notes</Text>
-                        <Text style={styles.modalNotes}>{selectedBooking.notes}</Text>
-                      </View>
-                    </>
+                    <View style={styles.modalNotesContainer}>
+                      <Text style={styles.modalLabel}>Notes</Text>
+                      <Text style={styles.modalNotes}>{selectedBooking.notes}</Text>
+                    </View>
                   )}
                 </ScrollView>
 
                 {selectedBooking.status === 'pending' && (
-                  <>
-                    <View style={styles.modalDivider} />
-                    <TouchableOpacity
-                      style={styles.modalCancelButton}
-                      onPress={handleCancelBooking}
-                    >
-                      <Text style={styles.modalCancelButtonText}>Cancel Booking</Text>
-                    </TouchableOpacity>
-                  </>
+                  <TouchableOpacity
+                    style={styles.modalCancelButton}
+                    onPress={handleCancelBooking}
+                  >
+                    <Text style={styles.modalCancelButtonText}>Cancel Booking</Text>
+                  </TouchableOpacity>
                 )}
               </>
             )}
@@ -342,7 +306,7 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
 
       <Modal
         visible={isConfirmModalVisible}
-        transparent={true}
+        transparent
         animationType="fade"
         onRequestClose={handleCancelConfirm}
       >
@@ -352,29 +316,15 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
             activeOpacity={1}
             onPress={handleCancelConfirm}
           />
-          <View
-            style={styles.confirmModalContent}
-            onStartShouldSetResponder={() => true}
-          >
-            <View style={styles.confirmModalHeader}>
-              <Text style={styles.confirmModalTitle}>Confirm Cancellation</Text>
-            </View>
-
-            <View style={styles.modalDivider} />
-
-            <View style={styles.confirmModalBody}>
-              <Text style={styles.confirmModalText}>
-                Are you sure you want to cancel this booking?
-              </Text>
-              {selectedBooking && (
-                <Text style={styles.confirmModalSubtext}>
+          <View style={styles.confirmModalContent} onStartShouldSetResponder={() => true}>
+            <Text style={styles.confirmModalTitle}>Are you sure you want to cancel this booking?</Text>
+            {selectedBooking && (
+              <View style={styles.confirmModalTextContainer}>
+                <Text style={styles.confirmModalText}>
                   {selectedBooking.sacrament} - {formatDate(selectedBooking.date)} at {selectedBooking.time}
                 </Text>
-              )}
-            </View>
-
-            <View style={styles.modalDivider} />
-
+              </View>
+            )}
             <View style={styles.confirmModalButtons}>
               <TouchableOpacity
                 style={styles.confirmModalButton}
@@ -382,7 +332,6 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
               >
                 <Text style={styles.confirmModalButtonText}>No, Keep Booking</Text>
               </TouchableOpacity>
-
               <TouchableOpacity
                 style={[styles.confirmModalButton, styles.confirmModalButtonPrimary]}
                 onPress={handleConfirmCancel}
