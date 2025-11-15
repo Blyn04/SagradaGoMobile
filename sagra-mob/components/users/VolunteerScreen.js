@@ -8,10 +8,12 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  Image
 } from 'react-native';
 import styles from '../../styles/users/VolunteerStyle';
 import CustomNavbar from '../../customs/CustomNavbar';
 import CustomPicker from '../../customs/CustomPicker';
+import { Ionicons } from "@expo/vector-icons";
 
 const volunteerRoles = [
   { label: 'Choir Member', value: 'Choir Member' },
@@ -41,7 +43,7 @@ export default function VolunteerScreen({ user, onNavigate }) {
       role: role,
       date: new Date().toLocaleDateString(),
     };
-    
+
     setVolunteerLog([newVolunteer, ...volunteerLog]);
 
     Alert.alert(
@@ -66,25 +68,46 @@ export default function VolunteerScreen({ user, onNavigate }) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => onNavigate('EventsScreen')}
+      >
+        <Ionicons name="arrow-back-circle-outline" size={32} color="#424242" />
+      </TouchableOpacity>
+
       <ScrollView style={styles.scrollView}>
-        <Text style={styles.title}>Volunteer</Text>
-        
+        <View style={styles.header}>
+          <Image
+            source={require('../../assets/sagrada.png')}
+            style={{ width: 100, height: 100, marginBottom: 10, alignSelf: 'center' }}
+            resizeMode="contain"
+          />
+          <Text style={styles.title}>Volunteer</Text>
+          <Text style={styles.subtitle}>Fill in all necessary information.</Text>
+        </View>
+
         {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
-        <TextInput
-          style={styles.input}
-          placeholder="Name"
-          value={name}
-          onChangeText={setName}
-        />
+        <View style={styles.inputContainer}>
+          <Ionicons name="person-outline" size={20} color="#757575" style={styles.inputIcon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Name"
+            value={name}
+            onChangeText={setName}
+          />
+        </View>
 
-        <TextInput
-          style={styles.input}
-          placeholder="Contact"
-          value={contact}
-          onChangeText={setContact}
-          keyboardType="phone-pad"
-        />
+        <View style={styles.inputContainer}>
+          <Ionicons name="call-outline" size={20} color="#757575" style={styles.inputIcon} />
+          <TextInput
+            style={styles.input}
+            placeholder="Contact"
+            value={contact}
+            onChangeText={setContact}
+            keyboardType="phone-pad"
+          />
+        </View>
 
         <CustomPicker
           value={role}
@@ -100,7 +123,7 @@ export default function VolunteerScreen({ user, onNavigate }) {
         <View style={styles.logContainer}>
           <Text style={styles.logTitle}>Volunteer Log</Text>
           {volunteerLog.length === 0 ? (
-            <Text style={styles.emptyText}>No volunteer records yet</Text>
+            <Text style={styles.emptyText}>No volunteer records yet.</Text>
           ) : (
             volunteerLog.map((item) => (
               <View key={item.id} style={styles.logItem}>

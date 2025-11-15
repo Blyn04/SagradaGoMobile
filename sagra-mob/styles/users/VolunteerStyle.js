@@ -3,69 +3,134 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
   },
+
   scrollView: {
     flex: 1,
-    padding: 10,
+    paddingHorizontal: 25,
+    paddingTop: 30,
   },
+
+  // HEADER
+  backButton: {
+    position: 'absolute',
+    left: 20,
+    top: 50,
+    padding: 5,
+    zIndex: 10,
+  },
+
+  header: {
+    marginTop: 70,
+    marginBottom: -15,
+    alignItems: 'center'
+  },
+
   title: {
-    fontSize: 20,
-    marginTop: 20,
+    fontSize: 24,
+    color: '#1a1a1a',
+    fontFamily: 'Poppins_700Bold',
+  },
+
+  subtitle: {
+    fontSize: 16,
+    fontFamily: 'Poppins_400Regular',
+    marginBottom: 30,
+    color: '#666',
+  },
+
+  // ERROR MESSAGE
+  errorText: {
+    color: '#d9534f',
+    fontFamily: 'Poppins_500Medium',
+    fontSize: 13,
     marginBottom: 10,
   },
-  errorText: {
-    color: 'red',
-    fontSize: 12,
-    marginBottom: 5,
+
+  // INPUT FIELDS
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    marginBottom: 15,
+  },
+  inputIcon: {
+    marginRight: 10,
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#000',
-    padding: 8,
-    marginBottom: 10,
-    fontSize: 14,
+    flex: 1,
+    height: 50,
+    fontSize: 16,
+    fontFamily: 'Poppins_400Regular',
+    color: '#333',
   },
+
+  // SUBMIT BUTTON
   submitButton: {
-    backgroundColor: '#ddd',
-    padding: 10,
-    marginTop: 5,
+    backgroundColor: '#424242',
+    paddingVertical: 10,
+    borderRadius: 20,
+    marginVertical: 5,
+    marginBottom: 20,
+    width: '100%'
   },
+
   submitButtonText: {
-    fontSize: 14,
+    fontSize: 16,
+    fontFamily: 'Poppins_700Bold',
+    color: '#fff',
     textAlign: 'center',
   },
+
+  // LOG SECTION
   logContainer: {
-    marginTop: 20,
-    borderTopWidth: 1,
-    borderTopColor: '#000',
-    paddingTop: 10,
+    marginTop: 10,
+    paddingBottom: 30,
   },
+
   logTitle: {
-    fontSize: 16,
-    marginBottom: 10,
+    fontSize: 20,
+    color: '#333',
+    fontFamily: 'Poppins_700Bold',
+    marginBottom: 15,
   },
-  logItem: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 8,
-    marginBottom: 8,
-  },
-  logText: {
-    fontSize: 12,
-    marginBottom: 2,
-  },
-  logDate: {
-    fontSize: 11,
-    color: '#666',
-    marginTop: 4,
-  },
+
   emptyText: {
+    fontFamily: 'Poppins_500Medium',
+    fontSize: 13,
+    color: '#9e9e9e',
+  },
+
+  // LOG ITEM CARD
+  logItem: {
+    backgroundColor: '#fafafa',
+    borderRadius: 12,
+    padding: 15,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 2,
+  },
+
+  logText: {
+    fontSize: 14,
+    fontFamily: 'Poppins_500Medium',
+    color: '#424242',
+    marginBottom: 4,
+  },
+
+  logDate: {
     fontSize: 12,
+    fontFamily: 'Poppins_500Medium',
     color: '#999',
-    fontStyle: 'italic',
+    marginTop: 4,
   },
 });
 
 export default styles;
-

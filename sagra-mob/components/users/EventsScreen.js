@@ -90,7 +90,8 @@ export default function EventsScreen({ user, onNavigate }) {
                   <Text style={styles.cardInfo}>{event.location}</Text>
                 </View>
 
-                <TouchableOpacity style={styles.cardVolunteerBtn}>
+                <TouchableOpacity style={styles.cardVolunteerBtn} onPress={() => onNavigate('VolunteerScreen')}
+                >
                   <Ionicons name="hand-left-outline" size={20} color="#fff" />
                   <Text style={styles.cardVolunteerText}>Volunteer</Text>
                 </TouchableOpacity>
@@ -98,7 +99,6 @@ export default function EventsScreen({ user, onNavigate }) {
             </View>
           ))}
         </ScrollView>
-
       </ScrollView>
 
       <CustomNavbar
