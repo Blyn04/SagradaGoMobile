@@ -258,7 +258,8 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
     borderRadius: 20,
     marginVertical: 5,
-    width: '100%'
+    width: '100%',
+    marginTop: 20
   },
 
   darkButton: {
@@ -266,7 +267,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 20,
     marginVertical: 5,
-    width: '100%'
+    width: '100%',
+    marginTop: 20
   },
 
   yellowButtonText: {

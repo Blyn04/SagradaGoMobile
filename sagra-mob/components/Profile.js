@@ -130,7 +130,7 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
               ]}
               placeholder="Gender"
               style={{ flex: 1, marginRight: 10 }}
-              editable={isEditing}
+              disabled={!isEditing}
             />
 
             <CustomPicker
@@ -143,7 +143,7 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
               ]}
               placeholder="Civil Status"
               style={{ flex: 1, marginLeft: 10 }}
-              editable={isEditing}
+              disabled={!isEditing}
             />
           </View>
 
@@ -170,7 +170,7 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
             <TouchableOpacity
               style={styles.yellowButton}
               onPress={() => {
-                onSave(formData);
+                // onSave(formData);
                 setIsEditing(false);
               }}
             >
