@@ -54,6 +54,9 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
         if (!value.trim()) {
           error = 'First name is required';
 
+        } else if (!/^[a-zA-Z\s\-']+$/.test(value.trim())) {
+          error = 'First name must contain only letters';
+
         } else if (value.trim().length < 2) {
           error = 'First name must be at least 2 characters';
         }
@@ -62,6 +65,9 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
       case 'last_name':
         if (!value.trim()) {
           error = 'Last name is required';
+
+        } else if (!/^[a-zA-Z\s\-']+$/.test(value.trim())) {
+          error = 'Last name must contain only letters';
 
         } else if (value.trim().length < 2) {
           error = 'Last name must be at least 2 characters';
@@ -78,11 +84,11 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
         if (!value.trim()) {
           error = 'Contact number is required';
 
-        } else if (!/^[0-9+\-\s()]+$/.test(value)) {
-          error = 'Please enter a valid contact number';
+        } else if (!/^[0-9]+$/.test(value)) {
+          error = 'Contact number must contain only digits';
 
-        } else if (value.replace(/[^0-9]/g, '').length < 10) {
-          error = 'Contact number must be at least 10 digits';
+        } else if (value.length !== 11) {
+          error = 'Contact number must be exactly 11 digits';
         }
         break;
 
@@ -141,17 +147,26 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
   };
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    let filteredValue = value;
+
+    if (field === 'first_name' || field === 'last_name' || field === 'middle_name') {
+      filteredValue = value.replace(/[^a-zA-Z\s\-']/g, '');
+
+    } else if (field === 'contact_number') {
+      filteredValue = value.replace(/[^0-9]/g, '').slice(0, 11);
+    }
+
+    setFormData(prev => ({ ...prev, [field]: filteredValue }));
 
     if (touched[field] || errors[field]) {
-      const error = validateField(field, value);
+      const error = validateField(field, filteredValue);
       setErrors(prev => ({ ...prev, [field]: error }));
     }
   };
 
   const checkEmailExists = async (email) => {
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-      return false; // Don't check if email format is invalid
+      return false;
     }
 
     try {
@@ -165,13 +180,13 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
       return data.exists;
     } catch (error) {
       console.error('Error checking email:', error);
-      return false; // Don't block if check fails
+      return false; 
     }
   };
 
   const checkContactExists = async (contactNumber) => {
-    if (!contactNumber || contactNumber.replace(/[^0-9]/g, '').length < 10) {
-      return false; // Don't check if contact format is invalid
+    if (!contactNumber || contactNumber.length !== 11 || !/^[0-9]+$/.test(contactNumber)) {
+      return false;
     }
 
     try {
@@ -185,7 +200,7 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
       return data.exists;
     } catch (error) {
       console.error('Error checking contact:', error);
-      return false; // Don't block if check fails
+      return false; 
     }
   };
 
@@ -193,9 +208,9 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
     setTouched(prev => ({ ...prev, [field]: true }));
     let error = validateField(field, formData[field]);
 
-    // Check if email or contact number already exists
     if (field === 'email' && !error && formData.email.trim()) {
       const emailExists = await checkEmailExists(formData.email);
+
       if (emailExists) {
         error = 'This email is already registered. Please use a different email.';
       }
@@ -203,6 +218,7 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
 
     if (field === 'contact_number' && !error && formData.contact_number.trim()) {
       const contactExists = await checkContactExists(formData.contact_number);
+      
       if (contactExists) {
         error = 'This contact number is already registered. Please use a different contact number.';
       }
@@ -326,7 +342,6 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
 
       setLoading(true);
 
-      // Check if email already exists before creating Firebase user
       const emailExists = await checkEmailExists(formData.email);
       if (emailExists) {
         setErrors(prev => ({ ...prev, email: 'This email is already registered. Please use a different email.' }));
@@ -336,7 +351,6 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
         return;
       }
 
-      // Check if contact number already exists before creating Firebase user
       const contactExists = await checkContactExists(formData.contact_number);
       if (contactExists) {
         setErrors(prev => ({ ...prev, contact_number: 'This contact number is already registered. Please use a different contact number.' }));
@@ -431,12 +445,12 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
       } else {
         console.error('MongoDB creation failed:', data.message);
 
-        // Handle specific error messages for email/contact conflicts
         let errorMessage = data.message || 'Failed to create account in database. Please try again.';
         
         if (data.message && data.message.includes('Email already exists')) {
           setErrors(prev => ({ ...prev, email: 'This email is already registered. Please use a different email.' }));
           setTouched(prev => ({ ...prev, email: true }));
+          
         } else if (data.message && data.message.includes('Contact number already exists')) {
           setErrors(prev => ({ ...prev, contact_number: 'This contact number is already registered. Please use a different contact number.' }));
           setTouched(prev => ({ ...prev, contact_number: true }));
