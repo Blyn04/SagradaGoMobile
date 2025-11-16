@@ -178,14 +178,41 @@ export const AuthProvider = ({ children }) => {
 
   const updateUser = async (updatedUserData) => {
     try {
-      const mergedUserData = { ...user, ...updatedUserData };
-      await saveUserToStorage(mergedUserData);
-      setUser(mergedUserData);
-      return { success: true, user: mergedUserData };
+      setLoading(true);
+      
+      if (!user || !user.uid) {
+        return { success: false, message: 'User not found. Please login again.' };
+      }
+
+      const response = await fetch(`${API_BASE_URL}/updateUser`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          uid: user.uid,
+          ...updatedUserData,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        const updatedUser = data.user;
+        await saveUserToStorage(updatedUser);
+        setUser(updatedUser);
+        return { success: true, user: updatedUser, message: data.message };
+
+      } else {
+        return { success: false, message: data.message || 'Failed to update profile. Please try again.' };
+      }
 
     } catch (error) {
       console.error('Update user error:', error);
-      return { success: false, message: 'Failed to update user data.' };
+      return { success: false, message: 'Network error. Please check your connection and try again.' };
+
+    } finally {
+      setLoading(false);
     }
   };
 

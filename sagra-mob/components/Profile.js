@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,16 +7,23 @@ import {
   Modal,
   KeyboardAvoidingView,
   Platform,
-  TextInput
+  TextInput,
+  Alert,
+  ActivityIndicator
 } from 'react-native';
 import styles from '../styles/ProfileStyle';
 import CustomNavbar from '../customs/CustomNavbar';
 import CustomPicker from '../customs/CustomPicker';
 import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) {
+  const { updateUser: updateUserProfile, user: authUser } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const currentUser = authUser || user;
 
   const handleLogoutConfirm = () => {
     setShowLogoutModal(false);
@@ -24,25 +31,84 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
   };
 
   const [formData, setFormData] = useState({
-    first_name: user.first_name || "",
-    middle_name: user.middle_name || "",
-    last_name: user.last_name || "",
-    email: user.email || "",
-    contact_number: user.contact_number || "",
-    gender: user.gender || "",
-    civil_status: user.civil_status || "",
-    birthday: user.birthday || "",
+    first_name: currentUser?.first_name || "",
+    middle_name: currentUser?.middle_name || "",
+    last_name: currentUser?.last_name || "",
+    email: currentUser?.email || "",
+    contact_number: currentUser?.contact_number || "",
+    gender: currentUser?.gender || "",
+    civil_status: currentUser?.civil_status || "",
+    birthday: currentUser?.birthday || "",
   });
+
+  useEffect(() => {
+    if (currentUser) {
+      setFormData({
+        first_name: currentUser.first_name || "",
+        middle_name: currentUser.middle_name || "",
+        last_name: currentUser.last_name || "",
+        email: currentUser.email || "",
+        contact_number: currentUser.contact_number || "",
+        gender: currentUser.gender || "",
+        civil_status: currentUser.civil_status || "",
+        birthday: currentUser.birthday || "",
+      });
+    }
+  }, [currentUser]);
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const getInitials = () => {
-    return `${user.first_name?.charAt(0) || ''}${user.last_name?.charAt(0) || ''}`.toUpperCase();
+  const handleCancel = () => {
+    if (currentUser) {
+      setFormData({
+        first_name: currentUser.first_name || "",
+        middle_name: currentUser.middle_name || "",
+        last_name: currentUser.last_name || "",
+        email: currentUser.email || "",
+        contact_number: currentUser.contact_number || "",
+        gender: currentUser.gender || "",
+        civil_status: currentUser.civil_status || "",
+        birthday: currentUser.birthday || "",
+      });
+    }
+
+    setIsEditing(false);
   };
 
-  const fullName = `${user.first_name || ''} ${user.middle_name || ''} ${user.last_name || ''}`;
+  const handleSave = async () => {
+    if (!formData.first_name || !formData.last_name || !formData.email || !formData.contact_number) {
+      Alert.alert("Validation Error", "Please fill in all required fields (First Name, Last Name, Email, Contact Number).");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const result = await updateUserProfile(formData);
+      
+      if (result.success) {
+        Alert.alert("Success", result.message || "Profile updated successfully!");
+        setIsEditing(false);
+
+      } else {
+        Alert.alert("Error", result.message || "Failed to update profile. Please try again.");
+      }
+
+    } catch (error) {
+      console.error("Save error:", error);
+      Alert.alert("Error", "An unexpected error occurred. Please try again.");
+      
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const getInitials = () => {
+    return `${currentUser?.first_name?.charAt(0) || ''}${currentUser?.last_name?.charAt(0) || ''}`.toUpperCase();
+  };
+
+  const fullName = `${currentUser?.first_name || ''} ${currentUser?.middle_name || ''} ${currentUser?.last_name || ''}`;
 
   return (
     <KeyboardAvoidingView
@@ -68,7 +134,7 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
         </View>
 
         <Text style={styles.title}>{fullName}</Text>
-        <Text style={styles.subtitle}>{user.email || ""}</Text>
+        <Text style={styles.subtitle}>{currentUser?.email || ""}</Text>
 
         {/* Booking History Button */}
         <TouchableOpacity
@@ -175,15 +241,26 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
             <Text style={styles.darkButtonText}>Edit Profile</Text>
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity
-            style={styles.yellowButton}
-            onPress={() => {
-              // onSave(formData);
-              setIsEditing(false);
-            }}
-          >
-            <Text style={styles.yellowButtonText}>Save Changes</Text>
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            <TouchableOpacity
+              style={[styles.darkButton, { flex: 1 }]}
+              onPress={handleCancel}
+              disabled={isSaving}
+            >
+              <Text style={styles.darkButtonText}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.yellowButton, { flex: 1 }, isSaving && { opacity: 0.6 }]}
+              onPress={handleSave}
+              disabled={isSaving}
+            >
+              {isSaving ? (
+                <ActivityIndicator size="small" color="#424242" />
+              ) : (
+                <Text style={styles.yellowButtonText}>Save</Text>
+              )}
+            </TouchableOpacity>
+          </View>
         )}
       </ScrollView>
 
