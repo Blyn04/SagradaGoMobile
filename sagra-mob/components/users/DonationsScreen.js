@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,44 +9,164 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
-  Image
+  Image,
+  ActivityIndicator
 } from 'react-native';
 import styles from '../../styles/users/DonationsStyle';
 import CustomNavbar from '../../customs/CustomNavbar';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { API_BASE_URL } from '../../config/API';
 
 export default function DonationsScreen({ user, onNavigate }) {
   const [showDonationModal, setShowDonationModal] = useState(false);
   const [amount, setAmount] = useState('');
   const [intercession, setIntercession] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
-
-  const recentDonations = [
-    { id: 1, amount: 500, method: "GCash", date: "Oct 12, 2025" },
-    { id: 2, amount: 1000, method: "Cash", date: "Nov 02, 2025" },
-    { id: 3, amount: 1000, method: "GCash", date: "Dec 01, 2025" },
-  ];
+  const [donations, setDonations] = useState([]);
+  const [donationStats, setDonationStats] = useState({ totalAmount: 0 });
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   const paymentMethods = ['GCash', 'Cash', 'In Kind'];
 
-  const handleConfirmDonation = () => {
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+  };
+
+  const fetchDonations = async () => {
+    if (!user?.uid) return;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/getUserDonations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          uid: user.uid,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setDonations(data.donations || []);
+        
+      } else {
+        console.error('Error fetching donations:', data.message);
+        setDonations([]);
+      }
+
+    } catch (error) {
+      console.error('Error fetching donations:', error);
+      setDonations([]);
+    }
+  };
+
+  const fetchDonationStats = async () => {
+    if (!user?.uid) return;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/getDonationStats`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          uid: user.uid,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setDonationStats(data.stats || { totalAmount: 0 });
+
+      } else {
+        console.error('Error fetching donation stats:', data.message);
+        setDonationStats({ totalAmount: 0 });
+      }
+
+    } catch (error) {
+      console.error('Error fetching donation stats:', error);
+      setDonationStats({ totalAmount: 0 });
+    }
+  };
+
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      await Promise.all([fetchDonations(), fetchDonationStats()]);
+      setLoading(false);
+    };
+
+    loadData();
+  }, [user?.uid]);
+
+  const handleConfirmDonation = async () => {
     if (!amount || !paymentMethod) {
       Alert.alert('Error', 'Please enter amount and select payment method');
       return;
     }
 
-    Alert.alert('Success', 'Donation submitted successfully!', [
-      {
-        text: 'OK',
-        onPress: () => {
-          setShowDonationModal(false);
-          setAmount('');
-          setIntercession('');
-          setPaymentMethod('');
+    const amountNum = parseFloat(amount);
+    if (isNaN(amountNum) || amountNum <= 0) {
+      Alert.alert('Error', 'Please enter a valid amount');
+      return;
+    }
+
+    if (!user?.uid) {
+      Alert.alert('Error', 'User not found. Please log in again.');
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/createDonation`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      },
-    ]);
+        body: JSON.stringify({
+          uid: user.uid,
+          amount: amountNum,
+          paymentMethod: paymentMethod,
+          intercession: intercession || '',
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert('Success', 'Donation submitted successfully!', [
+          {
+            text: 'OK',
+            onPress: () => {
+              setShowDonationModal(false);
+              setAmount('');
+              setIntercession('');
+              setPaymentMethod('');
+              fetchDonations();
+              fetchDonationStats();
+            },
+          },
+        ]);
+
+      } else {
+        Alert.alert('Error', data.message || 'Failed to submit donation. Please try again.');
+      }
+
+    } catch (error) {
+      console.error('Error creating donation:', error);
+      Alert.alert('Error', 'Network error. Please check your connection and try again.');
+      
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleCloseModal = () => {
@@ -77,28 +197,47 @@ export default function DonationsScreen({ user, onNavigate }) {
         <View style={styles.summaryBox}>
           <View style={styles.summaryBar} />
           <Text style={styles.summaryLabel}>You have donated a total of:</Text>
-          <Text style={styles.summaryAmount}>PHP 2,500.00</Text>
+          {loading ? (
+            <ActivityIndicator size="small" color="#FFC942" style={{ marginTop: 10 }} />
+          ) : (
+            <Text style={styles.summaryAmount}>
+              PHP {donationStats.totalAmount?.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || '0.00'}
+            </Text>
+          )}
         </View>
 
         {/* RECENT DONATIONS */}
         <Text style={styles.sectionTitle}>Your Donation History</Text>
-        <View style={styles.historyContainer}>
-          {recentDonations.map((item) => (
-            <View key={item.id} style={styles.historyItemWrapper}>
-              <View style={styles.historyItemRow}>
-                <View style={styles.historyItemColor} />
-                <View style={styles.historyItemContent}>
-                  <Text style={styles.historyAmount}>PHP {item.amount.toFixed(2)}</Text>
-                  <Text style={styles.historyMethod}>{item.method}</Text>
-                  <View style={styles.historyDateRow}>
-                    <Ionicons name="calendar-outline" size={14} color="#999" style={{ marginRight: 4 }} />
-                    <Text style={styles.historyDate}>{item.date}</Text>
+        {loading ? (
+          <View style={{ padding: 20, alignItems: 'center' }}>
+            <ActivityIndicator size="large" color="#FFC942" />
+            <Text style={{ marginTop: 10, color: '#666' }}>Loading donations...</Text>
+          </View>
+        ) : donations.length === 0 ? (
+          <View style={{ padding: 20, alignItems: 'center' }}>
+            <Text style={{ color: '#999', fontSize: 14 }}>No donations yet. Make your first donation!</Text>
+          </View>
+        ) : (
+          <View style={styles.historyContainer}>
+            {donations.map((item) => (
+              <View key={item._id} style={styles.historyItemWrapper}>
+                <View style={styles.historyItemRow}>
+                  <View style={styles.historyItemColor} />
+                  <View style={styles.historyItemContent}>
+                    <Text style={styles.historyAmount}>PHP {item.amount?.toFixed(2) || '0.00'}</Text>
+                    <Text style={styles.historyMethod}>{item.paymentMethod || 'N/A'}</Text>
+                    <View style={styles.historyDateRow}>
+                      <Ionicons name="calendar-outline" size={14} color="#999" style={{ marginRight: 4 }} />
+                      <Text style={styles.historyDate}>
+                        {item.createdAt ? formatDate(item.createdAt) : 'N/A'}
+                      </Text>
+                    </View>
                   </View>
                 </View>
               </View>
-            </View>
-          ))}
-        </View>
+            ))}
+          </View>
+        )}
 
         {/* DONATE BUTTON */}
         <View style={styles.content}>
@@ -177,10 +316,15 @@ export default function DonationsScreen({ user, onNavigate }) {
                 <Text style={styles.cancelButtonText}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.modalButton, styles.confirmButton]}
+                style={[styles.modalButton, styles.confirmButton, submitting && { opacity: 0.6 }]}
                 onPress={handleConfirmDonation}
+                disabled={submitting}
               >
-                <Text style={styles.confirmButtonText}>Confirm</Text>
+                {submitting ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <Text style={styles.confirmButtonText}>Confirm</Text>
+                )}
               </TouchableOpacity>
             </View>
           </View>
