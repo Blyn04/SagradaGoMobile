@@ -22,6 +22,20 @@ export const AuthProvider = ({ children }) => {
       const storedUser = await AsyncStorage.getItem('user');
       if (storedUser) {
         const userData = JSON.parse(storedUser);
+        
+        if (!userData.profilePicture && userData.gender) {
+          const gender = userData.gender.toLowerCase();
+
+          if (gender === 'female') {
+            userData.profilePicture = 'female-avatar';
+
+          } else if (gender === 'male') {
+            userData.profilePicture = 'male-avatar';
+          }
+          
+          await saveUserToStorage(userData);
+        }
+        
         setUser(userData);
         setIsAuthenticated(true);
       }
@@ -72,6 +86,18 @@ export const AuthProvider = ({ children }) => {
 
       if (response.ok) {
         const userData = data.user;
+
+        if (!userData.profilePicture && userData.gender) {
+          const gender = userData.gender.toLowerCase();
+
+          if (gender === 'female') {
+            userData.profilePicture = 'female-avatar';
+
+          } else if (gender === 'male') {
+            userData.profilePicture = 'male-avatar';
+          }
+        }
+        
         await saveUserToStorage(userData);
         setUser(userData);
         setIsAuthenticated(true);
@@ -143,6 +169,17 @@ export const AuthProvider = ({ children }) => {
           is_admin: data.newUser.is_admin || false,
         };
 
+        if (!newUserData.profilePicture && newUserData.gender) {
+          const gender = newUserData.gender.toLowerCase();
+
+          if (gender === 'female') {
+            newUserData.profilePicture = 'female-avatar';
+
+          } else if (gender === 'male') {
+            newUserData.profilePicture = 'male-avatar';
+          }
+        }
+
         await saveUserToStorage(newUserData);
         setUser(newUserData);
         setIsAuthenticated(true);
@@ -199,6 +236,18 @@ export const AuthProvider = ({ children }) => {
 
       if (response.ok) {
         const updatedUser = data.user;
+
+        if (!updatedUser.profilePicture && updatedUser.gender) {
+          const gender = updatedUser.gender.toLowerCase();
+
+          if (gender === 'female') {
+            updatedUser.profilePicture = 'female-avatar';
+
+          } else if (gender === 'male') {
+            updatedUser.profilePicture = 'male-avatar';
+          }
+        }
+        
         await saveUserToStorage(updatedUser);
         setUser(updatedUser);
         return { success: true, user: updatedUser, message: data.message };
@@ -231,6 +280,18 @@ export const AuthProvider = ({ children }) => {
 
       if (response.ok) {
         const userData = data.user;
+
+        if (!userData.profilePicture && userData.gender) {
+          const gender = userData.gender.toLowerCase();
+
+          if (gender === 'female') {
+            userData.profilePicture = 'female-avatar';
+            
+          } else if (gender === 'male') {
+            userData.profilePicture = 'male-avatar';
+          }
+        }
+        
         await saveUserToStorage(userData);
         setUser(userData);
         return { success: true, user: userData };

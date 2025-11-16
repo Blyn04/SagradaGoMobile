@@ -9,7 +9,8 @@ import {
   Platform,
   TextInput,
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
+  Image
 } from 'react-native';
 import styles from '../styles/ProfileStyle';
 import CustomNavbar from '../customs/CustomNavbar';
@@ -246,7 +247,23 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
 
         <View style={styles.avatarWrapper}>
           <View style={styles.avatarCircle}>
-            <Text style={styles.avatarText}>{getInitials()}</Text>
+            {currentUser?.profilePicture ? (
+              <Image
+                source={
+                  currentUser.profilePicture === 'female-avatar' 
+                    ? require('../assets/avatars/female-avatar.png')
+                    : currentUser.profilePicture === 'male-avatar'
+                    ? require('../assets/avatars/male-avatar.png')
+                    : currentUser.profilePicture && currentUser.profilePicture.startsWith('http')
+                    ? { uri: currentUser.profilePicture }
+                    : require('../assets/defaultpfp.jpg')
+                }
+                style={{ width: 120, height: 120, borderRadius: 60 }}
+                resizeMode="cover"
+              />
+            ) : (
+              <Text style={styles.avatarText}>{getInitials()}</Text>
+            )}
           </View>
         </View>
 

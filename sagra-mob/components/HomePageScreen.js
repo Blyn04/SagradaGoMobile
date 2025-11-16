@@ -76,7 +76,15 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
                 <Image
-                  source={user.profilePicture ? { uri: user.profilePicture } : require('../assets/defaultpfp.jpg')}
+                  source={
+                    user.profilePicture === 'female-avatar' 
+                      ? require('../assets/avatars/female-avatar.png')
+                      : user.profilePicture === 'male-avatar'
+                      ? require('../assets/avatars/male-avatar.png')
+                      : user.profilePicture && user.profilePicture.startsWith('http')
+                      ? { uri: user.profilePicture }
+                      : require('../assets/defaultpfp.jpg')
+                  }
                   style={{ width: 35, height: 35, borderRadius: 25, marginRight: 15 }}
                 />
                 <View style={{ flexDirection: 'column' }}>
