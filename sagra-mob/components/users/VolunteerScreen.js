@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import styles from '../../styles/users/VolunteerStyle';
 import CustomNavbar from '../../customs/CustomNavbar';
 import CustomPicker from '../../customs/CustomPicker';
 import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from '../../contexts/AuthContext';
 
 const volunteerRoles = [
   { label: 'Choir Member', value: 'Choir Member' },
@@ -24,11 +25,30 @@ const volunteerRoles = [
 ];
 
 export default function VolunteerScreen({ user, onNavigate }) {
+  const { user: authUser } = useAuth();
   const [name, setName] = useState('');
   const [contact, setContact] = useState('');
   const [role, setRole] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [volunteerLog, setVolunteerLog] = useState([]);
+
+  useEffect(() => {
+    if (authUser) {
+      const fullName = [
+        authUser.first_name || '',
+        authUser.middle_name || '',
+        authUser.last_name || ''
+      ].filter(Boolean).join(' ').trim();
+      
+      if (fullName) {
+        setName(fullName);
+      }
+      
+      if (authUser.contact_number) {
+        setContact(authUser.contact_number);
+      }
+    }
+  }, [authUser]);
 
   const handleSubmit = () => {
     if (!name || !contact || !role) {
@@ -53,10 +73,24 @@ export default function VolunteerScreen({ user, onNavigate }) {
         {
           text: 'OK',
           onPress: () => {
-            setName('');
-            setContact('');
             setRole('');
             setErrorMessage('');
+
+            if (authUser) {
+              const fullName = [
+                authUser.first_name || '',
+                authUser.middle_name || '',
+                authUser.last_name || ''
+              ].filter(Boolean).join(' ').trim();
+              
+              if (fullName) {
+                setName(fullName);
+              }
+              
+              if (authUser.contact_number) {
+                setContact(authUser.contact_number);
+              }
+            }
           },
         },
       ]
