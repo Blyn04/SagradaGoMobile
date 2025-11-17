@@ -5,7 +5,8 @@ import {
   ScrollView,
   TouchableOpacity,
   Modal,
-  Image
+  Image,
+  Alert
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import styles from '../../styles/users/BookingStyle';
@@ -13,6 +14,7 @@ import CustomNavbar from '../../customs/CustomNavbar';
 import CustomPicker from '../../customs/CustomPicker';
 import { Ionicons } from "@expo/vector-icons";
 import CustomBookingForm from '../../customs/CustomBookingForm';
+import { useAuth } from '../../contexts/AuthContext';
 
 const sacraments = [
   { name: 'Wedding', minDate: 'October 17, 2025' },
@@ -69,7 +71,9 @@ const requirements = {
   ],
 };
 
-export default function BookingScreen({ user, onNavigate }) {
+export default function BookingScreen({ user: userProp, onNavigate }) {
+  const { user: authUser } = useAuth();
+  const user = authUser || userProp;
   const [selectedSacrament, setSelectedSacrament] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isBookingModalVisible, setIsBookingModalVisible] = useState(false);
@@ -86,6 +90,41 @@ export default function BookingScreen({ user, onNavigate }) {
   };
 
   const handleBookNow = (sacramentName) => {
+    if (sacramentName === 'Baptism') {
+      if (!user) {
+        Alert.alert(
+          'Error',
+          'User information not available. Please try again.',
+          [{ text: 'OK' }]
+        );
+        return;
+      }
+      
+      const middleName = user.middle_name;
+      if (!middleName || middleName.trim() === '') {
+        Alert.alert(
+          'Middle Name Required',
+          'A middle name is required to book a Baptism. Please update your profile with your middle name before proceeding.',
+          [
+            {
+              text: 'Go to Profile',
+              onPress: () => {
+                if (onNavigate) {
+                  onNavigate('ProfileScreen');
+                }
+              },
+              style: 'default'
+            },
+            {
+              text: 'Cancel',
+              style: 'cancel'
+            }
+          ]
+        );
+        return;
+      }
+    }
+    
     setBookingSacrament(sacramentName);
     setIsBookingModalVisible(true);
   };

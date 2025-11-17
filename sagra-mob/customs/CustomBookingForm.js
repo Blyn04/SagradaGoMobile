@@ -18,6 +18,7 @@ import TimePicker from './TimePicker';
 import WeddingDocuments from '../components/users/WeddingDocuments';
 import BaptismDocuments from '../components/users/BaptismDocuments';
 import BurialDocuments from '../components/users/BurialDocuments';
+import { useAuth } from '../contexts/AuthContext';
 
 const getMinimumBookingDate = (sacrament) => {
   const dates = {
@@ -61,6 +62,7 @@ const getSacramentPrice = (sacrament) => {
 };
 
 export default function CustomBookingForm({ visible, onClose, selectedSacrament: initialSacrament }) {
+  const { user } = useAuth();
   const selectedSacrament = initialSacrament || '';
   const [date, setDate] = useState(null);
   const [time, setTime] = useState(null);
@@ -159,6 +161,30 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
     if (!selectedSacrament) {
       setErrorMessage('No sacrament selected. Please close and try again.');
       return;
+    }
+
+    if (selectedSacrament === 'Baptism') {
+      if (!user) {
+        setErrorMessage('User information not available. Please try again.');
+        return;
+      }
+      
+      const middleName = user.middle_name;
+      if (!middleName || middleName.trim() === '') {
+        Alert.alert(
+          'Middle Name Required',
+          'A middle name is required to book a Baptism. Please update your profile with your middle name before proceeding.',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                handleClose();
+              }
+            }
+          ]
+        );
+        return;
+      }
     }
 
     if (!date || !time || !pax) {
