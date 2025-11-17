@@ -8,6 +8,7 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
@@ -67,6 +68,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
   const [errorMessage, setErrorMessage] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [showQRCode, setShowQRCode] = useState(false);
 
   const [weddingForm, setWeddingForm] = useState({
     groom_fullname: '',
@@ -146,6 +148,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
     });
 
     setErrorMessage('');
+    setShowQRCode(false);
   };
 
   const handleClose = () => {
@@ -184,11 +187,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
       }
     }
 
-    Alert.alert(
-      'Form Validated',
-      `Booking form is ready for ${selectedSacrament} on ${date.toLocaleDateString()} at ${time.toLocaleTimeString()}`,
-      [{ text: 'OK', onPress: () => console.log('Form validated successfully') }]
-    );
+    setShowQRCode(true);
   };
 
   const minDate = selectedSacrament
@@ -352,6 +351,83 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
               style={styles.datePickerCloseButton}
             >
               <Text style={styles.datePickerCloseButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={showQRCode}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowQRCode(false)}
+      >
+        <View style={styles.qrCodeModalOverlay}>
+          <View style={styles.qrCodeModalContent}>
+            <View style={styles.qrCodeHeader}>
+              <Text style={styles.qrCodeTitle}>Payment QR Code</Text>
+              <TouchableOpacity onPress={() => {
+                setShowQRCode(false);
+                handleClose();
+              }}>
+                <Ionicons name="close" size={28} color="#333" />
+              </TouchableOpacity>
+            </View>
+            
+            <View style={styles.qrCodeContainer}>
+              <Text style={styles.qrCodeSubtitle}>
+                Scan this QR code to pay for your {selectedSacrament} booking
+              </Text>
+              <View style={styles.paymentAmountContainer}>
+                <Text style={styles.paymentAmountLabel}>Amount to Pay:</Text>
+                <Text style={styles.paymentAmount}>
+                  ₱{getSacramentPrice(selectedSacrament).toLocaleString()}
+                </Text>
+              </View>
+              <View style={styles.qrCodeImageWrapper}>
+                <Image
+                  source={require('../assets/qrCodes/qr-1.png')}
+                  style={styles.qrCodeImage}
+                  resizeMode="contain"
+                />
+              </View>
+              <View style={styles.bookingDetailsContainer}>
+                <Text style={styles.bookingDetailsTitle}>Booking Details</Text>
+                <View style={styles.bookingDetailRow}>
+                  <Ionicons name="calendar-outline" size={18} color="#666" />
+                  <Text style={styles.bookingDetailText}>
+                    {date ? date.toLocaleDateString() : 'N/A'}
+                  </Text>
+                </View>
+                <View style={styles.bookingDetailRow}>
+                  <Ionicons name="time-outline" size={18} color="#666" />
+                  <Text style={styles.bookingDetailText}>
+                    {time ? (() => {
+                      const hours = time.getHours();
+                      const minutes = time.getMinutes();
+                      const hour12 = hours > 12 ? hours - 12 : (hours === 0 ? 12 : hours);
+                      const period = hours >= 12 ? 'PM' : 'AM';
+                      return `${hour12.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${period}`;
+                    })() : 'N/A'}
+                  </Text>
+                </View>
+                <View style={styles.bookingDetailRow}>
+                  <Ionicons name="people-outline" size={18} color="#666" />
+                  <Text style={styles.bookingDetailText}>
+                    {pax || 'N/A'} {pax ? 'people' : ''}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              style={styles.qrCodeCloseButton}
+              onPress={() => {
+                setShowQRCode(false);
+                handleClose();
+              }}
+            >
+              <Text style={styles.qrCodeCloseButtonText}>Done</Text>
             </TouchableOpacity>
           </View>
         </View>
