@@ -25,12 +25,13 @@ const volunteerRoles = [
 ];
 
 export default function VolunteerScreen({ user, onNavigate, event }) {
-  const { user: authUser } = useAuth();
+  const { user: authUser, addVolunteer, loading } = useAuth();
   const [name, setName] = useState('');
   const [contact, setContact] = useState('');
   const [role, setRole] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [volunteerLog, setVolunteerLog] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (authUser) {
@@ -47,56 +48,80 @@ export default function VolunteerScreen({ user, onNavigate, event }) {
       if (authUser.contact_number) {
         setContact(authUser.contact_number);
       }
+
+      if (authUser.volunteers && Array.isArray(authUser.volunteers)) {
+        setVolunteerLog(authUser.volunteers);
+      }
     }
   }, [authUser]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!name || !contact || !role) {
       setErrorMessage('Please fill all required fields.');
       return;
     }
 
+    if (isSubmitting || loading) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage('');
+
     const newVolunteer = {
-      id: Date.now().toString(),
       name: name,
       contact: contact,
       role: role,
       eventTitle: event?.title || 'General Volunteer',
       eventId: event?.id || null,
-      date: new Date().toLocaleDateString(),
     };
 
-    setVolunteerLog([newVolunteer, ...volunteerLog]);
+    const result = await addVolunteer(newVolunteer);
 
-    Alert.alert(
-      'Success',
-      `Thank you ${name}! You've signed up as ${role}${event?.title ? ` for ${event.title}` : ''}.`,
-      [
-        {
-          text: 'OK',
-          onPress: () => {
-            setRole('');
-            setErrorMessage('');
+    if (result.success) {
+      if (result.user && result.user.volunteers) {
+        setVolunteerLog(result.user.volunteers);
 
-            if (authUser) {
-              const fullName = [
-                authUser.first_name || '',
-                authUser.middle_name || '',
-                authUser.last_name || ''
-              ].filter(Boolean).join(' ').trim();
-              
-              if (fullName) {
-                setName(fullName);
+      } else {
+        setVolunteerLog([newVolunteer, ...volunteerLog]);
+      }
+
+      Alert.alert(
+        'Success',
+        `Thank you ${name}! You've signed up as ${role}${event?.title ? ` for ${event.title}` : ''}.`,
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              setRole('');
+              setErrorMessage('');
+
+              if (authUser) {
+                const fullName = [
+                  authUser.first_name || '',
+                  authUser.middle_name || '',
+                  authUser.last_name || ''
+                ].filter(Boolean).join(' ').trim();
+                
+                if (fullName) {
+                  setName(fullName);
+                }
+                
+                if (authUser.contact_number) {
+                  setContact(authUser.contact_number);
+                }
               }
-              
-              if (authUser.contact_number) {
-                setContact(authUser.contact_number);
-              }
-            }
+            },
           },
-        },
-      ]
-    );
+        ]
+      );
+      
+    } else {
+      setErrorMessage(result.message || 'Failed to save volunteer information. Please try again.');
+      Alert.alert('Error', result.message || 'Failed to save volunteer information. Please try again.');
+    }
+
+    setIsSubmitting(false);
   };
 
   return (
@@ -156,8 +181,14 @@ export default function VolunteerScreen({ user, onNavigate, event }) {
           placeholder="Role"
         />
 
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>Submit</Text>
+        <TouchableOpacity 
+          style={[styles.submitButton, (isSubmitting || loading) && { opacity: 0.6 }]} 
+          onPress={handleSubmit}
+          disabled={isSubmitting || loading}
+        >
+          <Text style={styles.submitButtonText}>
+            {isSubmitting || loading ? 'Saving...' : 'Submit'}
+          </Text>
         </TouchableOpacity>
 
         <View style={styles.logContainer}>
@@ -165,14 +196,16 @@ export default function VolunteerScreen({ user, onNavigate, event }) {
           {volunteerLog.length === 0 ? (
             <Text style={styles.emptyText}>No volunteer records yet.</Text>
           ) : (
-            volunteerLog.map((item) => (
-              <View key={item.id} style={styles.logItem}>
+            volunteerLog.map((item, index) => (
+              <View key={item._id || item.id || index} style={styles.logItem}>
                 <Text style={styles.logText}>{item.name} - {item.role}</Text>
                 {item.eventTitle && (
                   <Text style={styles.logText}>Event: {item.eventTitle}</Text>
                 )}
                 <Text style={styles.logText}>{item.contact}</Text>
-                <Text style={styles.logDate}>{item.date}</Text>
+                <Text style={styles.logDate}>
+                  {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A'}
+                </Text>
               </View>
             ))
           )}

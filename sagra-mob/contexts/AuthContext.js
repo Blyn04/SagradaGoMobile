@@ -167,6 +167,7 @@ export const AuthProvider = ({ children }) => {
           civil_status: data.newUser.civil_status,
           birthday: data.newUser.birthday,
           is_admin: data.newUser.is_admin || false,
+          volunteers: data.newUser.volunteers || [],
         };
 
         if (!newUserData.profilePicture && newUserData.gender) {
@@ -340,6 +341,58 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const addVolunteer = async (volunteerData) => {
+    try {
+      setLoading(true);
+      
+      if (!user || !user.uid) {
+        return { success: false, message: 'User not found. Please login again.' };
+      }
+
+      const response = await fetch(`${API_BASE_URL}/addVolunteer`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          uid: user.uid,
+          volunteer: volunteerData,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        const updatedUser = data.user;
+
+        if (!updatedUser.profilePicture && updatedUser.gender) {
+          const gender = updatedUser.gender.toLowerCase();
+
+          if (gender === 'female') {
+            updatedUser.profilePicture = 'female-avatar';
+            
+          } else if (gender === 'male') {
+            updatedUser.profilePicture = 'male-avatar';
+          }
+        }
+        
+        await saveUserToStorage(updatedUser);
+        setUser(updatedUser);
+        return { success: true, user: updatedUser, message: data.message || 'Volunteer information saved successfully.' };
+
+      } else {
+        return { success: false, message: data.message || 'Failed to save volunteer information. Please try again.' };
+      }
+
+    } catch (error) {
+      console.error('Add volunteer error:', error);
+      return { success: false, message: 'Network error. Please check your connection and try again.' };
+
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const generateUID = () => {
     return 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
   };
@@ -354,7 +407,8 @@ export const AuthProvider = ({ children }) => {
       logout, 
       updateUser, 
       fetchUserDetails, 
-      forgotPassword 
+      forgotPassword,
+      addVolunteer 
     }}>
       {children}
     </AuthContext.Provider>
