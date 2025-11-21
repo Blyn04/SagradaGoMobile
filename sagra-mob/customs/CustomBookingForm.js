@@ -188,9 +188,11 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
       const updated = { ...prev };
       if (Object.keys(sacramentDocs).length === 0) {
         delete updated[selectedSacrament];
+
       } else {
         updated[selectedSacrament] = sacramentDocs;
       }
+      
       return updated;
     });
   };
@@ -249,6 +251,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
     } else if (selectedSacrament === 'Burial') {
       const hasSelection = burialForm.funeral_mass || burialForm.death_anniversary ||
         burialForm.funeral_blessing || burialForm.tomb_blessing;
+
       if (!hasSelection) {
         setErrorMessage('Please select at least one burial service.');
         return;

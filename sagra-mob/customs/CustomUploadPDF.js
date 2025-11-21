@@ -55,6 +55,7 @@ export default function CustomUploadPDF({
       };
 
       onUpload?.(requirement.id, fileInfo);
+      
     } catch (error) {
       console.error('PDF upload error:', error);
       Alert.alert('Upload Failed', 'Could not select a PDF. Please try again.');
