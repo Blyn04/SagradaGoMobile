@@ -111,6 +111,10 @@ export default function DonationsScreen({ user, onNavigate }) {
   };
 
   useEffect(() => {
+    if (!user?.uid) return;
+
+    let interval;
+
     const loadData = async () => {
       setLoading(true);
       await Promise.all([fetchDonations(), fetchDonationStats()]);
@@ -118,6 +122,13 @@ export default function DonationsScreen({ user, onNavigate }) {
     };
 
     loadData();
+
+    interval = setInterval(() => {
+      fetchDonations();
+      fetchDonationStats();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, [user?.uid]);
 
   const handleConfirmDonation = async () => {
