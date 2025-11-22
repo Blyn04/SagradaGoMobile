@@ -6,16 +6,12 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  Platform,
+  Button
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as DocumentPicker from 'expo-document-picker';
 import styles from '../styles/users/CustomBookingStyle';
-
-let DocumentPicker = null;
-try {
-  DocumentPicker = require('expo-document-picker');
-} catch (error) {
-  console.warn('expo-document-picker is not available in this environment.');
-}
 
 export default function CustomUploadPDF({
   visible,
@@ -27,35 +23,34 @@ export default function CustomUploadPDF({
   onRemove,
 }) {
   const handlePickDocument = async (requirement) => {
-    if (!DocumentPicker) {
-      Alert.alert(
-        'Module Missing',
-        'Please install expo-document-picker to enable PDF uploads:\n\nnpx expo install expo-document-picker'
-      );
-      return;
-    }
-
     try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: 'application/pdf',
-        multiple: false,
-        copyToCacheDirectory: true,
-      });
-
-      if (result.canceled || result.type === 'cancel') {
+      if (!DocumentPicker) {
+        Alert.alert(
+          'Module Missing',
+          'Please install expo-document-picker to enable PDF uploads:\n\nnpx expo install expo-document-picker'
+        );
+        
         return;
       }
 
+      const result = await DocumentPicker.getDocumentAsync({
+        type: ['application/pdf'], 
+        copyToCacheDirectory: true,
+        multiple: false,
+      });
+
+      if (result.type === 'cancel') return;
+
       const asset = result.assets ? result.assets[0] : result;
+
       const fileInfo = {
         uri: asset.uri,
         name: asset.name || asset.fileName || `${requirement.id}.pdf`,
         size: asset.size,
-        mimeType: asset.mimeType || asset.type || 'application/pdf',
+        mimeType: asset.mimeType || 'application/pdf',
       };
 
       onUpload?.(requirement.id, fileInfo);
-      
     } catch (error) {
       console.error('PDF upload error:', error);
       Alert.alert('Upload Failed', 'Could not select a PDF. Please try again.');
@@ -85,7 +80,12 @@ export default function CustomUploadPDF({
             style={styles.uploadRequirementButton}
             onPress={() => handlePickDocument(requirement)}
           >
-            <Ionicons name="cloud-upload-outline" size={18} color="#424242" style={{ marginRight: 6 }} />
+            <Ionicons
+              name="cloud-upload-outline"
+              size={18}
+              color="#424242"
+              style={{ marginRight: 6 }}
+            />
             <Text style={styles.uploadRequirementButtonText}>
               {uploadedFile ? 'Replace PDF' : 'Upload PDF'}
             </Text>
@@ -95,7 +95,12 @@ export default function CustomUploadPDF({
               style={styles.uploadRequirementButtonSecondary}
               onPress={() => onRemove?.(requirement.id)}
             >
-              <Ionicons name="trash-outline" size={16} color="#ff4444" style={{ marginRight: 4 }} />
+              <Ionicons
+                name="trash-outline"
+                size={16}
+                color="#ff4444"
+                style={{ marginRight: 4 }}
+              />
               <Text style={styles.uploadRequirementButtonSecondaryText}>Remove</Text>
             </TouchableOpacity>
           )}
@@ -105,12 +110,7 @@ export default function CustomUploadPDF({
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent={true}
-      animationType="fade"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} transparent={true} animationType="fade" onRequestClose={onClose}>
       <View style={styles.uploadModalOverlay}>
         <View style={styles.uploadModalContent}>
           <View style={styles.uploadModalHeader}>
@@ -133,10 +133,7 @@ export default function CustomUploadPDF({
               </Text>
             </View>
           ) : (
-            <ScrollView
-              style={{ flex: 1 }}
-              showsVerticalScrollIndicator={false}
-            >
+            <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
               {requirements.map(renderRequirementItem)}
             </ScrollView>
           )}
@@ -144,9 +141,22 @@ export default function CustomUploadPDF({
           <TouchableOpacity style={styles.uploadModalCloseButton} onPress={onClose}>
             <Text style={styles.qrCodeCloseButtonText}>Done</Text>
           </TouchableOpacity>
+
+          <Button
+            title="Test PDF Pick"
+            onPress={async () => {
+              try {
+                const res = await DocumentPicker.getDocumentAsync({ type: ['application/pdf'] });
+                console.log(res);
+                Alert.alert('Result', JSON.stringify(res));
+              } catch (e) {
+                console.error(e);
+                Alert.alert('Error', e.message);
+              }
+            }}
+          />
         </View>
       </View>
     </Modal>
   );
 }
-
