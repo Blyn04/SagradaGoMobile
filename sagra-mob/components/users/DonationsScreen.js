@@ -19,6 +19,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { API_BASE_URL } from '../../config/API';
 
+let ImagePicker = null;
+try {
+  ImagePicker = require('expo-image-picker');
+
+} catch (e) {
+  console.warn('expo-image-picker not available');
+}
+
 export default function DonationsScreen({ user, onNavigate }) {
   const [showDonationModal, setShowDonationModal] = useState(false);
   const [amount, setAmount] = useState('');
@@ -30,6 +38,7 @@ export default function DonationsScreen({ user, onNavigate }) {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [statusFilter, setStatusFilter] = useState('all');
+  const [donationImage, setDonationImage] = useState(null);
 
   const paymentMethods = ['GCash', 'Cash', 'In Kind'];
 
@@ -148,21 +157,46 @@ export default function DonationsScreen({ user, onNavigate }) {
       return;
     }
 
+    if (paymentMethod === 'In Kind' && !donationImage) {
+      Alert.alert('Error', 'Please upload an image of your donation');
+      return;
+    }
+
     setSubmitting(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/createDonation`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          uid: user.uid,
-          amount: amountNum,
-          paymentMethod: paymentMethod,
-          intercession: intercession || '',
-        }),
-      });
+      let response;
+      if (donationImage) {
+        const formData = new FormData();
+        formData.append('uid', user.uid);
+        formData.append('amount', amountNum.toString());
+        formData.append('paymentMethod', paymentMethod);
+        formData.append('intercession', intercession || '');
+        formData.append('image', {
+          uri: donationImage.uri,
+          type: donationImage.type || 'image/jpeg',
+          name: donationImage.fileName || 'donation-image.jpg',
+        });
+
+        response = await fetch(`${API_BASE_URL}/createDonation`, {
+          method: 'POST',
+          body: formData,
+        });
+
+      } else {
+        response = await fetch(`${API_BASE_URL}/createDonation`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            uid: user.uid,
+            amount: amountNum,
+            paymentMethod: paymentMethod,
+            intercession: intercession || '',
+          }),
+        });
+      }
 
       const data = await response.json();
 
@@ -175,6 +209,7 @@ export default function DonationsScreen({ user, onNavigate }) {
               setAmount('');
               setIntercession('');
               setPaymentMethod('');
+              setDonationImage(null);
               await fetchDonations();
               fetchDonationStats();
             },
@@ -199,6 +234,49 @@ export default function DonationsScreen({ user, onNavigate }) {
     setAmount('');
     setIntercession('');
     setPaymentMethod('');
+    setDonationImage(null);
+  };
+
+  const pickImage = async () => {
+    if (!ImagePicker) {
+      Alert.alert(
+        'Image Picker Not Available',
+        'Please install expo-image-picker: npx expo install expo-image-picker'
+      );
+
+      return;
+    }
+
+    try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (status !== 'granted') {
+        Alert.alert('Permission needed', 'Please grant camera roll permissions to upload images.');
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        setDonationImage({
+          uri: result.assets[0].uri,
+          fileName: result.assets[0].uri.split('/').pop() || 'donation-image.jpg',
+          type: result.assets[0].type || 'image/jpeg',
+        });
+      }
+
+    } catch (error) {
+      Alert.alert('Error', 'Failed to pick image. Please try again.');
+      console.error('Image picker error:', error);
+    }
+  };
+
+  const removeImage = () => {
+    setDonationImage(null);
   };
 
   const filterDonationsByStatus = (donationsList, filter) => {
@@ -399,7 +477,35 @@ export default function DonationsScreen({ user, onNavigate }) {
               textAlignVertical="top"
             />
 
-
+            {paymentMethod === 'In Kind' && (
+              <View style={styles.imageUploadContainer}>
+                <Text style={styles.imageUploadLabel}>Upload Image of Donation</Text>
+                
+                {donationImage ? (
+                  <View style={styles.imagePreviewContainer}>
+                    <Image
+                      source={{ uri: donationImage.uri }}
+                      style={styles.imagePreview}
+                      resizeMode="cover"
+                    />
+                    <TouchableOpacity
+                      style={styles.removeImageButton}
+                      onPress={removeImage}
+                    >
+                      <Ionicons name="close-circle" size={24} color="#F44336" />
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.uploadImageButton}
+                    onPress={pickImage}
+                  >
+                    <Ionicons name="image-outline" size={24} color="#424242" style={{ marginRight: 8 }} />
+                    <Text style={styles.uploadImageButtonText}>Upload Image</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
 
             <View style={styles.modalButtonContainer}>
               <TouchableOpacity

@@ -389,6 +389,60 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins_700Bold',
   },
 
+  /* IMAGE UPLOAD */
+  imageUploadContainer: {
+    marginBottom: 15,
+  },
+
+  imageUploadLabel: {
+    fontSize: 14,
+    fontFamily: 'Poppins_500Medium',
+    color: '#333',
+    marginBottom: 10,
+  },
+
+  uploadImageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f0f0f0',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderStyle: 'dashed',
+  },
+
+  uploadImageButtonText: {
+    fontSize: 14,
+    fontFamily: 'Poppins_500Medium',
+    color: '#424242',
+  },
+
+  imagePreviewContainer: {
+    position: 'relative',
+    borderRadius: 10,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+
+  imagePreview: {
+    width: '100%',
+    height: 200,
+    borderRadius: 10,
+  },
+
+  removeImageButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 15,
+    padding: 4,
+  },
+
 });
 
 export default styles;
