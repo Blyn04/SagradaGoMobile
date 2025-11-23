@@ -31,7 +31,7 @@ export default function AnnouncementsScreen({ user, onNavigate }) {
         authUser.middle_name || '',
         authUser.last_name || ''
       ].filter(Boolean).join(' ').trim();
-      
+
       return fullName || 'Guest';
     }
 
@@ -103,10 +103,10 @@ export default function AnnouncementsScreen({ user, onNavigate }) {
     switch (priority) {
       case 'important':
         return '#FF6B6B';
-        
+
       case 'urgent':
         return '#FF4444';
-        
+
       default:
         return '#4ECDC4';
     }
@@ -133,17 +133,12 @@ export default function AnnouncementsScreen({ user, onNavigate }) {
 
   return (
     <View style={styles.container}>
-      <ScrollView
-        style={styles.scrollView}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
+      <View style={{ padding: 20, paddingBottom: -5 }}>
         {/* HEADER */}
         <View style={styles.header}>
           <Text style={styles.greeting}>Hi, {getUserName() || 'Guest'} 👋</Text>
           <Text style={styles.title}>Announcements</Text>
-          <Text style={styles.subtitle}>Stay updated with our latest news</Text>
+          <Text style={styles.subtitle}>Stay updated with our latest news!</Text>
         </View>
 
         {/* SEARCH BAR */}
@@ -157,7 +152,14 @@ export default function AnnouncementsScreen({ user, onNavigate }) {
             placeholderTextColor="#999"
           />
         </View>
+      </View>
 
+      <ScrollView
+        style={styles.scrollView}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         {/* ANNOUNCEMENTS LIST */}
         {filteredAnnouncements.length === 0 ? (
           <View style={styles.emptyContainer}>
