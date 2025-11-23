@@ -443,6 +443,91 @@ const styles = StyleSheet.create({
     padding: 4,
   },
 
+  /* GCASH SECTION */
+  gcashContainer: {
+    marginBottom: 15,
+    padding: 12,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+
+  gcashSectionTitle: {
+    fontSize: 15,
+    fontFamily: 'Poppins_600SemiBold',
+    color: '#333',
+    marginBottom: 12,
+  },
+
+  gcashNumberContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#fff',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+
+  gcashNumberWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+
+  gcashNumberText: {
+    fontSize: 16,
+    fontFamily: 'Poppins_600SemiBold',
+    color: '#424242',
+    letterSpacing: 0.5,
+  },
+
+  copyButton: {
+    padding: 8,
+    borderRadius: 6,
+    backgroundColor: '#f0f0f0',
+  },
+
+  qrCodeContainer: {
+    marginBottom: 12,
+  },
+
+  qrCodeLabel: {
+    fontSize: 14,
+    fontFamily: 'Poppins_500Medium',
+    color: '#333',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+
+  qrCodeImageWrapper: {
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+
+  qrCodeImage: {
+    width: 200,
+    height: 200,
+  },
+
+  receiptUploadContainer: {
+    marginTop: 8,
+  },
+
+  receiptUploadLabel: {
+    fontSize: 14,
+    fontFamily: 'Poppins_500Medium',
+    color: '#333',
+    marginBottom: 10,
+  },
+
 });
 
 export default styles;

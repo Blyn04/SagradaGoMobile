@@ -18,11 +18,11 @@ import CustomPicker from '../../customs/CustomPicker';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { API_BASE_URL } from '../../config/API';
+import * as Clipboard from 'expo-clipboard';
 
 let ImagePicker = null;
 try {
   ImagePicker = require('expo-image-picker');
-
 } catch (e) {
   console.warn('expo-image-picker not available');
 }
@@ -39,6 +39,10 @@ export default function DonationsScreen({ user, onNavigate }) {
   const [submitting, setSubmitting] = useState(false);
   const [statusFilter, setStatusFilter] = useState('all');
   const [donationImage, setDonationImage] = useState(null);
+  const [gcashReceiptImage, setGcashReceiptImage] = useState(null);
+
+  // GCash number - update this with the actual GCash number
+  const GCASH_NUMBER = '09123456789';
 
   const paymentMethods = ['GCash', 'Cash', 'In Kind'];
 
@@ -162,21 +166,38 @@ export default function DonationsScreen({ user, onNavigate }) {
       return;
     }
 
+    if (paymentMethod === 'GCash' && !gcashReceiptImage) {
+      Alert.alert('Error', 'Please upload your GCash receipt');
+      return;
+    }
+
     setSubmitting(true);
 
     try {
       let response;
-      if (donationImage) {
+      // Use FormData if there's an image (In Kind donation or GCash receipt)
+      if (donationImage || gcashReceiptImage) {
         const formData = new FormData();
         formData.append('uid', user.uid);
         formData.append('amount', amountNum.toString());
         formData.append('paymentMethod', paymentMethod);
         formData.append('intercession', intercession || '');
-        formData.append('image', {
-          uri: donationImage.uri,
-          type: donationImage.type || 'image/jpeg',
-          name: donationImage.fileName || 'donation-image.jpg',
-        });
+        
+        if (donationImage) {
+          formData.append('image', {
+            uri: donationImage.uri,
+            type: donationImage.type || 'image/jpeg',
+            name: donationImage.fileName || 'donation-image.jpg',
+          });
+        }
+        
+        if (gcashReceiptImage) {
+          formData.append('receipt', {
+            uri: gcashReceiptImage.uri,
+            type: gcashReceiptImage.type || 'image/jpeg',
+            name: gcashReceiptImage.fileName || 'gcash-receipt.jpg',
+          });
+        }
 
         response = await fetch(`${API_BASE_URL}/createDonation`, {
           method: 'POST',
@@ -210,6 +231,7 @@ export default function DonationsScreen({ user, onNavigate }) {
               setIntercession('');
               setPaymentMethod('');
               setDonationImage(null);
+              setGcashReceiptImage(null);
               await fetchDonations();
               fetchDonationStats();
             },
@@ -235,6 +257,7 @@ export default function DonationsScreen({ user, onNavigate }) {
     setIntercession('');
     setPaymentMethod('');
     setDonationImage(null);
+    setGcashReceiptImage(null);
   };
 
   const pickImage = async () => {
@@ -277,6 +300,56 @@ export default function DonationsScreen({ user, onNavigate }) {
 
   const removeImage = () => {
     setDonationImage(null);
+  };
+
+  const copyGcashNumber = async () => {
+    try {
+      await Clipboard.setStringAsync(GCASH_NUMBER);
+      Alert.alert('Copied!', 'GCash number copied to clipboard');
+    } catch (error) {
+      console.error('Error copying to clipboard:', error);
+      Alert.alert('Error', 'Failed to copy number');
+    }
+  };
+
+  const pickReceiptImage = async () => {
+    if (!ImagePicker) {
+      Alert.alert(
+        'Image Picker Not Available',
+        'Please install expo-image-picker: npx expo install expo-image-picker'
+      );
+      return;
+    }
+
+    try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+      if (status !== 'granted') {
+        Alert.alert('Permission needed', 'Please grant camera roll permissions to upload receipt images.');
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        setGcashReceiptImage({
+          uri: result.assets[0].uri,
+          fileName: result.assets[0].uri.split('/').pop() || 'receipt.jpg',
+          type: result.assets[0].type || 'image/jpeg',
+        });
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to pick image. Please try again.');
+      console.error('Image picker error:', error);
+    }
+  };
+
+  const removeReceiptImage = () => {
+    setGcashReceiptImage(null);
   };
 
   const filterDonationsByStatus = (donationsList, filter) => {
@@ -504,6 +577,68 @@ export default function DonationsScreen({ user, onNavigate }) {
                     <Text style={styles.uploadImageButtonText}>Upload Image</Text>
                   </TouchableOpacity>
                 )}
+              </View>
+            )}
+
+            {/* GCash Section - Only show when "GCash" is selected */}
+            {paymentMethod === 'GCash' && (
+              <View style={styles.gcashContainer}>
+                <Text style={styles.gcashSectionTitle}>GCash Payment Details</Text>
+                
+                {/* GCash Number with Copy Button */}
+                <View style={styles.gcashNumberContainer}>
+                  <View style={styles.gcashNumberWrapper}>
+                    <Ionicons name="call-outline" size={20} color="#424242" style={{ marginRight: 8 }} />
+                    <Text style={styles.gcashNumberText}>{GCASH_NUMBER}</Text>
+                  </View>
+                  <TouchableOpacity
+                    style={styles.copyButton}
+                    onPress={copyGcashNumber}
+                  >
+                    <Ionicons name="copy-outline" size={20} color="#424242" />
+                  </TouchableOpacity>
+                </View>
+
+                {/* QR Code Image */}
+                <View style={styles.qrCodeContainer}>
+                  <Text style={styles.qrCodeLabel}>Scan QR Code to Pay</Text>
+                  <View style={styles.qrCodeImageWrapper}>
+                    <Image
+                      source={require('../../assets/qrCodes/qr-1.png')}
+                      style={styles.qrCodeImage}
+                      resizeMode="contain"
+                    />
+                  </View>
+                </View>
+
+                {/* Receipt Upload */}
+                <View style={styles.receiptUploadContainer}>
+                  <Text style={styles.receiptUploadLabel}>Upload Payment Receipt</Text>
+                  
+                  {gcashReceiptImage ? (
+                    <View style={styles.imagePreviewContainer}>
+                      <Image
+                        source={{ uri: gcashReceiptImage.uri }}
+                        style={styles.imagePreview}
+                        resizeMode="cover"
+                      />
+                      <TouchableOpacity
+                        style={styles.removeImageButton}
+                        onPress={removeReceiptImage}
+                      >
+                        <Ionicons name="close-circle" size={24} color="#F44336" />
+                      </TouchableOpacity>
+                    </View>
+                  ) : (
+                    <TouchableOpacity
+                      style={styles.uploadImageButton}
+                      onPress={pickReceiptImage}
+                    >
+                      <Ionicons name="receipt-outline" size={24} color="#424242" style={{ marginRight: 8 }} />
+                      <Text style={styles.uploadImageButtonText}>Upload Receipt</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
               </View>
             )}
 
