@@ -134,46 +134,48 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
         <Ionicons name="chevron-back" size={28} color="#333" />
       </TouchableOpacity>
 
+      <View style={styles.header}>
+        <Image
+          source={require('../../assets/sagrada.png')}
+          style={{ width: 80, height: 80, marginBottom: 10, alignSelf: 'center' }}
+          resizeMode="contain"
+        />
+        <Text style={styles.title}>Booking History</Text>
+        <Text style={styles.subtitle}>View your past and upcoming bookings</Text>
+      </View>
+
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.filterContainer}
+        contentContainerStyle={{ paddingRight: 20, margin: 20, gap: 10, height: 40, marginBottom: 60 }}
+      >
+        {['all', 'approved', 'pending', 'rejected', 'cancelled'].map((filter) => (
+          <TouchableOpacity
+            key={filter}
+            style={[
+              styles.filterButton,
+              selectedFilter === filter && styles.filterButtonActive
+            ]}
+            onPress={() => setSelectedFilter(filter)}
+          >
+            <Text
+              style={[
+                styles.filterButtonText,
+                selectedFilter === filter && styles.filterButtonTextActive
+              ]}
+            >
+              {filter.charAt(0).toUpperCase() + filter.slice(1)}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.header}>
-          <Image
-            source={require('../../assets/sagrada.png')}
-            style={{ width: 80, height: 80, marginBottom: 10, alignSelf: 'center' }}
-            resizeMode="contain"
-          />
-          <Text style={styles.title}>Booking History</Text>
-          <Text style={styles.subtitle}>View your past and upcoming bookings</Text>
-        </View>
 
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.filterContainer}
-          contentContainerStyle={{ paddingRight: 20, marginBottom: 20, gap: 10 }}
-        >
-          {['all', 'approved', 'pending', 'rejected', 'cancelled'].map((filter) => (
-            <TouchableOpacity
-              key={filter}
-              style={[
-                styles.filterButton,
-                selectedFilter === filter && styles.filterButtonActive
-              ]}
-              onPress={() => setSelectedFilter(filter)}
-            >
-              <Text
-                style={[
-                  styles.filterButtonText,
-                  selectedFilter === filter && styles.filterButtonTextActive
-                ]}
-              >
-                {filter.charAt(0).toUpperCase() + filter.slice(1)}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
 
         <View style={styles.bookingsContainer}>
           {filteredBookings.length > 0 ? (
