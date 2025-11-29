@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,9 +10,14 @@ import styles from '../styles/HomePageStyle';
 import CustomNavbar from '../customs/CustomNavbar';
 import { Ionicons } from '@expo/vector-icons';
 import dayjs from 'dayjs';
+import axios from 'axios';
+import { API_BASE_URL } from '../config/API'; // Your .env API config
 
 export default function HomePageScreen({ user, onLogout, onNavigate }) {
   const [selectedSection, setSelectedSection] = useState('Quick Access');
+  const [events, setEvents] = useState([]);
+  const [loadingEvents, setLoadingEvents] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(dayjs().format('YYYY-MM-DD'));
 
   const shortcuts = [
     {
@@ -44,40 +49,58 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
     },
   ];
 
-  const upcomingEvents = [
-    {
-      id: 'event1',
-      title: 'Community Cleanup',
-      date: dayjs().add(1, 'day').format('YYYY-MM-DD'), // dummy for layout event card
-      description: 'Join us for a community cleanup event.',
-    },
-  ];
+  const getUserName = () => {
+    if (user) {
+      const fullName = [user.first_name || '', user.middle_name || '', user.last_name || '']
+        .filter(Boolean)
+        .join(' ')
+        .trim();
+      return fullName || 'Guest';
+    }
+    
+    return 'Guest';
+  };
+
+  const last7Days = Array.from({ length: 7 }, (_, i) => dayjs().add(i, 'day'));
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const fetchEvents = async () => {
+    try {
+      setLoadingEvents(true);
+      const res = await axios.get(`${API_BASE_URL}/getAllEvents`);
+      setEvents(res.data.events || []);
+
+    } catch (err) {
+      console.error("Error fetching events:", err);
+
+    } finally {
+      setLoadingEvents(false);
+    }
+  };
+
+  const eventsForSelectedDate = events.filter(
+    (event) => dayjs(event.date).format('YYYY-MM-DD') === selectedDate
+  );
 
   const handleShortcutPress = (screen) => {
     if (onNavigate) onNavigate(screen);
   };
 
-  const last7Days = Array.from({ length: 7 }, (_, i) =>
-    dayjs().add(i, 'day')
-  );
-
-  const [selectedDate, setSelectedDate] = useState(last7Days[0].format('YYYY-MM-DD'));
-
-  const eventsForSelectedDate = upcomingEvents.filter(
-    (event) => dayjs(event.date).format('YYYY-MM-DD') === selectedDate
-  );
-
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
 
+        {/* HEADER */}
         <View style={styles.header}>
           {user && (
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
               <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
                 <Image
                   source={
-                    user.profilePicture === 'female-avatar' 
+                    user.profilePicture === 'female-avatar'
                       ? require('../assets/avatars/female-avatar.png')
                       : user.profilePicture === 'male-avatar'
                       ? require('../assets/avatars/male-avatar.png')
@@ -89,7 +112,7 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
                 />
                 <View style={{ flexDirection: 'column' }}>
                   <Text style={styles.userName}>
-                    Welcome back, {user.first_name}!
+                    Welcome back, {getUserName()}!
                   </Text>
                   <Text style={styles.appName}>SagradaGo</Text>
                 </View>
@@ -104,6 +127,7 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
           )}
         </View>
 
+        {/* SECTION SELECTOR */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -138,23 +162,9 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
               Upcoming Events
             </Text>
           </TouchableOpacity>
-
-          {/* <TouchableOpacity
-            style={[styles.sectionButton, selectedSection === 'Emerlyn' && styles.activeSectionButton]}
-            onPress={() => setSelectedSection('Upcoming Events')}
-          >
-            <Ionicons
-              name="person-outline"
-              size={20}
-              color={selectedSection === 'Emerlyn' ? '#fff' : '#424242'}
-              style={{ marginRight: 8 }}
-            />
-            <Text style={[styles.sectionButtonText, selectedSection === 'Emerlyn' && { color: '#fff' }]}>
-              Emerlyn
-            </Text>
-          </TouchableOpacity> */}
         </ScrollView>
 
+        {/* QUICK ACCESS */}
         {selectedSection === 'Quick Access' && (
           <View style={styles.shortcutsContainer}>
             <Text style={styles.title}>Explore our Services</Text>
@@ -193,11 +203,11 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
                   <Text style={styles.shortcutDescription}>{shortcut.description}</Text>
                 </TouchableOpacity>
               ))}
-
             </View>
           </View>
         )}
 
+        {/* UPCOMING EVENTS */}
         {selectedSection === 'Upcoming Events' && (
           <View>
             <Text style={[styles.title, { paddingLeft: 20 }]}>Upcoming Events</Text>
@@ -235,13 +245,16 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
 
             {eventsForSelectedDate.length > 0 ? (
               eventsForSelectedDate.map((event) => (
-                <View key={event.id} style={styles.eventCard}>
+                <TouchableOpacity
+                  key={event._id}
+                  style={styles.eventCard}
+                  onPress={() => onNavigate('EventsScreen', { eventId: event._id })}
+                >
                   <Image
-                    source={{ uri: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=400&q=80' }}
+                    source={{ uri: event.image || 'https://via.placeholder.com/400' }}
                     style={{ width: '100%', height: 130, borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
                     resizeMode="cover"
                   />
-
                   <View style={{ padding: 15 }}>
                     <Text style={styles.eventTitle}>{event.title}</Text>
                     <Text style={styles.eventDate}>{dayjs(event.date).format('MMMM D, YYYY')}</Text>
@@ -249,7 +262,7 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
                       {event.description}
                     </Text>
                   </View>
-                </View>
+                </TouchableOpacity>
               ))
             ) : (
               <Text style={{ textAlign: 'center', marginTop: 20, color: '#666', fontFamily: 'Poppins_500Medium' }}>
@@ -261,10 +274,7 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
 
       </ScrollView>
 
-      <CustomNavbar
-        currentScreen="HomePageScreen"
-        onNavigate={onNavigate}
-      />
+      <CustomNavbar currentScreen="HomePageScreen" onNavigate={onNavigate} />
 
       <TouchableOpacity
         style={styles.floatingButton}
