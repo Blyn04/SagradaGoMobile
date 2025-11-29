@@ -46,6 +46,20 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedDay, setSelectedDay] = useState(new Date().getDate());
 
+  const passwordRules = [
+    { test: (pw) => pw.length >= 6, message: 'At least 6 characters' },
+    { test: (pw) => /[A-Z]/.test(pw), message: 'At least 1 uppercase letter' },
+    { test: (pw) => /[a-z]/.test(pw), message: 'At least 1 lowercase letter' },
+    { test: (pw) => /[0-9]/.test(pw), message: 'At least 1 number' },
+    { test: (pw) => /[!@#$%^&*]/.test(pw), message: 'At least 1 special character (!@#$%^&*)' },
+  ];
+
+  const checkPasswordRules = (password) => {
+    return passwordRules
+      .filter(rule => !rule.test(password))
+      .map(rule => rule.message);
+  };
+
   const validateField = (field, value) => {
     let error = '';
 
@@ -706,7 +720,7 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
 
                   if (touched.confirmPassword || errors.confirmPassword) {
                     let confirmError = '';
-
+                    
                     if (!newData.confirmPassword) {
                       confirmError = 'Please confirm your password';
 
@@ -716,13 +730,12 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
 
                     setErrors(prev => ({ ...prev, confirmPassword: confirmError }));
                   }
+
                   return newData;
                 });
 
-                if (touched.password || errors.password) {
-                  const error = validateField('password', value);
-                  setErrors(prev => ({ ...prev, password: error }));
-                }
+                const passwordErrors = checkPasswordRules(value);
+                setErrors(prev => ({ ...prev, password: passwordErrors.join(', ') }));
               }}
               onBlur={() => handleBlur('password')}
               secureTextEntry={!showPassword}
@@ -765,6 +778,22 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
             </TouchableOpacity>
           </View>
           {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
+
+          {formData.password ? (
+            <View style={{ marginVertical: 4 }}>
+              {passwordRules.map((rule, index) => {
+                const passed = rule.test(formData.password);
+                return (
+                  <Text
+                    key={index}
+                    style={{ color: passed ? 'green' : 'red', fontSize: 12 }}
+                  >
+                    {passed ? '✓' : '✗'} {rule.message}
+                  </Text>
+                );
+              })}
+            </View>
+          ) : null}
 
           <TouchableOpacity
             style={[styles.yellowButton, loading && styles.buttonDisabled]}
