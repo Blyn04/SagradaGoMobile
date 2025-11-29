@@ -265,6 +265,15 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
     }
   }, [user?.uid]);
 
+  const sacramentMap = {
+    Wedding: "Wedding",
+    Baptism: "Baptism",
+    Burial: "Burial",
+    "First Communion": "Communion",
+    "Anointing of the Sick": "Anointing",
+    Confirmation: "Confirmation",
+  };
+
   const filteredBookings = useMemo(() => {
     if (selectedFilter === 'all') {
       return allBookings;
@@ -337,15 +346,43 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
     setIsConfirmModalVisible(true);
   };
 
-  const handleConfirmCancel = () => {
-    // TODO: Implement cancel booking API call
-    console.log('Cancel booking:', selectedBooking.id);
-    // After successful cancellation, you might want to:
-    // - Update the booking status in the list
-    // - Close the modal
-    // - Show a success message
-    setIsConfirmModalVisible(false);
-    closeModal();
+  const handleConfirmCancel = async () => {
+    if (!selectedBooking) return;
+
+    try {
+      const bookingType = sacramentMap[selectedBooking.sacrament];
+
+      if (!bookingType) throw new Error('Invalid booking type');
+
+      const response = await fetch(`${API_BASE_URL}/cancelBooking`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          transaction_id: selectedBooking.transaction_id || selectedBooking.id,
+          bookingType, 
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to cancel booking');
+      }
+
+      setAllBookings((prev) =>
+        prev.map((b) =>
+          b.id === selectedBooking.id ? { ...b, status: 'cancelled' } : b
+        )
+      );
+
+      setIsConfirmModalVisible(false);
+      closeModal();
+      Alert.alert('Success', data.message || 'Booking cancelled successfully');
+
+    } catch (error) {
+      console.error('Cancel booking error:', error);
+      Alert.alert('Error', error.message || 'Failed to cancel booking');
+    }
   };
 
   const handleCancelConfirm = () => {
