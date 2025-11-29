@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,13 +6,16 @@ import {
   TouchableOpacity,
   Image,
   TextInput,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import axios from 'axios';
 import styles from '../../styles/users/EventsStyle';
 import CustomNavbar from '../../customs/CustomNavbar';
 import { useAuth } from '../../contexts/AuthContext';
+import { API_BASE_URL } from '../../config/API'; // ✅ use your API.js config
 
-export default function EventsScreen({ user, onNavigate }) {
+export default function EventsScreen({ onNavigate }) {
   const { user: authUser } = useAuth();
 
   const getUserName = () => {
@@ -22,40 +25,35 @@ export default function EventsScreen({ user, onNavigate }) {
         authUser.middle_name || '',
         authUser.last_name || ''
       ].filter(Boolean).join(' ').trim();
-      
       return fullName || 'Guest';
     }
+    
     return 'Guest';
   };
 
-  const defaultEvents = [
-    {
-      id: 1,
-      title: "Tree Planting Activity",
-      date: "December 15, 2025",
-      location: "Tagaytay City",
-      image: "https://images.unsplash.com/photo-1501004318641-b39e6451bec6"
-    },
-    {
-      id: 2,
-      title: "Community Solar Installation",
-      date: "January 10, 2026",
-      location: "Dasmariñas, Cavite",
-      image: "https://images.unsplash.com/photo-1501004318641-b39e6451bec6"
-    },
-    {
-      id: 3,
-      title: "Eco Awareness Workshop",
-      date: "February 20, 2026",
-      location: "Bacoor, Cavite",
-      image: "https://images.unsplash.com/photo-1501004318641-b39e6451bec6"
-    },
-  ];
-
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
 
-  // Filter logic
-  const filteredEvents = defaultEvents.filter(e =>
+  useEffect(() => {
+    fetchEvents();
+  }, []);
+
+  const fetchEvents = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API_BASE_URL}/getAllEvents`);
+      setEvents(response.data.events || []);
+
+    } catch (error) {
+      console.error("Error fetching events:", error);
+
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredEvents = events.filter(e =>
     e.title.toLowerCase().includes(search.toLowerCase()) ||
     e.location.toLowerCase().includes(search.toLowerCase())
   );
@@ -63,12 +61,13 @@ export default function EventsScreen({ user, onNavigate }) {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
-
         {/* HEADER */}
         <View style={styles.header}>
-          <Text style={styles.greeting}>Hi, {getUserName() || "Guest"} 👋</Text>
+          <Text style={styles.greeting}>Hi, {getUserName()} 👋</Text>
           <Text style={styles.title}>
-            We have {defaultEvents.length} events this month!
+            {events.length > 0
+              ? `We have ${events.length} events this month!`
+              : "No upcoming events yet"}
           </Text>
         </View>
 
@@ -88,38 +87,44 @@ export default function EventsScreen({ user, onNavigate }) {
           <Text style={styles.subtitle}>Upcoming events and activities.</Text>
         </View>
 
-        {/* EVENT CARDS */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={{ paddingHorizontal: 30, height: 450 }}
-        >
-          {filteredEvents.map((event) => (
-            <View key={event.id} style={styles.card}>
-              <Image source={{ uri: event.image }} style={styles.cardImage} />
+        {loading ? (
+          <ActivityIndicator size="large" color="#000" style={{ marginTop: 50 }} />
+        ) : (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{ paddingHorizontal: 30, height: 450 }}
+          >
+            {filteredEvents.map((event) => (
+              <View key={event._id} style={styles.card}>
+                <Image
+                  source={{ uri: event.image || 'https://via.placeholder.com/150' }}
+                  style={styles.cardImage}
+                />
+                <View style={styles.cardContent}>
+                  <View>
+                    <Text style={styles.cardTitle}>{event.title}</Text>
+                    <Text style={styles.cardInfo}>
+                      {new Date(event.date).toDateString()}
+                    </Text>
+                    <Text style={styles.cardInfo}>{event.location}</Text>
+                  </View>
 
-              <View style={styles.cardContent}>
-                <View>
-                  <Text style={styles.cardTitle}>{event.title}</Text>
-                  <Text style={styles.cardInfo}>{event.date}</Text>
-                  <Text style={styles.cardInfo}>{event.location}</Text>
+                  <TouchableOpacity
+                    style={styles.cardVolunteerBtn}
+                    onPress={() => onNavigate('VolunteerScreen', { event })}
+                  >
+                    <Ionicons name="hand-left-outline" size={20} color="#fff" />
+                    <Text style={styles.cardVolunteerText}>Volunteer</Text>
+                  </TouchableOpacity>
                 </View>
-
-                <TouchableOpacity style={styles.cardVolunteerBtn} onPress={() => onNavigate('VolunteerScreen', { event: event })}
-                >
-                  <Ionicons name="hand-left-outline" size={20} color="#fff" />
-                  <Text style={styles.cardVolunteerText}>Volunteer</Text>
-                </TouchableOpacity>
               </View>
-            </View>
-          ))}
-        </ScrollView>
+            ))}
+          </ScrollView>
+        )}
       </ScrollView>
 
-      <CustomNavbar
-        currentScreen="EventsScreen"
-        onNavigate={onNavigate}
-      />
+      <CustomNavbar currentScreen="EventsScreen" onNavigate={onNavigate} />
     </View>
   );
 }
