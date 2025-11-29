@@ -175,33 +175,92 @@ export default function DonationsScreen({ user, onNavigate }) {
     formData.append('intercession', intercession || '');
 
     if (donationImage) {
+      // React Native FormData file upload format
+      // expo-image-picker returns URIs in the correct format already
+      const imageUri = donationImage.uri;
+      const imageName = donationImage.fileName || imageUri.split('/').pop() || 'donation-image.jpg';
+      const imageType = donationImage.type || 'image/jpeg';
+      
+      console.log('Appending image to FormData:', {
+        uri: imageUri,
+        type: imageType,
+        name: imageName,
+      });
+      
+      // React Native FormData expects this exact structure
       formData.append('image', {
-        uri: donationImage.uri,
-        type: donationImage.type || 'image/jpeg',
-        name: donationImage.fileName || 'donation-image.jpg',
+        uri: imageUri,
+        type: imageType,
+        name: imageName,
       });
     }
 
     if (gcashReceiptImage) {
+      // React Native FormData file upload format
+      // expo-image-picker returns URIs in the correct format already
+      const receiptUri = gcashReceiptImage.uri;
+      const receiptName = gcashReceiptImage.fileName || receiptUri.split('/').pop() || 'gcash-receipt.jpg';
+      const receiptType = gcashReceiptImage.type || 'image/jpeg';
+      
+      console.log('Appending receipt to FormData:', {
+        uri: receiptUri,
+        type: receiptType,
+        name: receiptName,
+      });
+      
+      // React Native FormData expects this exact structure
       formData.append('receipt', {
-        uri: gcashReceiptImage.uri,
-        type: gcashReceiptImage.type || 'image/jpeg',
-        name: gcashReceiptImage.fileName || 'gcash-receipt.jpg',
+        uri: receiptUri,
+        type: receiptType,
+        name: receiptName,
       });
     }
 
     // Debug log to verify FormData
-    for (let pair of formData.entries()) {
-      console.log('FormData', pair[0], pair[1]);
+    console.log('Submitting donation with FormData:');
+    console.log('- uid:', user.uid);
+    console.log('- amount:', amountNum);
+    console.log('- paymentMethod:', paymentMethod);
+    console.log('- hasImage:', !!donationImage);
+    console.log('- hasReceipt:', !!gcashReceiptImage);
+    console.log('- API URL:', `${API_BASE_URL}/createDonation`);
+
+    // Create AbortController for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+    let response;
+    try {
+      response = await fetch(`${API_BASE_URL}/createDonation`, {
+        method: 'POST',
+        body: formData,
+        signal: controller.signal,
+        // Do NOT set 'Content-Type' header - let fetch set it automatically with boundary
+      });
+      clearTimeout(timeoutId);
+    } catch (fetchError) {
+      clearTimeout(timeoutId);
+      console.error('Fetch error details:', fetchError);
+      if (fetchError.name === 'AbortError') {
+        throw new Error('Request timeout. Please check your connection and try again.');
+      }
+      if (fetchError.message === 'Network request failed') {
+        throw new Error('Cannot connect to server. Please check:\n1. Your internet connection\n2. The backend server is running\n3. The API URL is correct');
+      }
+      throw fetchError;
     }
 
-    const response = await fetch(`http://${API_BASE_URL}/createDonation`, {
-      method: 'POST',
-      body: formData,
-      // Do NOT set 'Content-Type' manually — fetch sets it for FormData
-    });
-
-    const data = await response.json();
+    console.log('Response status:', response.status);
+    
+    let data;
+    try {
+      const text = await response.text();
+      console.log('Response text:', text);
+      data = JSON.parse(text);
+    } catch (parseError) {
+      console.error('Error parsing response:', parseError);
+      throw new Error('Invalid response from server');
+    }
 
     if (response.ok) {
       Alert.alert('Success', 'Donation submitted successfully!', [
@@ -220,11 +279,12 @@ export default function DonationsScreen({ user, onNavigate }) {
         },
       ]);
     } else {
+      console.error('Donation creation failed:', data);
       Alert.alert('Error', data.message || 'Failed to submit donation. Please try again.');
     }
   } catch (error) {
     console.error('Error creating donation:', error);
-    Alert.alert('Error', 'Network error. Please check your connection and try again.');
+    Alert.alert('Error', error.message || 'Network error. Please check your connection and try again.');
   } finally {
     setSubmitting(false);
   }
@@ -265,10 +325,17 @@ export default function DonationsScreen({ user, onNavigate }) {
       });
 
       if (!result.canceled && result.assets[0]) {
+        const asset = result.assets[0];
         setDonationImage({
-          uri: result.assets[0].uri,
-          fileName: result.assets[0].uri.split('/').pop() || 'donation-image.jpg',
-          type: result.assets[0].type || 'image/jpeg',
+          uri: asset.uri,
+          fileName: asset.fileName || asset.uri.split('/').pop() || 'donation-image.jpg',
+          type: asset.mimeType || asset.type || 'image/jpeg',
+        });
+        console.log('Image selected:', {
+          uri: asset.uri,
+          fileName: asset.fileName || asset.uri.split('/').pop(),
+          mimeType: asset.mimeType,
+          type: asset.type,
         });
       }
 
@@ -316,10 +383,17 @@ export default function DonationsScreen({ user, onNavigate }) {
       });
 
       if (!result.canceled && result.assets[0]) {
+        const asset = result.assets[0];
         setGcashReceiptImage({
-          uri: result.assets[0].uri,
-          fileName: result.assets[0].uri.split('/').pop() || 'receipt.jpg',
-          type: result.assets[0].type || 'image/jpeg',
+          uri: asset.uri,
+          fileName: asset.fileName || asset.uri.split('/').pop() || 'receipt.jpg',
+          type: asset.mimeType || asset.type || 'image/jpeg',
+        });
+        console.log('Receipt image selected:', {
+          uri: asset.uri,
+          fileName: asset.fileName || asset.uri.split('/').pop(),
+          mimeType: asset.mimeType,
+          type: asset.type,
         });
       }
     } catch (error) {
