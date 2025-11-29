@@ -14,13 +14,12 @@ import CustomNavbar from '../../customs/CustomNavbar';
 
 const predefinedQuestions = [
   { id: 1, text: 'What sacraments can I book?', category: 'booking' },
-  { id: 2, text: 'What are the requirements for Baptism?', category: 'baptism' },
-  { id: 3, text: 'What are the requirements for Wedding?', category: 'wedding' },
-  { id: 4, text: 'How can I make a donation?', category: 'donation' },
-  { id: 5, text: 'What events are happening?', category: 'events' },
-  { id: 6, text: 'How can I volunteer?', category: 'volunteer' },
-  { id: 7, text: 'What is the Virtual Tour?', category: 'virtualtour' },
-  { id: 8, text: 'What are the booking dates for sacraments?', category: 'bookingdates' },
+  // { id: 2, text: 'What are the requirements for Baptism?', category: 'baptism' },
+  // { id: 3, text: 'What are the requirements for Wedding?', category: 'wedding' },
+  { id: 3, text: 'How can I make a donation?', category: 'donation' },
+  { id: 4, text: 'What events are happening?', category: 'events' },
+  { id: 5, text: 'How can I volunteer?', category: 'volunteer' },
+  { id: 6, text: 'What are the booking dates for sacraments?', category: 'bookingdates' },
 ];
 
 const sacramentInfo = {
