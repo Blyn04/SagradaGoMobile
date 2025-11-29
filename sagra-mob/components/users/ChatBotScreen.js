@@ -37,6 +37,7 @@ export default function ChatBotScreen({ user, onNavigate }) {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [showChoices, setShowChoices] = useState(true);
+  const [talkToAdmin, setTalkToAdmin] = useState(false);
   const scrollViewRef = useRef();
 
   const formatTime = (date) => {
@@ -233,10 +234,22 @@ export default function ChatBotScreen({ user, onNavigate }) {
               </View>
             ))}
 
-            {showChoices && messages.length > 0 && (
+           {showChoices && messages.length > 0 && (
               <View style={styles.choiceButtonsContainer}>
                 <Text style={styles.choiceButtonsTitle}>Quick Questions</Text>
                 <Text style={styles.choiceButtonsSubtitle}>Tap a question below</Text>
+
+                {/* New option for Admin Chat */}
+                <TouchableOpacity
+                  style={styles.choiceButton}
+                  onPress={() => setTalkToAdmin(true)}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons name="people-outline" size={18} color="#424242" style={{ marginRight: 10 }} />
+                  <Text style={styles.choiceButtonText}>Chat or Message with Admin</Text>
+                  <Ionicons name="chevron-forward" size={18} color="#999" />
+                </TouchableOpacity>
+
                 {predefinedQuestions.map((question) => (
                   <TouchableOpacity
                     key={question.id}
@@ -252,7 +265,18 @@ export default function ChatBotScreen({ user, onNavigate }) {
               </View>
             )}
 
-            {!showChoices && messages.length > 1 && (
+            {/* {!showChoices && messages.length > 1 && (
+              <TouchableOpacity
+                style={styles.showChoicesButton}
+                onPress={showChoicesAgain}
+                activeOpacity={0.7}
+              >
+                <Ionicons name="list-outline" size={18} color="#424242" />
+                <Text style={styles.showChoicesButtonText}>Show quick questions</Text>
+              </TouchableOpacity>
+            )} */}
+
+            {!talkToAdmin && !showChoices && messages.length > 1 && (
               <TouchableOpacity
                 style={styles.showChoicesButton}
                 onPress={showChoicesAgain}
