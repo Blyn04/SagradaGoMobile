@@ -211,46 +211,58 @@ const styles = StyleSheet.create({
     color: '#424242',
     marginLeft: 8,
   },
-  
+
   landingContainer: {
-  flex: 1,
-  justifyContent: 'center',
-  alignItems: 'center',
-  backgroundColor: '#fafafa',
-  paddingHorizontal: 30,
-},
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 30,
+    backgroundColor: '#f9f9f9',
+  },
 
-landingTitle: {
-  fontSize: 34,
-  fontFamily: 'Poppins_700Bold',
-  color: '#1a1a1a',
-  marginTop: 20,
-},
+  backButton: {
+    position: 'absolute',
+    top: 55,
+    left: 20,
+    padding: 10,
+    borderRadius: 50,
+  },
 
-landingSubtitle: {
-  fontSize: 16,
-  fontFamily: 'Poppins_400Regular',
-  color: '#6c757d',
-  textAlign: 'center',
-  marginTop: 10,
-  lineHeight: 22,
-  paddingHorizontal: 10,
-},
+  landingTitle: {
+    fontSize: 34,
+    fontFamily: 'Poppins_700Bold',
+    marginTop: 20,
+    color: '#1a1a1a',
+    letterSpacing: 1,
+  },
 
-landingButton: {
-  marginTop: 35,
-  backgroundColor: '#424242',
-  paddingHorizontal: 40,
-  paddingVertical: 14,
-  borderRadius: 30,
-  elevation: 5,
-},
+  landingDescription: {
+    fontSize: 16,
+    color: '#555',
+    textAlign: 'center',
+    marginTop: 10,
+    paddingHorizontal: 20,
+    lineHeight: 22,
+    fontFamily: 'Poppins_500Medium'
+  },
 
-landingButtonText: {
-  color: '#fff',
-  fontFamily: 'Poppins_600SemiBold',
-  fontSize: 16,
-},
+  landingButton: {
+    marginTop: 30,
+    backgroundColor: '#424242',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.25,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+
+  landingButtonText: {
+    fontSize: 16,
+    color: '#fff',
+    fontFamily: 'Poppins_600SemiBold',
+  },
 
 });
 
