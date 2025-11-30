@@ -132,6 +132,12 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
     }
   }, [errorMessage]);
 
+  useEffect(() => {
+    if (selectedSacrament === 'Confession') {
+      setPax('1');
+    }
+  }, [selectedSacrament]);
+
   const resetForm = () => {
     setDate(null);
     setTime(null);
@@ -428,6 +434,48 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
           ]);
         }
 
+      } else if (selectedSacrament === 'Confession') {
+        if (!user?.uid) {
+          Alert.alert('Error', 'User not found. Please log in again.');
+          return;
+        }
+
+        const payload = {
+          uid: user.uid,
+          full_name: fullName || '',
+          email: email || '',
+          date: date.toISOString(),
+          time: time.toISOString(),
+          attendees: 1,
+          transaction_id: `CONF-${Date.now()}`,
+          status: 'pending',
+        };
+
+        try {
+          const response = await fetch(`${API_BASE_URL}/createConfession`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            Alert.alert('Success', 'Confession booking submitted successfully!', [
+              { text: 'OK', onPress: handleClose }
+            ]);
+            
+          } else {
+            throw new Error(data.message || 'Failed to submit Confession booking.');
+          }
+
+        } catch (err) {
+          console.error('Confession booking error:', err);
+          Alert.alert('Error', err.message || 'Failed to submit Confession booking.');
+        }
+
       } else if (selectedSacrament === 'First Communion') {
         formData.append('contact_number', user.contact_number || '');
 
@@ -693,19 +741,21 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
                   />
                 </View>
 
-                <View style={styles.inputWrapper}>
-                  <Text style={styles.inputLabel}>Number of People</Text>
-                  <View style={[styles.inputContainer, { paddingVertical: 2 }]}>
-                    <Ionicons name="people-outline" size={20} color="#999" style={{ marginRight: 10 }} />
-                    <TextInput
-                      style={styles.textInput}
-                      value={pax}
-                      onChangeText={setPax}
-                      placeholder="Enter number of people"
-                      keyboardType="number-pad"
-                    />
+                {selectedSacrament !== 'Confession' && (
+                  <View style={styles.inputWrapper}>
+                    <Text style={styles.inputLabel}>Number of People</Text>
+                    <View style={[styles.inputContainer, { paddingVertical: 2 }]}>
+                      <Ionicons name="people-outline" size={20} color="#999" style={{ marginRight: 10 }} />
+                      <TextInput
+                        style={styles.textInput}
+                        value={pax}
+                        onChangeText={setPax}
+                        placeholder="Enter number of people"
+                        keyboardType="number-pad"
+                      />
+                    </View>
                   </View>
-                </View>
+                )}
 
                 {selectedSacrament === 'Wedding' && (
                   <WeddingDocuments
@@ -728,12 +778,27 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
                   />
                 )}
 
-                <TouchableOpacity
-                  style={styles.submitButton}
-                  onPress={handleNext}
-                >
-                  <Text style={styles.submitButtonText}>Next</Text>
-                </TouchableOpacity>
+                {selectedSacrament === 'Confession' ? (
+                  <TouchableOpacity
+                    style={styles.submitButton}
+                    onPress={handleSubmitBooking} // directly submit
+                    disabled={submitting}
+                  >
+                    {submitting ? (
+                      <ActivityIndicator size="small" color="#fff" />
+                    ) : (
+                      <Text style={styles.submitButtonText}>Submit Booking</Text>
+                    )}
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    style={styles.submitButton}
+                    onPress={handleNext}
+                  >
+                    <Text style={styles.submitButtonText}>Next</Text>
+                  </TouchableOpacity>
+                )}
+
               </>
             ) : (
               <View style={styles.noSacramentContainer}>
@@ -803,22 +868,27 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
             </View>
             
             <View style={styles.qrCodeContainer}>
-              <Text style={styles.qrCodeSubtitle}>
-                Scan this QR code to pay for your {selectedSacrament} booking
-              </Text>
-              <View style={styles.paymentAmountContainer}>
-                <Text style={styles.paymentAmountLabel}>Amount to Pay:</Text>
-                <Text style={styles.paymentAmount}>
-                  ₱{getSacramentPrice(selectedSacrament).toLocaleString()}
-                </Text>
-              </View>
-              <View style={styles.qrCodeImageWrapper}>
-                <Image
-                  source={require('../assets/qrCodes/qr-1.png')}
-                  style={styles.qrCodeImage}
-                  resizeMode="contain"
-                />
-              </View>
+              {selectedSacrament !== 'Confession' && (
+                <>
+                  <Text style={styles.qrCodeSubtitle}>
+                    Scan this QR code to pay for your {selectedSacrament} booking
+                  </Text>
+                  <View style={styles.paymentAmountContainer}>
+                    <Text style={styles.paymentAmountLabel}>Amount to Pay:</Text>
+                    <Text style={styles.paymentAmount}>
+                      ₱{getSacramentPrice(selectedSacrament).toLocaleString()}
+                    </Text>
+                  </View>
+                  <View style={styles.qrCodeImageWrapper}>
+                    <Image
+                      source={require('../assets/qrCodes/qr-1.png')}
+                      style={styles.qrCodeImage}
+                      resizeMode="contain"
+                    />
+                  </View>
+                </>
+              )}
+
               <View style={styles.bookingDetailsContainer}>
                 <Text style={styles.bookingDetailsTitle}>Booking Details</Text>
                 <View style={styles.bookingDetailRow}>
