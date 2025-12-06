@@ -11,7 +11,7 @@ const CustomPicker = ({
     error,
     placeholder,
     style,
-    disabled = false, // <-- new prop
+    disabled = false,
 }) => {
     const [showModal, setShowModal] = useState(false);
 
@@ -65,7 +65,7 @@ const CustomPicker = ({
                         activeOpacity={1}
                         onPressOut={() => setShowModal(false)}
                     >
-                        <View style={[styles.modalContent, { maxHeight: 180 }]}>
+                        <View style={[styles.modalContent, { maxHeight: 170 }]}>
                             <FlatList
                                 data={options}
                                 keyExtractor={(item) => item.value}
@@ -74,7 +74,7 @@ const CustomPicker = ({
                                         style={{ padding: 5 }}
                                         onPress={() => handleSelect(item.value)}
                                     >
-                                        <Text style={[styles.input, { marginBottom: -10 }]}>{item.label}</Text>
+                                        <Text style={[styles.input, { marginBottom: -10, textAlign: 'center' }]}>{item.label}</Text>
                                     </TouchableOpacity>
                                 )}
                             />

@@ -46,6 +46,17 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedDay, setSelectedDay] = useState(new Date().getDate());
 
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalType, setModalType] = useState('info');
+  const showModal = (message, type = 'info') => {
+    setModalMessage(message);
+    setModalType(type);
+    setShowMessageModal(true);
+  };
+
+  const hideModal = () => setShowMessageModal(false);
+
   const passwordRules = [
     { test: (pw) => pw.length >= 6, message: 'At least 6 characters' },
     { test: (pw) => /[A-Z]/.test(pw), message: 'At least 1 uppercase letter' },
@@ -66,25 +77,25 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
     switch (field) {
       case 'first_name':
         if (!value.trim()) {
-          error = 'First name is required';
+          error = 'First name is required.';
 
         } else if (!/^[a-zA-Z\s\-']+$/.test(value.trim())) {
-          error = 'First name must contain only letters';
+          error = 'First name must contain only letters.';
 
         } else if (value.trim().length < 2) {
-          error = 'First name must be at least 2 characters';
+          error = 'First name must be at least 2 characters.';
         }
         break;
 
       case 'last_name':
         if (!value.trim()) {
-          error = 'Last name is required';
+          error = 'Last name is required.';
 
         } else if (!/^[a-zA-Z\s\-']+$/.test(value.trim())) {
-          error = 'Last name must contain only letters';
+          error = 'Last name must contain only letters.';
 
         } else if (value.trim().length < 2) {
-          error = 'Last name must be at least 2 characters';
+          error = 'Last name must be at least 2 characters.';
         }
         break;
 
@@ -96,60 +107,60 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
 
       case 'contact_number':
         if (!value.trim()) {
-          error = 'Contact number is required';
+          error = 'Contact number is required.';
 
         } else if (!/^[0-9]+$/.test(value)) {
-          error = 'Contact number must contain only digits';
+          error = 'Contact number must contain only digits.';
 
         } else if (value.length !== 11) {
-          error = 'Contact number must be exactly 11 digits';
+          error = 'Contact number must be exactly 11 digits.';
         }
         break;
 
       case 'birthday':
         if (!value.trim()) {
-          error = 'Birthday is required';
+          error = 'Birthday is required.';
 
         } else if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-          error = 'Please use format YYYY-MM-DD';
+          error = 'Please use format YYYY-MM-DD.';
 
         } else {
           const date = new Date(value);
           const today = new Date();
 
           if (isNaN(date.getTime())) {
-            error = 'Please enter a valid date';
+            error = 'Please enter a valid date.';
 
           } else if (date > today) {
-            error = 'Birthday cannot be in the future';
+            error = 'Birthday cannot be in the future.';
           }
         }
         break;
 
       case 'email':
         if (!value.trim()) {
-          error = 'Email is required';
+          error = 'Email is required.';
 
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())) {
-          error = 'Please enter a valid email address';
+          error = 'Please enter a valid email address.';
         }
         break;
 
       case 'password':
         if (!value) {
-          error = 'Password is required';
+          error = 'Password is required.';
 
         } else if (value.length < 6) {
-          error = 'Password must be at least 6 characters long';
+          error = 'Password must be at least 6 characters long.';
         }
         break;
 
       case 'confirmPassword':
         if (!value) {
-          error = 'Please confirm your password';
+          error = 'Please confirm your password.';
 
         } else if (value !== formData.password) {
-          error = 'Passwords do not match';
+          error = 'Passwords do not match.';
         }
         break;
 
@@ -194,7 +205,7 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
       return data.exists;
     } catch (error) {
       console.error('Error checking email:', error);
-      return false; 
+      return false;
     }
   };
 
@@ -214,7 +225,7 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
       return data.exists;
     } catch (error) {
       console.error('Error checking contact:', error);
-      return false; 
+      return false;
     }
   };
 
@@ -232,7 +243,7 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
 
     if (field === 'contact_number' && !error && formData.contact_number.trim()) {
       const contactExists = await checkContactExists(formData.contact_number);
-      
+
       if (contactExists) {
         error = 'This contact number is already registered. Please use a different contact number.';
       }
@@ -333,7 +344,7 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
     setErrors(newErrors);
 
     if (hasErrors) {
-      Alert.alert('Error', 'Please fix the errors in the form');
+      showModal('Please fix the errors in the form', 'error');
       return false;
     }
 
@@ -341,35 +352,39 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
   };
 
   const handleSignUp = async () => {
+    if (!formData.email || !formData.password || !formData.first_name || !formData.last_name) {
+      showModal('Please fill out all required fields.', 'error');
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      showModal('Passwords do not match!', 'error');
+      return;
+    }
+
+    if (!validateForm()) return;
+
+    setLoading(true);
+
+    let user;
     try {
-      if (!formData.email || !formData.password || !formData.first_name || !formData.last_name) {
-        Alert.alert('Error', 'Please fill out all required fields.');
-        return;
-      }
+      const [emailExists, contactExists] = await Promise.all([
+        checkEmailExists(formData.email),
+        checkContactExists(formData.contact_number)
+      ]);
 
-      if (formData.password !== formData.confirmPassword) {
-        Alert.alert('Error', 'Passwords do not match!');
-        return;
-      }
-
-      if (!validateForm()) return;
-
-      setLoading(true);
-
-      const emailExists = await checkEmailExists(formData.email);
       if (emailExists) {
         setErrors(prev => ({ ...prev, email: 'This email is already registered. Please use a different email.' }));
         setTouched(prev => ({ ...prev, email: true }));
-        Alert.alert('Error', 'This email is already registered. Please use a different email.');
+        showModal('This email is already registered.', 'error');
         setLoading(false);
         return;
       }
 
-      const contactExists = await checkContactExists(formData.contact_number);
       if (contactExists) {
         setErrors(prev => ({ ...prev, contact_number: 'This contact number is already registered. Please use a different contact number.' }));
         setTouched(prev => ({ ...prev, contact_number: true }));
-        Alert.alert('Error', 'This contact number is already registered. Please use a different contact number.');
+        showModal('This contact number is already registered.', 'error');
         setLoading(false);
         return;
       }
@@ -379,9 +394,7 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
         formData.email.trim(),
         formData.password
       );
-
-      const user = userCredential.user;
-      const uid = user.uid;
+      user = userCredential.user;
 
       await sendEmailVerification(user);
 
@@ -389,102 +402,60 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
         first_name: formData.first_name.trim(),
         middle_name: formData.middle_name.trim(),
         last_name: formData.last_name.trim(),
-        // gender: formData.gender.trim(),
         contact_number: formData.contact_number.trim(),
-        // civil_status: formData.civil_status.trim(),
         birthday: formData.birthday.trim(),
         email: formData.email.trim(),
         password: formData.password,
-        uid: uid
+        uid: user.uid
       };
 
-      let response;
+      const response = await fetch(`${API_BASE_URL}/createUser`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(signUpData),
+      });
+
       let data;
-      
-      console.log('Attempting to create user in MongoDB via:', `${API_BASE_URL}/createUser`);
-      
-      try {
-        response = await fetch(`${API_BASE_URL}/createUser`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(signUpData),
-        });
-
-        console.log('API Response status:', response.status);
-
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-          data = await response.json();
-          console.log('API Response data:', data);
-
-        } else {
-          const text = await response.text();
-          console.error('Non-JSON response:', text);
-          data = { message: 'Server returned an invalid response' };
-        }
-
-      } catch (fetchError) {
-        console.error('API Network Error:', fetchError);
-
-        try {
-          await deleteUser(user);
-          console.log('Firebase user rolled back due to network error');
-          
-        } catch (deleteError) {
-          console.error('Error deleting Firebase user:', deleteError);
-        }
-
-        Alert.alert(
-          'Network Error', 
-          'Failed to connect to server. Please check your internet connection and try again. Your account was not created.'
-        );
-
-        return;
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        console.error('Non-JSON response:', text);
+        data = { message: 'Server returned an invalid response' };
       }
 
       if (response.ok) {
-        Alert.alert(
-          'Success', 
-          'Account created successfully! A verification email has been sent. Please check your inbox and spam folder.',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                if (onSwitchToLogin) onSwitchToLogin();
-              }
-            }
-          ]
-        );
-
+        showModal('Account created successfully! A verification email has been sent.', 'success');
+        onSwitchToLogin && onSwitchToLogin();
       } else {
-        console.error('MongoDB creation failed:', data.message);
+        const errorMessage = data.message || 'Failed to create account in database. Please try again.';
+        console.error('MongoDB creation failed:', errorMessage);
 
-        let errorMessage = data.message || 'Failed to create account in database. Please try again.';
-        
-        if (data.message && data.message.includes('Email already exists')) {
+        if (user) await deleteUser(user);
+
+        if (errorMessage.includes('Email already exists')) {
           setErrors(prev => ({ ...prev, email: 'This email is already registered. Please use a different email.' }));
           setTouched(prev => ({ ...prev, email: true }));
-          
-        } else if (data.message && data.message.includes('Contact number already exists')) {
+        } else if (errorMessage.includes('Contact number already exists')) {
           setErrors(prev => ({ ...prev, contact_number: 'This contact number is already registered. Please use a different contact number.' }));
           setTouched(prev => ({ ...prev, contact_number: true }));
         }
 
-        try {
-          await deleteUser(user);
-          console.log('Firebase user rolled back due to MongoDB failure');
-
-        } catch (deleteError) {
-          console.error('Error deleting Firebase user:', deleteError);
-        }
-        
-        Alert.alert('Error', errorMessage);
+        showModal(errorMessage, 'error');
       }
 
     } catch (error) {
-      console.error('Signup Error:', error.message);
-      Alert.alert('Error', error.message || 'Network error. Please check your connection and try again.');
-      
+      console.error('Signup Error:', error);
+      if (user) {
+        try {
+          await deleteUser(user);
+          console.log('Firebase user rolled back due to error');
+        } catch (deleteError) {
+          console.error('Error deleting Firebase user:', deleteError);
+        }
+      }
+      showModal(error.message || 'Network error. Please check your connection and try again.', 'error');
     } finally {
       setLoading(false);
     }
@@ -720,7 +691,7 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
 
                   if (touched.confirmPassword || errors.confirmPassword) {
                     let confirmError = '';
-                    
+
                     if (!newData.confirmPassword) {
                       confirmError = 'Please confirm your password';
 
@@ -826,6 +797,34 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      <Modal
+        visible={showMessageModal}
+        transparent
+        animationType="fade"
+        onRequestClose={hideModal}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text
+              style={[
+                styles.modalMessage,
+              ]}
+            >
+              {modalMessage}
+            </Text>
+
+            <TouchableOpacity
+              style={[styles.darkButton, { marginTop: 20 }]}
+              onPress={hideModal}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.darkButtonText}>OK</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
     </KeyboardAvoidingView>
   );
 }
