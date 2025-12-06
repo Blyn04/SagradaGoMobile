@@ -59,6 +59,7 @@ const styles = StyleSheet.create({
   timePickerColumn: {
     flex: 1,
     alignItems: 'center',
+    marginHorizontal: 5,
   },
   timePickerLabel: {
     fontSize: 14,
@@ -87,7 +88,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   timePickerItemTextSelected: {
-    color: '#fff',
+    color: '#141414',
     fontFamily: 'Poppins_700Bold',
   },
   timePickerFooter: {
