@@ -144,6 +144,7 @@ const styles = StyleSheet.create({
   emptyText: {
     marginTop: 16,
     textAlign: 'center',
+    fontFamily: 'Poppins_500Medium',
   },
 
   modalOverlay: {

@@ -528,7 +528,7 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
               <Ionicons name="calendar-outline" size={48} color="#ccc" style={{ marginBottom: 10 }} />
               <Text style={styles.emptyText}>
                 {selectedFilter !== 'all' 
-                  ? `No ${selectedFilter} bookings found` 
+                  ? `No ${selectedFilter} bookings found.` 
                   : 'No bookings yet. Book a sacrament to get started!'}
               </Text>
             </View>
