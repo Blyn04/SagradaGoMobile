@@ -225,17 +225,15 @@ function AppContent() {
             onNavigate={handleNavigate}
           />
         );
-      case 'VolunteerScreen':
-        return (
-          <VolunteerScreen
-            // user={user}
-
-            // Testing
-            user={currentUser}
-            onNavigate={handleNavigate}
-            event={navigationParams.event}
-          />
-        );
+      // VolunteerScreen is now a modal, accessed from EventsScreen only
+      // case 'VolunteerScreen':
+      //   return (
+      //     <VolunteerScreen
+      //       user={currentUser}
+      //       onNavigate={handleNavigate}
+      //       event={navigationParams.event}
+      //     />
+      //   );
       default:
         return (
           // <HomePageScreen user={user} onNavigate={handleNavigate}/>

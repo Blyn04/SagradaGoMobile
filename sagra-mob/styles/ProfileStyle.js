@@ -257,6 +257,116 @@ const styles = StyleSheet.create({
     color: '#424242',
   },
 
+  // Volunteer Log Modal Styles
+  volunteerLogModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+
+  volunteerLogModalContent: {
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '80%',
+    paddingBottom: 20,
+  },
+
+  volunteerLogModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+
+  volunteerLogModalTitle: {
+    fontSize: 22,
+    fontFamily: 'Poppins_700Bold',
+    color: '#424242',
+  },
+
+  volunteerLogModalCloseButton: {
+    padding: 5,
+  },
+
+  volunteerLogScrollView: {
+    padding: 20,
+  },
+
+  volunteerLogItem: {
+    backgroundColor: '#fafafa',
+    borderRadius: 12,
+    padding: 15,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 2,
+  },
+
+  volunteerLogItemHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+
+  volunteerLogItemName: {
+    fontSize: 16,
+    fontFamily: 'Poppins_600SemiBold',
+    color: '#424242',
+  },
+
+  volunteerLogItemRole: {
+    fontSize: 14,
+    fontFamily: 'Poppins_500Medium',
+    color: '#666',
+    marginBottom: 4,
+  },
+
+  volunteerLogItemEvent: {
+    fontSize: 14,
+    fontFamily: 'Poppins_400Regular',
+    color: '#666',
+    marginBottom: 4,
+  },
+
+  volunteerLogItemContact: {
+    fontSize: 14,
+    fontFamily: 'Poppins_400Regular',
+    color: '#666',
+    marginBottom: 4,
+  },
+
+  volunteerLogItemDate: {
+    fontSize: 12,
+    fontFamily: 'Poppins_400Regular',
+    color: '#999',
+    marginTop: 4,
+  },
+
+  volunteerLogEmptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 60,
+  },
+
+  volunteerLogEmptyText: {
+    fontSize: 16,
+    fontFamily: 'Poppins_600SemiBold',
+    color: '#666',
+    marginBottom: 5,
+  },
+
+  volunteerLogEmptySubtext: {
+    fontSize: 14,
+    fontFamily: 'Poppins_400Regular',
+    color: '#999',
+    textAlign: 'center',
+  },
+
 });
 
 export default styles;

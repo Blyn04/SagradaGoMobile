@@ -25,6 +25,7 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
   const [isSaving, setIsSaving] = useState(false);
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
+  const [showVolunteerLogModal, setShowVolunteerLogModal] = useState(false);
 
   const currentUser = authUser || user;
 
@@ -280,6 +281,16 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
           <Ionicons name="chevron-forward" size={20} color="#424242" />
         </TouchableOpacity>
 
+        {/* Volunteer Log Button */}
+        <TouchableOpacity
+          style={styles.bookingHistoryButton}
+          onPress={() => setShowVolunteerLogModal(true)}
+        >
+          <Ionicons name="people-outline" size={20} color="#424242" style={{ marginRight: 8 }} />
+          <Text style={styles.bookingHistoryButtonText}>Volunteer Log</Text>
+          <Ionicons name="chevron-forward" size={20} color="#424242" />
+        </TouchableOpacity>
+
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <View style={[styles.inputContainer, { flex: 1, marginRight: 10 }, errors.first_name && styles.inputContainerError]}>
             <Ionicons name="person-outline" size={20} color="#999" style={styles.inputIcon} />
@@ -448,6 +459,59 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
             </View>
           </View>
         </TouchableOpacity>
+      </Modal>
+
+      {/* Volunteer Log Modal */}
+      <Modal
+        visible={showVolunteerLogModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowVolunteerLogModal(false)}
+      >
+        <View style={styles.volunteerLogModalOverlay}>
+          <View style={styles.volunteerLogModalContent}>
+            <View style={styles.volunteerLogModalHeader}>
+              <Text style={styles.volunteerLogModalTitle}>Volunteer Log</Text>
+              <TouchableOpacity
+                onPress={() => setShowVolunteerLogModal(false)}
+                style={styles.volunteerLogModalCloseButton}
+              >
+                <Ionicons name="close" size={24} color="#424242" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.volunteerLogScrollView}>
+              {currentUser?.volunteers && Array.isArray(currentUser.volunteers) && currentUser.volunteers.length > 0 ? (
+                currentUser.volunteers.map((item, index) => (
+                  <View key={item._id || item.id || index} style={styles.volunteerLogItem}>
+                    <View style={styles.volunteerLogItemHeader}>
+                      <Ionicons name="person-outline" size={20} color="#FFC942" style={{ marginRight: 8 }} />
+                      <Text style={styles.volunteerLogItemName}>{item.name}</Text>
+                    </View>
+                    <Text style={styles.volunteerLogItemRole}>Role: {item.role}</Text>
+                    {item.eventTitle && (
+                      <Text style={styles.volunteerLogItemEvent}>Event: {item.eventTitle}</Text>
+                    )}
+                    <Text style={styles.volunteerLogItemContact}>Contact: {item.contact}</Text>
+                    <Text style={styles.volunteerLogItemDate}>
+                      {item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                      }) : 'N/A'}
+                    </Text>
+                  </View>
+                ))
+              ) : (
+                <View style={styles.volunteerLogEmptyContainer}>
+                  <Ionicons name="people-outline" size={48} color="#ccc" style={{ marginBottom: 10 }} />
+                  <Text style={styles.volunteerLogEmptyText}>No volunteer records yet.</Text>
+                  <Text style={styles.volunteerLogEmptySubtext}>Start volunteering at events to see your log here!</Text>
+                </View>
+              )}
+            </ScrollView>
+          </View>
+        </View>
       </Modal>
     </KeyboardAvoidingView>
   );

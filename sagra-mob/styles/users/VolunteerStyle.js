@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   },
 
   header: {
-    marginTop: 70,
+    marginTop: 10,
     marginBottom: -15,
     alignItems: 'center'
   },
@@ -130,6 +130,49 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins_500Medium',
     color: '#999',
     marginTop: 4,
+  },
+
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+
+  modalContent: {
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    maxHeight: '80%',
+    paddingBottom: 20,
+  },
+
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+
+  modalTitle: {
+    fontSize: 22,
+    fontFamily: 'Poppins_700Bold',
+    color: '#424242',
+  },
+
+  modalCloseButton: {
+    padding: 5,
+  },
+
+  modalScrollView: {
+    paddingHorizontal: 25,
+    paddingTop: 20,
   },
 });
 

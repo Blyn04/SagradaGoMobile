@@ -8,10 +8,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
-  Image
+  Image,
+  Modal
 } from 'react-native';
 import styles from '../../styles/users/VolunteerStyle';
-import CustomNavbar from '../../customs/CustomNavbar';
 import CustomPicker from '../../customs/CustomPicker';
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from '../../contexts/AuthContext';
@@ -24,13 +24,12 @@ const volunteerRoles = [
   { label: 'Others', value: 'Others' },
 ];
 
-export default function VolunteerScreen({ user, onNavigate, event }) {
+export default function VolunteerScreen({ visible, onClose, event }) {
   const { user: authUser, addVolunteer, loading } = useAuth();
   const [name, setName] = useState('');
   const [contact, setContact] = useState('');
   const [role, setRole] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [volunteerLog, setVolunteerLog] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -47,10 +46,6 @@ export default function VolunteerScreen({ user, onNavigate, event }) {
       
       if (authUser.contact_number) {
         setContact(authUser.contact_number);
-      }
-
-      if (authUser.volunteers && Array.isArray(authUser.volunteers)) {
-        setVolunteerLog(authUser.volunteers);
       }
     }
   }, [authUser]);
@@ -80,13 +75,6 @@ export default function VolunteerScreen({ user, onNavigate, event }) {
     const result = await addVolunteer(newVolunteer);
 
     if (result.success) {
-      if (result.user && result.user.volunteers) {
-        setVolunteerLog(result.user.volunteers);
-
-      } else {
-        setVolunteerLog([newVolunteer, ...volunteerLog]);
-      }
-
       Alert.alert(
         'Success',
         `Thank you ${name}! You've signed up as ${role}${event?.title ? ` for ${event.title}` : ''}.`,
@@ -112,6 +100,10 @@ export default function VolunteerScreen({ user, onNavigate, event }) {
                   setContact(authUser.contact_number);
                 }
               }
+
+              if (onClose) {
+                onClose();
+              }
             },
           },
         ]
@@ -126,98 +118,89 @@ export default function VolunteerScreen({ user, onNavigate, event }) {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
+    <Modal
+      visible={visible}
+      transparent={true}
+      animationType="slide"
+      onRequestClose={onClose}
     >
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => onNavigate('EventsScreen')}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.modalOverlay}
       >
-        <Ionicons name="arrow-back-circle-outline" size={32} color="#424242" />
-      </TouchableOpacity>
-
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.header}>
-          <Image
-            source={require('../../assets/sagrada.png')}
-            style={{ width: 100, height: 100, marginBottom: 10, alignSelf: 'center' }}
-            resizeMode="contain"
-          />
-          <Text style={styles.title}>Volunteer</Text>
-          {event && event.title ? (
-            <Text style={styles.subtitle}>Volunteering for: {event.title}</Text>
-          ) : (
-            <Text style={styles.subtitle}>Fill in all necessary information.</Text>
-          )}
-        </View>
-
-        {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
-
-        <View style={styles.inputContainer}>
-          <Ionicons name="person-outline" size={20} color="#757575" style={styles.inputIcon} />
-          <TextInput
-            style={styles.input}
-            placeholder="Name"
-            value={name}
-            onChangeText={setName}
-          />
-        </View>
-
-        <View style={styles.inputContainer}>
-          <Ionicons name="call-outline" size={20} color="#757575" style={styles.inputIcon} />
-          <TextInput
-            style={styles.input}
-            placeholder="Contact"
-            value={contact}
-            onChangeText={setContact}
-            keyboardType="phone-pad"
-          />
-        </View>
-
-        <CustomPicker
-          value={role}
-          onValueChange={setRole}
-          options={volunteerRoles}
-          placeholder="Role"
+        <TouchableOpacity
+          style={styles.modalBackdrop}
+          activeOpacity={1}
+          onPress={onClose}
         />
+        <View style={styles.modalContent} onStartShouldSetResponder={() => true}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Volunteer</Text>
+            <TouchableOpacity
+              onPress={onClose}
+              style={styles.modalCloseButton}
+            >
+              <Ionicons name="close" size={24} color="#424242" />
+            </TouchableOpacity>
+          </View>
 
-        <TouchableOpacity 
-          style={[styles.submitButton, (isSubmitting || loading) && { opacity: 0.6 }]} 
-          onPress={handleSubmit}
-          disabled={isSubmitting || loading}
-        >
-          <Text style={styles.submitButtonText}>
-            {isSubmitting || loading ? 'Saving...' : 'Submit'}
-          </Text>
-        </TouchableOpacity>
+          <ScrollView style={styles.modalScrollView} showsVerticalScrollIndicator={false}>
+            <View style={styles.header}>
+              <Image
+                source={require('../../assets/sagrada.png')}
+                style={{ width: 80, height: 80, marginBottom: 10, alignSelf: 'center' }}
+                resizeMode="contain"
+              />
+              {event && event.title ? (
+                <Text style={styles.subtitle}>Volunteering for: {event.title}</Text>
+              ) : (
+                <Text style={styles.subtitle}>Fill in all necessary information.</Text>
+              )}
+            </View>
 
-        <View style={styles.logContainer}>
-          <Text style={styles.logTitle}>Volunteer Log</Text>
-          {volunteerLog.length === 0 ? (
-            <Text style={styles.emptyText}>No volunteer records yet.</Text>
-          ) : (
-            volunteerLog.map((item, index) => (
-              <View key={item._id || item.id || index} style={styles.logItem}>
-                <Text style={styles.logText}>{item.name} - {item.role}</Text>
-                {item.eventTitle && (
-                  <Text style={styles.logText}>Event: {item.eventTitle}</Text>
-                )}
-                <Text style={styles.logText}>{item.contact}</Text>
-                <Text style={styles.logDate}>
-                  {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A'}
-                </Text>
-              </View>
-            ))
-          )}
+            {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+
+            <View style={styles.inputContainer}>
+              <Ionicons name="person-outline" size={20} color="#757575" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Name"
+                value={name}
+                onChangeText={setName}
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Ionicons name="call-outline" size={20} color="#757575" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Contact"
+                value={contact}
+                onChangeText={setContact}
+                keyboardType="phone-pad"
+              />
+            </View>
+
+            <CustomPicker
+              value={role}
+              onValueChange={setRole}
+              options={volunteerRoles}
+              placeholder="Role"
+            />
+
+            <TouchableOpacity 
+              style={[styles.submitButton, (isSubmitting || loading) && { opacity: 0.6 }]} 
+              onPress={handleSubmit}
+              disabled={isSubmitting || loading}
+            >
+              <Text style={styles.submitButtonText}>
+                {isSubmitting || loading ? 'Saving...' : 'Submit'}
+              </Text>
+            </TouchableOpacity>
+          </ScrollView>
         </View>
-      </ScrollView>
-
-      <CustomNavbar
-        currentScreen="VolunteerScreen"
-        onNavigate={onNavigate}
-      />
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </Modal>
   );
 }
 

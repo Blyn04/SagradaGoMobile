@@ -12,11 +12,14 @@ import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import styles from '../../styles/users/EventsStyle';
 import CustomNavbar from '../../customs/CustomNavbar';
+import VolunteerScreen from './VolunteerScreen';
 import { useAuth } from '../../contexts/AuthContext';
-import { API_BASE_URL } from '../../config/API'; // ✅ use your API.js config
+import { API_BASE_URL } from '../../config/API';
 
 export default function EventsScreen({ onNavigate }) {
   const { user: authUser } = useAuth();
+  const [showVolunteerModal, setShowVolunteerModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   const getUserName = () => {
     if (authUser) {
@@ -112,7 +115,10 @@ export default function EventsScreen({ onNavigate }) {
 
                   <TouchableOpacity
                     style={styles.cardVolunteerBtn}
-                    onPress={() => onNavigate('VolunteerScreen', { event })}
+                    onPress={() => {
+                      setSelectedEvent(event);
+                      setShowVolunteerModal(true);
+                    }}
                   >
                     <Ionicons name="hand-left-outline" size={20} color="#fff" />
                     <Text style={styles.cardVolunteerText}>Volunteer</Text>
@@ -125,6 +131,15 @@ export default function EventsScreen({ onNavigate }) {
       </ScrollView>
 
       <CustomNavbar currentScreen="EventsScreen" onNavigate={onNavigate} />
+
+      <VolunteerScreen
+        visible={showVolunteerModal}
+        onClose={() => {
+          setShowVolunteerModal(false);
+          setSelectedEvent(null);
+        }}
+        event={selectedEvent}
+      />
     </View>
   );
 }
