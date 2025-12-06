@@ -27,7 +27,7 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
       screen: 'DonationsScreen',
       color: '#FFC942',
       hints: ['Help a family', 'Support a cause'],
-      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=80&q=80',
+      image: 'https://lh3.googleusercontent.com/gps-cs-s/AG0ilSwz2-2x2nNm-1Y0wXm4sTfRp-ZOsbo5xWEitpsAKPSuK52hB1ymCI4WykGQaNIhNLJSIrrq4-8XHwjT4ACHKaEXcD8YnT_Po4M9M39IjcjCz4xRQXjkSJ4HVudItvbaPbjGDPdF=s680-w680-h510-rw',
     },
     {
       id: 'announcement',
@@ -36,7 +36,7 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
       screen: 'AnnouncementsScreen',
       color: '#d89d09ff',
       hints: ['News & Updates', 'Community Alerts'],
-      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=80&q=80',
+      image: 'https://lh3.googleusercontent.com/gps-cs-s/AG0ilSwwN85yC8vouPT69D5Kjz8RTchXeOyMbQ-dSmI4ui25OH7_XpPsGW0yWPWjtArSTSwAFuvAk7ODktcYtGTIu0NeFIAY7glt9p6mblqIwQlpy6PziibLSAQiyQK87jhB1iVmPU8=s680-w680-h510-rw',
     },
     {
       id: 'virtualtour',
@@ -45,7 +45,7 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
       screen: 'VirtualTourScreen',
       color: '#705104ff',
       hints: ['Explore Locations', '360° Experience'],
-      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=80&q=80',
+      image: 'https://lh3.googleusercontent.com/gps-cs-s/AG0ilSzL4AseRFcztDs3mM7aDc-Y0GOre4wu4KSxaFDllXAqoeL1e0YYe9qFAOfZImXr5qkFKHVQpLMBgCya3ia4j49QwGxTAC3qtjWiHDc6ljGnA7PEBCt8o9iqcF7fs7NiVG1Tg1lIqQ=s680-w680-h510-rw',
     },
   ];
 
@@ -187,7 +187,7 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
                   {shortcut.image && (
                     <Image
                       source={{ uri: shortcut.image }}
-                      style={{ width: '100%', height: 100, borderRadius: 10, marginBottom: 8 }}
+                      style={{ width: '100%', height: 120, borderRadius: 10, marginBottom: 8 }}
                       resizeMode="cover"
                     />
                   )}
