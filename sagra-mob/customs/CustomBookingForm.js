@@ -304,9 +304,25 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
       formData.append('uid', user.uid);
       formData.append('full_name', fullName);
       formData.append('email', email);
-      formData.append('date', date.toISOString());
-      formData.append('time', time.toISOString());
       formData.append('attendees', pax.toString());
+
+      // Validate date and time
+      if (!date || !time) {
+        Alert.alert('Validation Error', 'Please select both date and time.');
+        setSubmitting(false);
+        return;
+      }
+
+      // Combine date and time properly - use the selected date with the time's hours/minutes
+      const combinedDateTime = new Date(date);
+      combinedDateTime.setHours(time.getHours());
+      combinedDateTime.setMinutes(time.getMinutes());
+      combinedDateTime.setSeconds(0);
+      combinedDateTime.setMilliseconds(0);
+
+      // Append combined date and time for all sacraments
+      formData.append('date', combinedDateTime.toISOString());
+      formData.append('time', combinedDateTime.toISOString());
 
       const docs = uploadedDocuments[selectedSacrament] || {};
       
@@ -368,10 +384,40 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
         }
 
       } else if (selectedSacrament === 'Baptism') {
+        // Validate godparent data before submission
+        if (!baptismForm.main_godfather?.name || !baptismForm.main_godmother?.name) {
+          Alert.alert('Validation Error', 'Please fill in both main godfather and main godmother names.');
+          setSubmitting(false);
+          return;
+        }
+
         formData.append('contact_number', user.contact_number || '');
-        formData.append('main_godfather', JSON.stringify(baptismForm.main_godfather || {}));
-        formData.append('main_godmother', JSON.stringify(baptismForm.main_godmother || {}));
-        formData.append('additional_godparents', JSON.stringify(baptismForm.additional_godparents || []));
+        
+        // Log godparent data before stringifying
+        console.log('Baptism Form Data:');
+        console.log('- main_godfather:', baptismForm.main_godfather);
+        console.log('- main_godmother:', baptismForm.main_godmother);
+        console.log('- additional_godparents:', baptismForm.additional_godparents);
+        
+        // Ensure we're sending valid objects (not empty if validation passed)
+        const mainGodfather = baptismForm.main_godfather || {};
+        const mainGodmother = baptismForm.main_godmother || {};
+        const additionalGodparents = baptismForm.additional_godparents || [];
+        
+        formData.append('main_godfather', JSON.stringify(mainGodfather));
+        formData.append('main_godmother', JSON.stringify(mainGodmother));
+        formData.append('additional_godparents', JSON.stringify(additionalGodparents));
+
+        // Log all form data being sent (except files)
+        console.log('Baptism booking payload:');
+        console.log('- uid:', user.uid);
+        console.log('- full_name:', fullName);
+        console.log('- email:', email);
+        console.log('- original date:', date?.toISOString());
+        console.log('- original time:', time?.toISOString());
+        console.log('- combined dateTime:', combinedDateTime.toISOString());
+        console.log('- attendees:', pax);
+        console.log('- contact_number:', user.contact_number || '');
 
         const baptismDocs = {
           'birth_certificate': 'birth_certificate',
@@ -380,6 +426,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
           'baptismal_seminar': 'baptismal_seminar',
         };
 
+        let docCount = 0;
         Object.keys(docs).forEach((reqId) => {
           const file = docs[reqId];
           if (file && file.uri) {
@@ -391,8 +438,10 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
             });
 
             console.log(`Appending baptism document: ${reqId} -> ${fieldName}`);
+            docCount++;
           }
         });
+        console.log(`Total documents appended: ${docCount}`);
 
         const response = await submitBookingForm(`${API_BASE_URL}/createBaptism`, formData);
         if (response) {
@@ -589,6 +638,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
         method: 'POST',
         body: formData,
         signal: controller.signal,
+        // Do NOT set 'Content-Type' header - let fetch set it automatically with boundary for FormData
       });
       clearTimeout(timeoutId);
 
@@ -608,23 +658,47 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
     }
 
     console.log('Response status:', response.status);
+    console.log('Response headers:', JSON.stringify(Object.fromEntries(response.headers.entries())));
     
     let data;
     try {
       const text = await response.text();
       console.log('Response text:', text);
-      data = JSON.parse(text);
+      
+      // Try to parse as JSON, but handle non-JSON responses gracefully
+      if (text.trim()) {
+        try {
+          data = JSON.parse(text);
+        } catch (parseError) {
+          console.error('Failed to parse response as JSON:', parseError);
+          console.error('Raw response text:', text);
+          throw new Error(`Server returned invalid JSON. Response: ${text.substring(0, 200)}`);
+        }
+      } else {
+        data = { message: 'Empty response from server' };
+      }
 
     } catch (parseError) {
       console.error('Error parsing response:', parseError);
-      throw new Error('Invalid response from server');
+      throw new Error(parseError.message || 'Invalid response from server');
     }
 
     if (response.ok) {
       return data;
       
     } else {
-      throw new Error(data.message || 'Failed to submit booking. Please try again.');
+      // Provide more detailed error message for 500 errors
+      const errorMsg = response.status === 500 
+        ? `Server error (500). ${data.message || 'Please check the server logs for more details.'}\n\nCheck:\n- All required fields are provided\n- File formats are correct\n- Server database connection is working`
+        : (data.message || `Failed to submit booking (Status: ${response.status}). Please try again.`);
+      
+      console.error('Server error response:', {
+        status: response.status,
+        statusText: response.statusText,
+        data: data
+      });
+      
+      throw new Error(errorMsg);
     }
   };
 
