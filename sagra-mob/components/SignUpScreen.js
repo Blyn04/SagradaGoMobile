@@ -77,25 +77,25 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
     switch (field) {
       case 'first_name':
         if (!value.trim()) {
-          error = 'First name is required';
+          error = 'First name is required.';
 
         } else if (!/^[a-zA-Z\s\-']+$/.test(value.trim())) {
-          error = 'First name must contain only letters';
+          error = 'First name must contain only letters.';
 
         } else if (value.trim().length < 2) {
-          error = 'First name must be at least 2 characters';
+          error = 'First name must be at least 2 characters.';
         }
         break;
 
       case 'last_name':
         if (!value.trim()) {
-          error = 'Last name is required';
+          error = 'Last name is required.';
 
         } else if (!/^[a-zA-Z\s\-']+$/.test(value.trim())) {
-          error = 'Last name must contain only letters';
+          error = 'Last name must contain only letters.';
 
         } else if (value.trim().length < 2) {
-          error = 'Last name must be at least 2 characters';
+          error = 'Last name must be at least 2 characters.';
         }
         break;
 
@@ -107,60 +107,60 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
 
       case 'contact_number':
         if (!value.trim()) {
-          error = 'Contact number is required';
+          error = 'Contact number is required.';
 
         } else if (!/^[0-9]+$/.test(value)) {
-          error = 'Contact number must contain only digits';
+          error = 'Contact number must contain only digits.';
 
         } else if (value.length !== 11) {
-          error = 'Contact number must be exactly 11 digits';
+          error = 'Contact number must be exactly 11 digits.';
         }
         break;
 
       case 'birthday':
         if (!value.trim()) {
-          error = 'Birthday is required';
+          error = 'Birthday is required.';
 
         } else if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-          error = 'Please use format YYYY-MM-DD';
+          error = 'Please use format YYYY-MM-DD.';
 
         } else {
           const date = new Date(value);
           const today = new Date();
 
           if (isNaN(date.getTime())) {
-            error = 'Please enter a valid date';
+            error = 'Please enter a valid date.';
 
           } else if (date > today) {
-            error = 'Birthday cannot be in the future';
+            error = 'Birthday cannot be in the future.';
           }
         }
         break;
 
       case 'email':
         if (!value.trim()) {
-          error = 'Email is required';
+          error = 'Email is required.';
 
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())) {
-          error = 'Please enter a valid email address';
+          error = 'Please enter a valid email address.';
         }
         break;
 
       case 'password':
         if (!value) {
-          error = 'Password is required';
+          error = 'Password is required.';
 
         } else if (value.length < 6) {
-          error = 'Password must be at least 6 characters long';
+          error = 'Password must be at least 6 characters long.';
         }
         break;
 
       case 'confirmPassword':
         if (!value) {
-          error = 'Please confirm your password';
+          error = 'Please confirm your password.';
 
         } else if (value !== formData.password) {
-          error = 'Passwords do not match';
+          error = 'Passwords do not match.';
         }
         break;
 
