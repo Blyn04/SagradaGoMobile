@@ -49,15 +49,31 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
     },
   ];
 
+  // const getUserName = () => {
+  //   if (user) {
+  //     const fullName = [user.first_name || '', user.middle_name || '', user.last_name || '']
+  //       .filter(Boolean)
+  //       .join(' ')
+  //       .trim();
+  //     return fullName || 'Guest';
+  //   }
+
+  //   return 'Guest';
+  // };
+
   const getUserName = () => {
     if (user) {
-      const fullName = [user.first_name || '', user.middle_name || '', user.last_name || '']
+      const fullName = [
+        user.first_name || '',
+        user.last_name || ''
+      ]
         .filter(Boolean)
         .join(' ')
         .trim();
+
       return fullName || 'Guest';
     }
-    
+
     return 'Guest';
   };
 
@@ -103,16 +119,16 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
                     user.profilePicture === 'female-avatar'
                       ? require('../assets/avatars/female-avatar.png')
                       : user.profilePicture === 'male-avatar'
-                      ? require('../assets/avatars/male-avatar.png')
-                      : user.profilePicture && user.profilePicture.startsWith('http')
-                      ? { uri: user.profilePicture }
-                      : require('../assets/defaultpfp.jpg')
+                        ? require('../assets/avatars/male-avatar.png')
+                        : user.profilePicture && user.profilePicture.startsWith('http')
+                          ? { uri: user.profilePicture }
+                          : require('../assets/defaultpfp.jpg')
                   }
                   style={{ width: 35, height: 35, borderRadius: 25, marginRight: 15 }}
                 />
                 <View style={{ flexDirection: 'column' }}>
                   <Text style={styles.userName}>
-                    Welcome back, {getUserName()}!
+                    Welcome, {getUserName()}!
                   </Text>
                   <Text style={styles.appName}>SagradaGo</Text>
                 </View>
