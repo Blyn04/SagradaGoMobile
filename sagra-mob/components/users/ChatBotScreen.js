@@ -306,9 +306,11 @@ export default function ChatBotScreen({ user, onNavigate }) {
 
                   <Text
                     style={{
-                      fontSize: 10,
+                      fontSize: 12,
                       marginTop: 4,
                       alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start',
+                      color: msg.sender === 'user' ? '#fff' : '#141414',
+                      fontFamily: 'Poppins_500Medium',
                     }}
                   >
                     {msg.timeSent}

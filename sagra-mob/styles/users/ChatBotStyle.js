@@ -43,10 +43,10 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 18,
     marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowColor: '#8a8a8aff',
+    shadowOffset: { width: 3, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowRadius: 10,
     elevation: 2,
   },
 
