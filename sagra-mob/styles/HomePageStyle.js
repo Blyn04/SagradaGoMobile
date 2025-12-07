@@ -207,6 +207,13 @@ const styles = StyleSheet.create({
     color: '#444',
     lineHeight: 20,
   },
+  sectionSelector: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 20,
+    marginBottom: 20,
+  },
 });
 
 export default styles;
