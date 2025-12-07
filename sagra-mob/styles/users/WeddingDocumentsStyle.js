@@ -31,9 +31,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
     borderRadius: 10,
     paddingHorizontal: 15,
-    paddingVertical: 12,
+    paddingVertical: 0,
     borderWidth: 1,
     borderColor: '#e0e0e0',
+    height: 50,
   },
   textInput: {
     flex: 1,
