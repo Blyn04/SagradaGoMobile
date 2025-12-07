@@ -10,7 +10,7 @@ import styles from '../styles/CalendarStyle';
 
 export default function CustomCalendar({
   selectedDate = null,
-  onDateSelect = () => {},
+  onDateSelect = () => { },
   minDate = null,
   maxDate = null,
   markedDates = [],
