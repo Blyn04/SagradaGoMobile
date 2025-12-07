@@ -3,12 +3,19 @@ import { View, Text, TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import styles from '../styles/NavbarStyle';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function CustomNavbar({ currentScreen, onNavigate }) {
+  const { user: authUser } = useAuth();
   const navItems = [
     { id: 'home', label: 'Home', screen: 'HomePageScreen', icon: 'home' },
     { id: 'events', label: 'Events', screen: 'EventsScreen', icon: 'calendar-month' },
-    { id: 'booking', label: 'Booking', screen: 'BookingScreen', icon: 'book-open-page-variant' },
+    { 
+      id: 'booking', 
+      label: 'Booking', 
+      screen: authUser?.is_priest ? 'BookingHistoryScreen' : 'BookingScreen', 
+      icon: 'book-open-page-variant' 
+    },
     { id: 'virtualtour', label: 'Virtual Tour', screen: 'VirtualTourScreen', icon: 'virtual-reality' },
     { id: 'profile', label: 'Profile', screen: 'ProfileScreen', icon: 'account-circle' },
   ];
