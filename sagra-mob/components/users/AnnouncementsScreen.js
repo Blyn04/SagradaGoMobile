@@ -10,6 +10,7 @@ import {
   Modal,
   Pressable,
   Animated,
+  Image
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
@@ -133,11 +134,17 @@ export default function AnnouncementsScreen({ onNavigate }) {
 
   return (
     <View style={styles.container}>
-      <View style={{ padding: 20 }}>
+      <View style={{ padding: 20, paddingTop: 30, }}>
         <View style={styles.header}>
-          <Text style={styles.greeting}>Hi, {getUserName()} 👋</Text>
-          <Text style={styles.title}>Announcements</Text>
-          <Text style={styles.subtitle}>Stay updated with our latest news!</Text>
+          <Image
+            source={require('../../assets/sagrada.png')}
+            style={{ width: 60, height: 60, alignSelf: 'center' }}
+            resizeMode="contain"
+          />
+          <View style={{ flexDirection: 'column' }}>
+            <Text style={styles.title}>Announcements</Text>
+            <Text style={styles.subtitle}>Stay updated with our latest news!</Text>
+          </View>
         </View>
 
         <View style={styles.searchContainer}>
