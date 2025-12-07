@@ -24,13 +24,13 @@ export default function EventsScreen({ onNavigate }) {
   const getUserName = () => {
     if (authUser) {
       const fullName = [
-        authUser.first_name || '',
-        authUser.middle_name || '',
-        authUser.last_name || ''
-      ].filter(Boolean).join(' ').trim();
+        authUser?.first_name?.trim(),
+        authUser?.middle_name?.trim(),
+        authUser?.last_name?.trim()
+      ].filter(Boolean).join(' ');
       return fullName || 'Guest';
     }
-    
+
     return 'Guest';
   };
 
