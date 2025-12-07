@@ -28,6 +28,11 @@ export default function EventsScreen({ onNavigate }) {
         authUser?.middle_name?.trim(),
         authUser?.last_name?.trim()
       ].filter(Boolean).join(' ');
+
+      if (authUser.is_priest) {
+        return `Father ${fullName || ''}`.trim();
+      }
+      
       return fullName || 'Guest';
     }
 
@@ -113,16 +118,19 @@ export default function EventsScreen({ onNavigate }) {
                     <Text style={styles.cardInfo}>{event.location}</Text>
                   </View>
 
-                  <TouchableOpacity
-                    style={styles.cardVolunteerBtn}
-                    onPress={() => {
-                      setSelectedEvent(event);
-                      setShowVolunteerModal(true);
-                    }}
-                  >
-                    <Ionicons name="hand-left-outline" size={20} color="#fff" />
-                    <Text style={styles.cardVolunteerText}>Volunteer</Text>
-                  </TouchableOpacity>
+                  {!authUser?.is_priest && (
+                    <TouchableOpacity
+                      style={styles.cardVolunteerBtn}
+                      onPress={() => {
+                        setSelectedEvent(event);
+                        setShowVolunteerModal(true);
+                      }}
+                    >
+                      <Ionicons name="hand-left-outline" size={20} color="#fff" />
+                      <Text style={styles.cardVolunteerText}>Volunteer</Text>
+                    </TouchableOpacity>
+                  )}
+
                 </View>
               </View>
             ))}
