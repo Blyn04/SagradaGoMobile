@@ -39,6 +39,7 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
   const [allBookings, setAllBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [proofOfPaymentUrl, setProofOfPaymentUrl] = useState(null);
 
   const fetchAllBookings = async (isRefresh = false) => {
     if (!user?.uid) {
@@ -78,7 +79,9 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
                 contact_number: booking.contact_number || '',
                 priest_name: booking.priest_name || null,
                 notes: booking.medical_condition || '',
-
+                payment_method: booking.payment_method,
+                amount: booking.amount,
+                proof_of_payment: booking.proof_of_payment,
                 full_name: booking.full_name || booking.candidate_name || booking.deceased_name || 
                           (booking.groom_name && booking.bride_name ? `${booking.groom_name} & ${booking.bride_name}` : null),
               });
@@ -124,6 +127,9 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
               contact_number: wedding.contact_number,
               priest_name: wedding.priest_name || null,
               notes: '',
+              payment_method: wedding.payment_method,
+              amount: wedding.amount,
+              proof_of_payment: wedding.proof_of_payment,
             });
           });
         }
@@ -155,6 +161,9 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
               contact_number: baptism.contact_number,
               priest_name: baptism.priest_name || null,
               notes: '',
+              payment_method: baptism.payment_method,
+              amount: baptism.amount,
+              proof_of_payment: baptism.proof_of_payment,
             });
           });
         }
@@ -186,6 +195,9 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
               contact_number: burial.contact_number,
               priest_name: burial.priest_name || null,
               notes: '',
+              payment_method: burial.payment_method,
+              amount: burial.amount,
+              proof_of_payment: burial.proof_of_payment,
             });
           });
         }
@@ -217,6 +229,9 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
               contact_number: communion.contact_number,
               priest_name: communion.priest_name || null,
               notes: '',
+              payment_method: communion.payment_method,
+              amount: communion.amount,
+              proof_of_payment: communion.proof_of_payment,
             });
           });
         }
@@ -248,6 +263,9 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
               contact_number: anointing.contact_number,
               priest_name: anointing.priest_name || null,
               notes: anointing.medical_condition || '',
+              payment_method: anointing.payment_method,
+              amount: anointing.amount,
+              proof_of_payment: anointing.proof_of_payment,
             });
           });
         }
@@ -279,6 +297,9 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
               contact_number: confirmation.contact_number,
               priest_name: confirmation.priest_name || null,
               notes: '',
+              payment_method: confirmation.payment_method,
+              amount: confirmation.amount,
+              proof_of_payment: confirmation.proof_of_payment,
             });
           });
         }
@@ -309,6 +330,9 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
             contact_number: confession.contact_number || '',
             priest_name: confession.priest_name || null,
             notes: '',
+            payment_method: confession.payment_method,
+            amount: confession.amount,
+            proof_of_payment: confession.proof_of_payment,
           });
         });
       }
@@ -412,14 +436,57 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
     return timeString;
   };
 
-  const handleCardPress = (booking) => {
+  const handleCardPress = async (booking) => {
+    console.log('Selected booking - Full object:', JSON.stringify(booking, null, 2));
+    console.log('Selected booking - Payment info:', {
+      payment_method: booking.payment_method,
+      payment_method_type: typeof booking.payment_method,
+      amount: booking.amount,
+      amount_type: typeof booking.amount,
+      proof_of_payment: booking.proof_of_payment,
+      proof_of_payment_type: typeof booking.proof_of_payment,
+    });
+    
     setSelectedBooking(booking);
     setIsModalVisible(true);
+
+    setProofOfPaymentUrl(null);
+    
+    if (booking.payment_method === 'gcash' && booking.proof_of_payment) {
+      console.log('Fetching proof of payment for GCash booking:', booking.proof_of_payment);
+
+      if (booking.proof_of_payment.startsWith('http')) {
+        console.log('Proof of payment is already a URL:', booking.proof_of_payment);
+        setProofOfPaymentUrl(booking.proof_of_payment);
+
+      } else {
+
+        try {
+          console.log('Fetching signed URL for path:', booking.proof_of_payment);
+          const response = await fetch(`${API_BASE_URL}/getProofOfPayment?path=${encodeURIComponent(booking.proof_of_payment)}`);
+          const data = await response.json();
+          console.log('Proof of payment response:', data);
+          if (data.url) {
+            setProofOfPaymentUrl(data.url);
+
+          } else {
+            console.warn('No URL in response:', data);
+          }
+
+        } catch (error) {
+          console.error('Error fetching proof of payment URL:', error);
+        }
+      }
+
+    } else {
+      console.log('Not fetching proof of payment - payment_method:', booking.payment_method, 'proof_of_payment:', booking.proof_of_payment);
+    }
   };
 
   const closeModal = () => {
     setIsModalVisible(false);
     setSelectedBooking(null);
+    setProofOfPaymentUrl(null);
   };
 
   const handleCancelBooking = () => {
@@ -669,6 +736,16 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
                     { label: "Transaction ID", value: selectedBooking.transaction_id || selectedBooking.id, icon: "receipt-outline" },
                     { label: "Booked on", value: formatDate(selectedBooking.bookingDate), icon: "calendar-outline" },
                     ...(selectedBooking.priest_name && !user?.is_priest ? [{ label: "Assigned Priest", value: selectedBooking.priest_name, icon: "person-outline" }] : []),
+                    ...(selectedBooking.payment_method ? [{ 
+                      label: "Payment Method", 
+                      value: selectedBooking.payment_method === 'gcash' ? 'GCash' : (selectedBooking.payment_method === 'in_person' ? 'In-Person Payment' : selectedBooking.payment_method), 
+                      icon: selectedBooking.payment_method === 'gcash' ? "phone-portrait-outline" : "person-outline" 
+                    }] : []),
+                    ...(selectedBooking.amount && parseFloat(selectedBooking.amount) > 0 ? [{ 
+                      label: "Amount", 
+                      value: `₱${parseFloat(selectedBooking.amount).toLocaleString()}`, 
+                      icon: "wallet-outline" 
+                    }] : []),
                     ...(selectedBooking.notes ? [{ label: "Notes", value: selectedBooking.notes, icon: "document-text-outline" }] : []),
                   ].map((item, idx) => (
                     <React.Fragment key={idx}>
@@ -687,6 +764,34 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
                     <View style={styles.modalNotesContainer}>
                       <Text style={styles.modalLabel}>Notes</Text>
                       <Text style={styles.modalNotes}>{selectedBooking.notes}</Text>
+                    </View>
+                  )}
+
+                  {/* Proof of Payment Section - Show if payment method is gcash */}
+                  {selectedBooking.payment_method === 'gcash' && (
+                    <View style={styles.modalNotesContainer}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+                        <Ionicons name="receipt-outline" size={18} color="#666" style={{ marginRight: 6 }} />
+                        <Text style={styles.modalLabel}>Proof of Payment</Text>
+                      </View>
+                      {proofOfPaymentUrl ? (
+                        <Image
+                          source={{ uri: proofOfPaymentUrl }}
+                          style={styles.proofOfPaymentImage}
+                          resizeMode="contain"
+                          onError={(error) => {
+                            console.error('Error loading proof of payment image:', error);
+                            setProofOfPaymentUrl(null);
+                          }}
+                        />
+                      ) : selectedBooking.proof_of_payment ? (
+                        <View style={{ padding: 20, alignItems: 'center' }}>
+                          <ActivityIndicator size="small" color="#666" />
+                          <Text style={[styles.modalNotes, { marginTop: 10 }]}>Loading proof of payment...</Text>
+                        </View>
+                      ) : (
+                        <Text style={styles.modalNotes}>No proof of payment uploaded</Text>
+                      )}
                     </View>
                   )}
                 </ScrollView>
