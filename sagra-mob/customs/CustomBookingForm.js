@@ -24,6 +24,14 @@ import { sacramentRequirements } from '../utils/sacramentRequirements';
 import { API_BASE_URL } from '../config/API';
 import { Platform } from 'react-native';
 
+let ImagePicker = null;
+try {
+  ImagePicker = require('expo-image-picker');
+
+} catch (e) {
+  console.warn('expo-image-picker not available');
+}
+
 const getMinimumBookingDate = (sacrament) => {
   const dates = {
     'Wedding': '2025-10-17',
@@ -75,6 +83,9 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [showQRCode, setShowQRCode] = useState(false);
+  const [showPaymentMethod, setShowPaymentMethod] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState(null); 
+  const [proofOfPayment, setProofOfPayment] = useState(null);
   const [isUploadModalVisible, setIsUploadModalVisible] = useState(false);
   const [uploadedDocuments, setUploadedDocuments] = useState({});
   const [submitting, setSubmitting] = useState(false);
@@ -180,6 +191,9 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
 
     setErrorMessage('');
     setShowQRCode(false);
+    setShowPaymentMethod(false);
+    setPaymentMethod(null);
+    setProofOfPayment(null);
     setUploadedDocuments({});
   };
 
@@ -290,12 +304,72 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
       }
     }
 
-    setShowQRCode(true);
+    if (selectedSacrament === 'Confession' || selectedSacrament === 'Anointing of the Sick') {
+      setPaymentMethod('in_person');
+      handleSubmitBooking('in_person');
+      return;
+    }
+
+    setShowPaymentMethod(true);
   };
 
-  const handleSubmitBooking = async () => {
+  const handlePaymentMethodSelect = (method) => {
+    setPaymentMethod(method);
+    if (method === 'gcash') {
+      setShowPaymentMethod(false);
+      setShowQRCode(true);
+
+    } else if (method === 'in_person') {
+      setShowPaymentMethod(false);
+      handleSubmitBooking('in_person');
+    }
+  };
+
+  const pickProofOfPayment = async () => {
+    if (!ImagePicker) {
+      Alert.alert(
+        'Image Picker Not Available',
+        'Please install expo-image-picker: npx expo install expo-image-picker'
+      );
+      return;
+    }
+
+    try {
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission needed', 'Please grant camera roll permissions to upload proof of payment.');
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        setProofOfPayment({
+          ...result.assets[0],
+          fileName: result.assets[0].uri.split('/').pop() || 'proof_of_payment.jpg',
+        });
+      }
+      
+    } catch (error) {
+      Alert.alert('Error', 'Failed to pick image. Please try again.');
+      console.error('Image picker error:', error);
+    }
+  };
+
+  const handleSubmitBooking = async (overridePaymentMethod = null) => {
     if (!user?.uid) {
       Alert.alert('Error', 'User not found. Please log in again.');
+      return;
+    }
+
+    const currentPaymentMethod = overridePaymentMethod || paymentMethod || 'in_person';
+
+    if (currentPaymentMethod === 'gcash' && !proofOfPayment) {
+      Alert.alert('Proof of Payment Required', 'Please upload proof of payment before submitting your booking.');
       return;
     }
 
@@ -309,23 +383,29 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
       formData.append('email', email);
       formData.append('attendees', pax.toString());
 
-      // Validate date and time
       if (!date || !time) {
         Alert.alert('Validation Error', 'Please select both date and time.');
         setSubmitting(false);
         return;
       }
 
-      // Combine date and time properly - use the selected date with the time's hours/minutes
       const combinedDateTime = new Date(date);
       combinedDateTime.setHours(time.getHours());
       combinedDateTime.setMinutes(time.getMinutes());
       combinedDateTime.setSeconds(0);
       combinedDateTime.setMilliseconds(0);
 
-      // Append combined date and time for all sacraments
       formData.append('date', combinedDateTime.toISOString());
       formData.append('time', combinedDateTime.toISOString());
+      
+      formData.append('payment_method', currentPaymentMethod);
+      if (currentPaymentMethod === 'gcash' && proofOfPayment && proofOfPayment.uri) {
+        formData.append('proof_of_payment', {
+          uri: proofOfPayment.uri,
+          type: proofOfPayment.mimeType || proofOfPayment.type || 'image/jpeg',
+          name: proofOfPayment.fileName || proofOfPayment.name || 'proof_of_payment.jpg',
+        });
+      }
 
       const docs = uploadedDocuments[selectedSacrament] || {};
       
@@ -941,6 +1021,85 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
         onRemove={handleDocumentRemove}
       />
 
+      {/* Payment Method Selection Modal */}
+      <Modal
+        visible={showPaymentMethod}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowPaymentMethod(false)}
+      >
+        <View style={styles.qrCodeModalOverlay}>
+          <View style={styles.qrCodeModalContent}>
+            <View style={styles.qrCodeHeader}>
+              <Text style={styles.qrCodeTitle}>Select Payment Method</Text>
+              <TouchableOpacity onPress={() => setShowPaymentMethod(false)}>
+                <Ionicons name="close" size={28} color="#333" />
+              </TouchableOpacity>
+            </View>
+            
+            <View style={styles.qrCodeContainer}>
+              <Text style={styles.qrCodeSubtitle}>
+                Choose your preferred payment method for your {selectedSacrament} booking
+              </Text>
+              
+              {selectedSacrament !== 'Confession' && selectedSacrament !== 'Anointing of the Sick' && (
+                <View style={styles.paymentAmountContainer}>
+                  <Text style={styles.paymentAmountLabel}>Amount to Pay:</Text>
+                  <Text style={styles.paymentAmount}>
+                    ₱{getSacramentPrice(selectedSacrament).toLocaleString()}
+                  </Text>
+                </View>
+              )}
+
+              <View style={styles.paymentMethodContainer}>
+                <TouchableOpacity
+                  style={[
+                    styles.paymentMethodOption,
+                    paymentMethod === 'gcash' && styles.paymentMethodOptionSelected
+                  ]}
+                  onPress={() => handlePaymentMethodSelect('gcash')}
+                >
+                  <View style={styles.paymentMethodRadio}>
+                    {paymentMethod === 'gcash' && <View style={styles.paymentMethodRadioSelected} />}
+                  </View>
+                  <Ionicons name="phone-portrait-outline" size={24} color={paymentMethod === 'gcash' ? '#4CAF50' : '#666'} />
+                  <View style={styles.paymentMethodTextContainer}>
+                    <Text style={[styles.paymentMethodText, paymentMethod === 'gcash' && styles.paymentMethodTextSelected]}>
+                      GCash
+                    </Text>
+                    <Text style={styles.paymentMethodSubtext}>
+                      Pay via GCash QR code
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.paymentMethodOption,
+                    paymentMethod === 'in_person' && styles.paymentMethodOptionSelected
+                  ]}
+                  onPress={() => handlePaymentMethodSelect('in_person')}
+                >
+                  <View style={styles.paymentMethodRadio}>
+                    {paymentMethod === 'in_person' && <View style={styles.paymentMethodRadioSelected} />}
+                  </View>
+                  <Ionicons name="person-outline" size={24} color={paymentMethod === 'in_person' ? '#4CAF50' : '#666'} />
+                  <View style={styles.paymentMethodTextContainer}>
+                    <Text style={[styles.paymentMethodText, paymentMethod === 'in_person' && styles.paymentMethodTextSelected]}>
+                      In-Person Payment
+                    </Text>
+                    <Text style={styles.paymentMethodSubtext}>
+                      Pay at the church office
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* QR Code Modal */}
       <Modal
         visible={showQRCode}
         transparent={true}
@@ -950,79 +1109,114 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
         <View style={styles.qrCodeModalOverlay}>
           <View style={styles.qrCodeModalContent}>
             <View style={styles.qrCodeHeader}>
-              <Text style={styles.qrCodeTitle}>Payment QR Code</Text>
+              <Text style={styles.qrCodeTitle}>GCash Payment</Text>
               <TouchableOpacity onPress={() => {
                 setShowQRCode(false);
-                handleClose();
+                setShowPaymentMethod(true);
               }}>
                 <Ionicons name="close" size={28} color="#333" />
               </TouchableOpacity>
             </View>
             
-            <View style={styles.qrCodeContainer}>
-              {selectedSacrament !== 'Confession' && selectedSacrament !== 'Anointing of the Sick' && (
-                <>
-                  <Text style={styles.qrCodeSubtitle}>
-                    Scan this QR code to pay for your {selectedSacrament} booking
+            <ScrollView style={styles.qrCodeScrollView} showsVerticalScrollIndicator={false}>
+              <View style={styles.qrCodeContainer}>
+                {selectedSacrament !== 'Confession' && selectedSacrament !== 'Anointing of the Sick' && (
+                  <>
+                    <Text style={styles.qrCodeSubtitle}>
+                      Scan this QR code to pay for your {selectedSacrament} booking
+                    </Text>
+                    <View style={styles.paymentAmountContainer}>
+                      <Text style={styles.paymentAmountLabel}>Amount to Pay:</Text>
+                      <Text style={styles.paymentAmount}>
+                        ₱{getSacramentPrice(selectedSacrament).toLocaleString()}
+                      </Text>
+                    </View>
+                    <View style={styles.qrCodeImageWrapper}>
+                      <Image
+                        source={require('../assets/qrCodes/qr-1.png')}
+                        style={styles.qrCodeImage}
+                        resizeMode="contain"
+                      />
+                    </View>
+                  </>
+                )}
+
+                {/* Proof of Payment Upload Section */}
+                <View style={styles.proofOfPaymentContainer}>
+                  <Text style={styles.proofOfPaymentTitle}>Upload Proof of Payment</Text>
+                  <Text style={styles.proofOfPaymentSubtext}>
+                    Please upload a screenshot or photo of your GCash payment confirmation
                   </Text>
-                  <View style={styles.paymentAmountContainer}>
-                    <Text style={styles.paymentAmountLabel}>Amount to Pay:</Text>
-                    <Text style={styles.paymentAmount}>
-                      ₱{getSacramentPrice(selectedSacrament).toLocaleString()}
+                  
+                  {proofOfPayment ? (
+                    <View style={styles.proofOfPaymentImageContainer}>
+                      <Image
+                        source={{ uri: proofOfPayment.uri }}
+                        style={styles.proofOfPaymentImage}
+                        resizeMode="cover"
+                      />
+                      <TouchableOpacity
+                        style={styles.removeProofButton}
+                        onPress={() => setProofOfPayment(null)}
+                      >
+                        <Ionicons name="close-circle" size={24} color="#ff4444" />
+                      </TouchableOpacity>
+                    </View>
+                  ) : (
+                    <TouchableOpacity
+                      style={styles.uploadProofButton}
+                      onPress={pickProofOfPayment}
+                    >
+                      <Ionicons name="cloud-upload-outline" size={24} color="#666" />
+                      <Text style={styles.uploadProofButtonText}>Upload Proof of Payment</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+
+                <View style={styles.bookingDetailsContainer}>
+                  <Text style={styles.bookingDetailsTitle}>Booking Details</Text>
+                  <View style={styles.bookingDetailRow}>
+                    <Ionicons name="calendar-outline" size={18} color="#666" />
+                    <Text style={styles.bookingDetailText}>
+                      {date ? date.toLocaleDateString() : 'N/A'}
                     </Text>
                   </View>
-                  <View style={styles.qrCodeImageWrapper}>
-                    <Image
-                      source={require('../assets/qrCodes/qr-1.png')}
-                      style={styles.qrCodeImage}
-                      resizeMode="contain"
-                    />
+                  <View style={styles.bookingDetailRow}>
+                    <Ionicons name="time-outline" size={18} color="#666" />
+                    <Text style={styles.bookingDetailText}>
+                      {time ? (() => {
+                        const hours = time.getHours();
+                        const minutes = time.getMinutes();
+                        const hour12 = hours > 12 ? hours - 12 : (hours === 0 ? 12 : hours);
+                        const period = hours >= 12 ? 'PM' : 'AM';
+                        return `${hour12.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${period}`;
+                      })() : 'N/A'}
+                    </Text>
                   </View>
-                </>
-              )}
-
-              <View style={styles.bookingDetailsContainer}>
-                <Text style={styles.bookingDetailsTitle}>Booking Details</Text>
-                <View style={styles.bookingDetailRow}>
-                  <Ionicons name="calendar-outline" size={18} color="#666" />
-                  <Text style={styles.bookingDetailText}>
-                    {date ? date.toLocaleDateString() : 'N/A'}
-                  </Text>
-                </View>
-                <View style={styles.bookingDetailRow}>
-                  <Ionicons name="time-outline" size={18} color="#666" />
-                  <Text style={styles.bookingDetailText}>
-                    {time ? (() => {
-                      const hours = time.getHours();
-                      const minutes = time.getMinutes();
-                      const hour12 = hours > 12 ? hours - 12 : (hours === 0 ? 12 : hours);
-                      const period = hours >= 12 ? 'PM' : 'AM';
-                      return `${hour12.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${period}`;
-                    })() : 'N/A'}
-                  </Text>
-                </View>
-                <View style={styles.bookingDetailRow}>
-                  <Ionicons name="people-outline" size={18} color="#666" />
-                  <Text style={styles.bookingDetailText}>
-                    {pax || 'N/A'} {pax ? 'people' : ''}
-                  </Text>
+                  <View style={styles.bookingDetailRow}>
+                    <Ionicons name="people-outline" size={18} color="#666" />
+                    <Text style={styles.bookingDetailText}>
+                      {pax || 'N/A'} {pax ? 'people' : ''}
+                    </Text>
+                  </View>
                 </View>
               </View>
-            </View>
+            </ScrollView>
 
             <View style={{ flexDirection: 'row', gap: 10, marginTop: 20 }}>
               <TouchableOpacity
                 style={[styles.qrCodeCloseButton, { flex: 1, backgroundColor: '#e0e0e0' }]}
                 onPress={() => {
                   setShowQRCode(false);
+                  setShowPaymentMethod(true);
                 }}
               >
-                <Text style={[styles.qrCodeCloseButtonText, { color: '#666' }]}>Cancel</Text>
+                <Text style={[styles.qrCodeCloseButtonText, { color: '#666' }]}>Back</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.qrCodeCloseButton, { flex: 1 }]}
                 onPress={handleSubmitBooking}
-                disabled={submitting}
+                disabled={submitting || (paymentMethod === 'gcash' && !proofOfPayment)}
               >
                 {submitting ? (
                   <ActivityIndicator size="small" color="#fff" />
