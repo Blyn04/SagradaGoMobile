@@ -497,7 +497,7 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
         horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.filterContainer}
-        contentContainerStyle={{ paddingRight: 20, marginHorizontal: 20, gap: 10, height: 40, marginTop: 20 }}
+        contentContainerStyle={{ paddingRight: 20, marginHorizontal: 20, gap: 10, height: 40, marginTop: 20, marginBottom: 0}}
       >
         {['all', 'approved', 'pending', 'rejected', 'cancelled'].map((filter) => (
           <TouchableOpacity
