@@ -54,6 +54,53 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
     try {
       const bookings = [];
 
+      if (user?.is_priest) {
+        try {
+          const response = await fetch(`${API_BASE_URL}/getPriestSchedule`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ priest_id: user.uid }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.bookings) {
+            data.bookings.forEach(booking => {
+              bookings.push({
+                id: booking._id || booking.transaction_id,
+                transaction_id: booking.transaction_id,
+                sacrament: booking.sacrament || booking.type,
+                date: booking.date,
+                time: booking.time,
+                status: mapStatus(booking.status),
+                bookingDate: booking.createdAt || booking.date,
+                attendees: booking.attendees || 0,
+                contact_number: booking.contact_number || '',
+                priest_name: booking.priest_name || null,
+                notes: booking.medical_condition || '',
+
+                full_name: booking.full_name || booking.candidate_name || booking.deceased_name || 
+                          (booking.groom_name && booking.bride_name ? `${booking.groom_name} & ${booking.bride_name}` : null),
+              });
+            });
+          }
+
+        } catch (error) {
+          console.error('Error fetching priest schedule:', error);
+        }
+
+        bookings.sort((a, b) => {
+          const dateA = new Date(a.bookingDate || a.date);
+          const dateB = new Date(b.bookingDate || b.date);
+          return dateB - dateA;
+        });
+
+        setAllBookings(bookings);
+        setLoading(false);
+        setRefreshing(false);
+        return;
+      }
+
       try {
         const weddingResponse = await fetch(`${API_BASE_URL}/getUserWeddings`, {
           method: 'POST',
@@ -435,8 +482,15 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
           style={{ width: 80, height: 80, marginBottom: 10, alignSelf: 'center' }}
           resizeMode="contain"
         />
-        <Text style={styles.title}>Booking History</Text>
-        <Text style={styles.subtitle}>View your past and upcoming bookings</Text>
+        <Text style={styles.title}>
+          {user?.is_priest ? 'My Schedule' : 'Booking History'}
+        </Text>
+
+        <Text style={styles.subtitle}>
+          {user?.is_priest 
+            ? 'View your assigned bookings and schedule' 
+            : 'View your past and upcoming bookings'}
+        </Text>
       </View>
 
       <ScrollView
@@ -528,11 +582,30 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
                   <Text style={styles.detailText}>{formatTime(booking.time)}</Text>
                 </View>
               </View>
-              {booking.priest_name && booking.status === 'approved' && (
+
+              {booking.full_name && user?.is_priest && (
+                <View style={{ marginTop: 8, flexDirection: 'row', alignItems: 'center' }}>
+                  <Ionicons name="person-outline" size={16} color="#666" style={{ marginRight: 6 }} />
+                  <Text style={{ fontSize: 13, color: '#666', fontFamily: 'Poppins_500Medium' }}>
+                    {booking.full_name}
+                  </Text>
+                </View>
+              )}
+
+              {booking.priest_name && !user?.is_priest && booking.status === 'approved' && (
                 <View style={{ marginTop: 8, flexDirection: 'row', alignItems: 'center' }}>
                   <Ionicons name="person-outline" size={16} color="#4CAF50" style={{ marginRight: 6 }} />
                   <Text style={{ fontSize: 13, color: '#4CAF50', fontFamily: 'Poppins_500Medium' }}>
                     Priest: {booking.priest_name}
+                  </Text>
+                </View>
+              )}
+              
+              {booking.contact_number && user?.is_priest && (
+                <View style={{ marginTop: 6, flexDirection: 'row', alignItems: 'center' }}>
+                  <Ionicons name="call-outline" size={16} color="#666" style={{ marginRight: 6 }} />
+                  <Text style={{ fontSize: 13, color: '#666', fontFamily: 'Poppins_400Regular' }}>
+                    {booking.contact_number}
                   </Text>
                 </View>
               )}
@@ -544,7 +617,9 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
             <Text style={styles.emptyText}>
               {selectedFilter !== 'all'
                 ? `No ${selectedFilter} bookings found.`
-                : 'No bookings yet. Book a sacrament to get started!'}
+                : user?.is_priest 
+                  ? 'No bookings assigned to you yet.' 
+                  : 'No bookings yet. Book a sacrament to get started!'}
             </Text>
           </View>
         )}
@@ -588,10 +663,13 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
                     { label: "Status", value: selectedBooking.status.charAt(0).toUpperCase() + selectedBooking.status.slice(1) },
                     { label: "Date", value: formatDate(selectedBooking.date), icon: "calendar-outline" },
                     { label: "Time", value: formatTime(selectedBooking.time), icon: "time-outline" },
+                    ...(selectedBooking.full_name && user?.is_priest ? [{ label: "Participant", value: selectedBooking.full_name, icon: "person-outline" }] : []),
                     { label: "Attendees", value: selectedBooking.attendees ? `${selectedBooking.attendees} people` : 'N/A', icon: "people-outline" },
+                    ...(selectedBooking.contact_number && user?.is_priest ? [{ label: "Contact Number", value: selectedBooking.contact_number, icon: "call-outline" }] : []),
                     { label: "Transaction ID", value: selectedBooking.transaction_id || selectedBooking.id, icon: "receipt-outline" },
                     { label: "Booked on", value: formatDate(selectedBooking.bookingDate), icon: "calendar-outline" },
-                    ...(selectedBooking.priest_name ? [{ label: "Assigned Priest", value: selectedBooking.priest_name, icon: "person-outline" }] : []),
+                    ...(selectedBooking.priest_name && !user?.is_priest ? [{ label: "Assigned Priest", value: selectedBooking.priest_name, icon: "person-outline" }] : []),
+                    ...(selectedBooking.notes ? [{ label: "Notes", value: selectedBooking.notes, icon: "document-text-outline" }] : []),
                   ].map((item, idx) => (
                     <React.Fragment key={idx}>
                       <View style={styles.modalDetailRow}>
