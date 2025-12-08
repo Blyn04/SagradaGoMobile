@@ -23,14 +23,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { sacramentRequirements } from '../utils/sacramentRequirements';
 import { API_BASE_URL } from '../config/API';
 import { Platform } from 'react-native';
-
-let ImagePicker = null;
-try {
-  ImagePicker = require('expo-image-picker');
-
-} catch (e) {
-  console.warn('expo-image-picker not available');
-}
+import * as ImagePicker from 'expo-image-picker';
 
 const getMinimumBookingDate = (sacrament) => {
   const dates = {
@@ -326,16 +319,9 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
   };
 
   const pickProofOfPayment = async () => {
-    if (!ImagePicker) {
-      Alert.alert(
-        'Image Picker Not Available',
-        'Please install expo-image-picker: npx expo install expo-image-picker'
-      );
-      return;
-    }
-
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
       if (status !== 'granted') {
         Alert.alert('Permission needed', 'Please grant camera roll permissions to upload proof of payment.');
         return;
@@ -347,10 +333,18 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
         quality: 0.8,
       });
 
-      if (!result.canceled && result.assets[0]) {
+      if (!result.canceled && result.assets && result.assets[0]) {
+        const asset = result.assets[0];
         setProofOfPayment({
-          ...result.assets[0],
-          fileName: result.assets[0].uri.split('/').pop() || 'proof_of_payment.jpg',
+          uri: asset.uri,
+          fileName: asset.fileName || asset.uri.split('/').pop() || 'proof_of_payment.jpg',
+          mimeType: asset.mimeType || 'image/jpeg',
+          type: asset.mimeType || 'image/jpeg',
+        });
+        console.log('Proof of payment image selected:', {
+          uri: asset.uri,
+          fileName: asset.fileName || asset.uri.split('/').pop(),
+          mimeType: asset.mimeType || 'image/jpeg',
         });
       }
       
@@ -366,7 +360,21 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
       return;
     }
 
-    const currentPaymentMethod = overridePaymentMethod || paymentMethod || 'in_person';
+    // Ensure overridePaymentMethod is a string, not an event object
+    let method = overridePaymentMethod;
+    if (method && typeof method !== 'string') {
+      method = null;
+    }
+    
+    const currentPaymentMethod = method || paymentMethod || 'in_person';
+    
+    // Validate that currentPaymentMethod is actually a string
+    if (typeof currentPaymentMethod !== 'string') {
+      console.error('Invalid payment method type:', typeof currentPaymentMethod, currentPaymentMethod);
+      Alert.alert('Error', 'Payment method error. Please try again.');
+      setSubmitting(false);
+      return;
+    }
 
     if (currentPaymentMethod === 'gcash' && !proofOfPayment) {
       Alert.alert('Proof of Payment Required', 'Please upload proof of payment before submitting your booking.');
@@ -399,11 +407,39 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
       formData.append('time', combinedDateTime.toISOString());
       
       formData.append('payment_method', currentPaymentMethod);
+      formData.append('amount', getSacramentPrice(selectedSacrament).toString());
+      
+      console.log('Payment method check:', {
+        currentPaymentMethod,
+        paymentMethodState: paymentMethod,
+        hasProofOfPayment: !!proofOfPayment,
+        proofOfPaymentUri: proofOfPayment?.uri,
+      });
+      
       if (currentPaymentMethod === 'gcash' && proofOfPayment && proofOfPayment.uri) {
-        formData.append('proof_of_payment', {
-          uri: proofOfPayment.uri,
-          type: proofOfPayment.mimeType || proofOfPayment.type || 'image/jpeg',
-          name: proofOfPayment.fileName || proofOfPayment.name || 'proof_of_payment.jpg',
+        try {
+          console.log('Attempting to append proof of payment...');
+          formData.append('proof_of_payment', {
+            uri: proofOfPayment.uri,
+            type: proofOfPayment.mimeType || 'image/jpeg',
+            name: proofOfPayment.fileName || proofOfPayment.name || 'proof_of_payment.jpg',
+          });
+          console.log('Proof of payment appended successfully:', {
+            uri: proofOfPayment.uri,
+            type: proofOfPayment.mimeType || 'image/jpeg',
+            name: proofOfPayment.fileName || proofOfPayment.name || 'proof_of_payment.jpg',
+          });
+        } catch (uploadError) {
+          console.error('Error appending proof of payment:', uploadError);
+          Alert.alert('Error', 'Failed to attach proof of payment. Please try again.');
+          setSubmitting(false);
+          return;
+        }
+      } else {
+        console.log('Proof of payment NOT appended. Reason:', {
+          isGCash: currentPaymentMethod === 'gcash',
+          hasProof: !!proofOfPayment,
+          hasUri: !!(proofOfPayment && proofOfPayment.uri)
         });
       }
 
@@ -631,11 +667,24 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
           }
         });
 
-        const response = await submitBookingForm(`${API_BASE_URL}/createCommunion`, formData);
-        if (response) {
-          Alert.alert('Success', 'Communion booking submitted successfully!', [
-            { text: 'OK', onPress: handleClose }
-          ]);
+        console.log('About to submit Communion booking...');
+        try {
+          console.log('Calling submitBookingForm for Communion...');
+          const response = await submitBookingForm(`${API_BASE_URL}/createCommunion`, formData);
+          console.log('submitBookingForm returned:', response);
+          if (response) {
+            Alert.alert('Success', 'Communion booking submitted successfully!', [
+              { text: 'OK', onPress: handleClose }
+            ]);
+            resetForm();
+          }
+        } catch (err) {
+          console.error('Communion booking submission error:', err);
+          console.error('Error name:', err.name);
+          console.error('Error message:', err.message);
+          console.error('Error stack:', err.stack);
+          Alert.alert('Error', err.message || 'Failed to submit Communion booking. Please try again.');
+          throw err; // Re-throw to be caught by outer catch
         }
 
       } else if (selectedSacrament === 'Anointing of the Sick') {
@@ -717,8 +766,10 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
 
     } catch (error) {
       console.error('Error submitting booking:', error);
+      console.error('Error name:', error.name);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
       Alert.alert('Error', error.message || 'Failed to submit booking. Please try again.');
-
     } finally {
       setSubmitting(false);
     }
@@ -732,6 +783,8 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
 
     let response;
     try {
+      console.log('Starting fetch request...');
+      console.log('FormData entries count (approximate):', formData._parts ? formData._parts.length : 'unknown');
       response = await fetch(url, {
         method: 'POST',
         body: formData,
@@ -739,6 +792,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
         // Do NOT set 'Content-Type' header - let fetch set it automatically with boundary for FormData
       });
       clearTimeout(timeoutId);
+      console.log('Fetch request completed, status:', response.status);
 
     } catch (fetchError) {
       clearTimeout(timeoutId);
@@ -953,7 +1007,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
                 {selectedSacrament === 'Confession' || selectedSacrament === 'Anointing of the Sick' ? (
                   <TouchableOpacity
                     style={styles.submitButton}
-                    onPress={handleSubmitBooking} // directly submit
+                    onPress={() => handleSubmitBooking()} // directly submit
                     disabled={submitting}
                   >
                     {submitting ? (
@@ -1215,7 +1269,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.qrCodeCloseButton, { flex: 1 }]}
-                onPress={handleSubmitBooking}
+                onPress={() => handleSubmitBooking()}
                 disabled={submitting || (paymentMethod === 'gcash' && !proofOfPayment)}
               >
                 {submitting ? (
