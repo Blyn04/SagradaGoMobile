@@ -54,10 +54,19 @@ function AppContent() {
   });
 
   useEffect(() => {
-    if (isAuthenticated && (currentScreen === 'LoginScreen' || currentScreen === 'GetStarted' || currentScreen === 'SignUpScreen')) {
-      setCurrentScreen('HomePageScreen');
+    if (isAuthenticated && user) {
+      setCurrentUser(user);
+      setIsLoggedIn(true);
+
+      if (currentScreen === 'LoginScreen' || currentScreen === 'GetStarted' || currentScreen === 'SignUpScreen') {
+        setCurrentScreen('HomePageScreen');
+      }
+
+    } else if (!isAuthenticated) {
+      setCurrentUser(null);
+      setIsLoggedIn(false);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, user]);
 
   if (!fontsLoaded || authLoading) {
     return (
