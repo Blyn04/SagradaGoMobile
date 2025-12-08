@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
 
   filterContainer: {
     flexDirection: 'row',
-    marginBottom: -300,
+    marginBottom: -500,
   },
 
   detailRow: {
