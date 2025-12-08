@@ -13,6 +13,8 @@ import dayjs from 'dayjs';
 import axios from 'axios';
 import { API_BASE_URL } from '../config/API';
 import CustomCalendar from '../customs/CustomCalendar';
+import NotificationBadge from './NotificationBadge';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function HomePageScreen({ user, onLogout, onNavigate }) {
   const [selectedSection, setSelectedSection] = useState('Quick Access');
@@ -21,6 +23,9 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
   const [loadingEvents, setLoadingEvents] = useState(false);
   const [loadingBookings, setLoadingBookings] = useState(false);
   const [selectedDate, setSelectedDate] = useState(dayjs().format('YYYY-MM-DD'));
+  const [unreadCount, setUnreadCount] = useState(0);
+  const { user: authUser } = useAuth();
+  const currentUser = user || authUser;
 
   const shortcuts = [
     {
@@ -81,6 +86,48 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
     }
   }, [user]);
 
+  const fetchUnreadCount = async () => {
+    try {
+      if (!currentUser || !currentUser.uid) {
+        return;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/getUnreadCount`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          recipient_id: currentUser.uid,
+          recipient_type: 'user',
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setUnreadCount(data.unreadCount || 0);
+      }
+
+    } catch (error) {
+      console.error('Error fetching unread count:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUnreadCount();
+    const interval = setInterval(fetchUnreadCount, 30000);
+    return () => clearInterval(interval);
+  }, [currentUser?.uid]);
+
+  useEffect(() => {
+    const refreshTimer = setTimeout(() => {
+      fetchUnreadCount();
+    }, 1000); 
+    
+    return () => clearTimeout(refreshTimer);
+  }, [currentUser?.uid]);
+
   const fetchEvents = async () => {
     try {
       setLoadingEvents(true);
@@ -136,7 +183,12 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
   });
 
   const handleShortcutPress = (screen) => {
-    if (onNavigate) onNavigate(screen);
+    if (onNavigate) {
+      onNavigate(screen);
+      if (screen === 'NotificationsScreen') {
+        setTimeout(fetchUnreadCount, 500);
+      }
+    }
   };
 
   return (
@@ -168,10 +220,14 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
                 </View>
               </View>
               <TouchableOpacity
-                onPress={() => handleShortcutPress('NotificationsScreen')}
-                style={{ padding: 8 }}
+                onPress={() => {
+                  handleShortcutPress('NotificationsScreen');
+                  setTimeout(fetchUnreadCount, 500);
+                }}
+                style={{ padding: 8, position: 'relative' }}
               >
                 <Ionicons name="notifications-outline" size={24} color="#424242" />
+                <NotificationBadge count={unreadCount} />
               </TouchableOpacity>
             </View>
           )}

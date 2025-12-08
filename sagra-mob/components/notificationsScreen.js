@@ -160,7 +160,12 @@ export default function NotificationsScreen({ user, onNavigate }) {
           setNotifications(notifications.map(n => 
             n.id === notification.id ? { ...n, read: true } : n
           ));
-          setUnreadCount(Math.max(0, unreadCount - 1));
+          const newCount = Math.max(0, unreadCount - 1);
+          setUnreadCount(newCount);
+          
+          if (onNavigate && typeof onNavigate === 'function') {
+            fetchNotifications();
+          }
 
         } else {
           console.error('Error marking notification as read:', data.message);
