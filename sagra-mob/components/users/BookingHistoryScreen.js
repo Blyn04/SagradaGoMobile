@@ -40,6 +40,7 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [proofOfPaymentUrl, setProofOfPaymentUrl] = useState(null);
+  const [loadingProofOfPayment, setLoadingProofOfPayment] = useState(false);
 
   const fetchAllBookings = async (isRefresh = false) => {
     if (!user?.uid) {
@@ -451,6 +452,7 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
     setIsModalVisible(true);
 
     setProofOfPaymentUrl(null);
+    setLoadingProofOfPayment(false);
     
     if (booking.payment_method === 'gcash' && booking.proof_of_payment) {
       console.log('Fetching proof of payment for GCash booking:', booking.proof_of_payment);
@@ -458,9 +460,10 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
       if (booking.proof_of_payment.startsWith('http')) {
         console.log('Proof of payment is already a URL:', booking.proof_of_payment);
         setProofOfPaymentUrl(booking.proof_of_payment);
+        setLoadingProofOfPayment(false);
 
       } else {
-
+        setLoadingProofOfPayment(true);
         try {
           console.log('Fetching signed URL for path:', booking.proof_of_payment);
           const response = await fetch(`${API_BASE_URL}/getProofOfPayment?path=${encodeURIComponent(booking.proof_of_payment)}`);
@@ -468,16 +471,18 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
           console.log('Proof of payment response:', data);
           if (data.url) {
             setProofOfPaymentUrl(data.url);
+            setLoadingProofOfPayment(false);
 
           } else {
             console.warn('No URL in response:', data);
+            setLoadingProofOfPayment(false);
           }
-
+          
         } catch (error) {
           console.error('Error fetching proof of payment URL:', error);
+          setLoadingProofOfPayment(false);
         }
       }
-
     } else {
       console.log('Not fetching proof of payment - payment_method:', booking.payment_method, 'proof_of_payment:', booking.proof_of_payment);
     }
@@ -487,6 +492,7 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
     setIsModalVisible(false);
     setSelectedBooking(null);
     setProofOfPaymentUrl(null);
+    setLoadingProofOfPayment(false);
   };
 
   const handleCancelBooking = () => {
@@ -774,20 +780,33 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
                         <Ionicons name="receipt-outline" size={18} color="#666" style={{ marginRight: 6 }} />
                         <Text style={styles.modalLabel}>Proof of Payment</Text>
                       </View>
-                      {proofOfPaymentUrl ? (
+                      {loadingProofOfPayment ? (
+                        <View style={{ padding: 20, alignItems: 'center' }}>
+                          <ActivityIndicator size="small" color="#666" />
+                          <Text style={[styles.modalNotes, { marginTop: 10 }]}>Loading proof of payment...</Text>
+                        </View>
+                      ) : proofOfPaymentUrl ? (
                         <Image
                           source={{ uri: proofOfPaymentUrl }}
                           style={styles.proofOfPaymentImage}
                           resizeMode="contain"
                           onError={(error) => {
                             console.error('Error loading proof of payment image:', error);
+                            console.error('Failed URL:', proofOfPaymentUrl);
                             setProofOfPaymentUrl(null);
+                          }}
+                          onLoad={() => {
+                            console.log('Proof of payment image loaded successfully:', proofOfPaymentUrl);
                           }}
                         />
                       ) : selectedBooking.proof_of_payment ? (
                         <View style={{ padding: 20, alignItems: 'center' }}>
-                          <ActivityIndicator size="small" color="#666" />
-                          <Text style={[styles.modalNotes, { marginTop: 10 }]}>Loading proof of payment...</Text>
+                          <Text style={[styles.modalNotes, { color: '#ff9800' }]}>
+                            Unable to load proof of payment image.
+                          </Text>
+                          <Text style={[styles.modalNotes, { marginTop: 5, fontSize: 12 }]}>
+                            Path: {selectedBooking.proof_of_payment}
+                          </Text>
                         </View>
                       ) : (
                         <Text style={styles.modalNotes}>No proof of payment uploaded</Text>

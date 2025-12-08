@@ -327,6 +327,14 @@ const styles = StyleSheet.create({
     color: '#424242',
   },
 
+  proofOfPaymentImage: {
+    width: '100%',
+    height: 300,
+    borderRadius: 8,
+    marginTop: 10,
+    backgroundColor: '#f5f5f5',
+  },
+
 });
 
 export default styles;
