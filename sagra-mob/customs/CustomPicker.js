@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Modal, FlatList } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import styles from '../styles/SignUpStyle';
+import styles from '../styles/users/CustomPickerStyle';
 
 const CustomPicker = ({
     value,
@@ -65,7 +65,8 @@ const CustomPicker = ({
                         activeOpacity={1}
                         onPressOut={() => setShowModal(false)}
                     >
-                        <View style={[styles.modalContent, { maxHeight: 170 }]}>
+                        <View style={[styles.modalContent, { maxHeight: 'auto' }]}>
+                            <Text style={[styles.modalTitle]}>Choose an option:</Text>
                             <FlatList
                                 data={options}
                                 keyExtractor={(item) => item.value}
