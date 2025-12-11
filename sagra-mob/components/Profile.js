@@ -502,10 +502,13 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
             <ScrollView style={styles.volunteerLogScrollView}>
               {currentUser?.volunteers && Array.isArray(currentUser.volunteers) && currentUser.volunteers.length > 0 ? (
                 currentUser.volunteers.map((item, index) => {
+                  const capitalize = (str) =>
+                    str ? str.trim().charAt(0).toUpperCase() + str.trim().slice(1).toLowerCase() : '';
+
                   const currentFullName = [
-                    currentUser?.first_name?.trim(),
-                    currentUser?.middle_name?.trim(),
-                    currentUser?.last_name?.trim()
+                    capitalize(currentUser?.first_name),
+                    capitalize(currentUser?.middle_name),
+                    capitalize(currentUser?.last_name)
                   ].filter(Boolean).join(' ');
 
                   return (
