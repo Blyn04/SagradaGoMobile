@@ -330,7 +330,9 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
               placeholder="Middle"
               editable={isEditing}
               value={formData.middle_name}
-              onChangeText={(v) => handleInputChange("middle_name", v)}
+              onChangeText={(v) =>
+                handleInputChange("middle_name", v.charAt(0).toUpperCase() + v.slice(1))
+              }
               onBlur={() => handleBlur("middle_name")}
             />
           </View>
@@ -342,7 +344,9 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
               placeholder="Last Name"
               editable={isEditing}
               value={formData.last_name}
-              onChangeText={(v) => handleInputChange("last_name", v)}
+              onChangeText={(v) =>
+                handleInputChange("last_name", v.charAt(0).toUpperCase() + v.slice(1))
+              }
               onBlur={() => handleBlur("last_name")}
             />
           </View>
