@@ -235,10 +235,13 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
     return `${currentUser?.first_name?.charAt(0) || ''}${currentUser?.last_name?.charAt(0) || ''}`.toUpperCase();
   };
 
+  const capitalize = (str) =>
+    str ? str.trim().charAt(0).toUpperCase() + str.trim().slice(1).toLowerCase() : '';
+
   const fullName = [
-    currentUser?.first_name?.trim(),
-    currentUser?.middle_name?.trim(),
-    currentUser?.last_name?.trim()
+    capitalize(currentUser?.first_name),
+    capitalize(currentUser?.middle_name),
+    capitalize(currentUser?.last_name)
   ].filter(Boolean).join(' ');
 
   return (
@@ -504,26 +507,26 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
                     currentUser?.middle_name?.trim(),
                     currentUser?.last_name?.trim()
                   ].filter(Boolean).join(' ');
-                  
+
                   return (
-                  <View key={item._id || item.id || index} style={styles.volunteerLogItem}>
-                    <View style={styles.volunteerLogItemHeader}>
-                      <Ionicons name="person-outline" size={20} color="#FFC942" style={{ marginRight: 8 }} />
-                      <Text style={styles.volunteerLogItemName}>{currentFullName || item.name}</Text>
+                    <View key={item._id || item.id || index} style={styles.volunteerLogItem}>
+                      <View style={styles.volunteerLogItemHeader}>
+                        <Ionicons name="person-outline" size={20} color="#FFC942" style={{ marginRight: 8 }} />
+                        <Text style={styles.volunteerLogItemName}>{currentFullName || item.name}</Text>
+                      </View>
+                      <Text style={styles.volunteerLogItemRole}>Role: {item.role}</Text>
+                      {item.eventTitle && (
+                        <Text style={styles.volunteerLogItemEvent}>Event: {item.eventTitle}</Text>
+                      )}
+                      <Text style={styles.volunteerLogItemContact}>Contact: {item.contact}</Text>
+                      <Text style={styles.volunteerLogItemDate}>
+                        {item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric'
+                        }) : 'N/A'}
+                      </Text>
                     </View>
-                    <Text style={styles.volunteerLogItemRole}>Role: {item.role}</Text>
-                    {item.eventTitle && (
-                      <Text style={styles.volunteerLogItemEvent}>Event: {item.eventTitle}</Text>
-                    )}
-                    <Text style={styles.volunteerLogItemContact}>Contact: {item.contact}</Text>
-                    <Text style={styles.volunteerLogItemDate}>
-                      {item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric'
-                      }) : 'N/A'}
-                    </Text>
-                  </View>
                   );
                 })
               ) : (
