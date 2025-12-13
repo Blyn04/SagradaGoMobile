@@ -82,6 +82,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
   const [isUploadModalVisible, setIsUploadModalVisible] = useState(false);
   const [uploadedDocuments, setUploadedDocuments] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  const [checkingConflict, setCheckingConflict] = useState(false);
 
   const fullName = user
     ? `${user.first_name || ''} ${user.middle_name || ''} ${user.last_name || ''}`.trim()
@@ -242,11 +243,261 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
     });
   };
 
+  const checkBookingConflict = async (selectedDate, selectedTime) => {
+    if (!user?.uid || !selectedDate || !selectedTime) {
+      return { hasConflict: false, message: '' };
+    }
+
+    try {
+      setCheckingConflict(true);
+      
+      const combinedDateTime = new Date(selectedDate);
+      combinedDateTime.setHours(selectedTime.getHours());
+      combinedDateTime.setMinutes(selectedTime.getMinutes());
+      combinedDateTime.setSeconds(0);
+      combinedDateTime.setMilliseconds(0);
+
+      const selectedDateTimeISO = combinedDateTime.toISOString();
+      const selectedDateStr = dayjs(selectedDate).format('YYYY-MM-DD');
+      const selectedTimeStr = dayjs(combinedDateTime).format('HH:mm');
+
+      const userBookings = [];
+      
+      try {
+        const weddingResponse = await fetch(`${API_BASE_URL}/getUserWeddings`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid: user.uid }),
+        });
+        const weddingData = await weddingResponse.json();
+        if (weddingResponse.ok && weddingData.weddings) {
+          weddingData.weddings.forEach(wedding => {
+            if (wedding.status !== 'cancelled' && wedding.status !== 'rejected') {
+              userBookings.push({
+                date: wedding.date,
+                time: wedding.time,
+                sacrament: 'Wedding',
+                transaction_id: wedding.transaction_id,
+              });
+            }
+          });
+        }
+
+      } catch (error) {
+        console.error('Error fetching user weddings:', error);
+      }
+
+      try {
+        const baptismResponse = await fetch(`${API_BASE_URL}/getUserBaptisms`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid: user.uid }),
+        });
+        const baptismData = await baptismResponse.json();
+        if (baptismResponse.ok && baptismData.baptisms) {
+          baptismData.baptisms.forEach(baptism => {
+            if (baptism.status !== 'cancelled' && baptism.status !== 'rejected') {
+              userBookings.push({
+                date: baptism.date,
+                time: baptism.time,
+                sacrament: 'Baptism',
+                transaction_id: baptism.transaction_id,
+              });
+            }
+          });
+        }
+
+      } catch (error) {
+        console.error('Error fetching user baptisms:', error);
+      }
+
+      try {
+        const burialResponse = await fetch(`${API_BASE_URL}/getUserBurials`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid: user.uid }),
+        });
+        const burialData = await burialResponse.json();
+        if (burialResponse.ok && burialData.burials) {
+          burialData.burials.forEach(burial => {
+            if (burial.status !== 'cancelled' && burial.status !== 'rejected') {
+              userBookings.push({
+                date: burial.date,
+                time: burial.time,
+                sacrament: 'Burial',
+                transaction_id: burial.transaction_id,
+              });
+            }
+          });
+        }
+
+      } catch (error) {
+        console.error('Error fetching user burials:', error);
+      }
+
+      try {
+        const confessionResponse = await fetch(`${API_BASE_URL}/getUserConfessions`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid: user.uid }),
+        });
+        const confessionData = await confessionResponse.json();
+        if (confessionResponse.ok && confessionData.confessions) {
+          confessionData.confessions.forEach(confession => {
+            if (confession.status !== 'cancelled' && confession.status !== 'rejected') {
+              userBookings.push({
+                date: confession.date,
+                time: confession.time,
+                sacrament: 'Confession',
+                transaction_id: confession.transaction_id,
+              });
+            }
+          });
+        }
+
+      } catch (error) {
+        console.error('Error fetching user confessions:', error);
+      }
+
+      try {
+        const anointingResponse = await fetch(`${API_BASE_URL}/getUserAnointings`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid: user.uid }),
+        });
+        const anointingData = await anointingResponse.json();
+        if (anointingResponse.ok && anointingData.anointings) {
+          anointingData.anointings.forEach(anointing => {
+            if (anointing.status !== 'cancelled' && anointing.status !== 'rejected') {
+              userBookings.push({
+                date: anointing.date,
+                time: anointing.time,
+                sacrament: 'Anointing of the Sick',
+                transaction_id: anointing.transaction_id,
+              });
+            }
+          });
+        }
+
+      } catch (error) {
+        console.error('Error fetching user anointings:', error);
+      }
+
+      try {
+        const communionResponse = await fetch(`${API_BASE_URL}/getUserCommunions`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid: user.uid }),
+        });
+        const communionData = await communionResponse.json();
+        if (communionResponse.ok && communionData.communions) {
+          communionData.communions.forEach(communion => {
+            if (communion.status !== 'cancelled' && communion.status !== 'rejected') {
+              userBookings.push({
+                date: communion.date,
+                time: communion.time,
+                sacrament: 'First Communion',
+                transaction_id: communion.transaction_id,
+              });
+            }
+          });
+        }
+
+      } catch (error) {
+        console.error('Error fetching user communions:', error);
+      }
+
+      try {
+        const confirmationResponse = await fetch(`${API_BASE_URL}/getUserConfirmations`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid: user.uid }),
+        });
+        const confirmationData = await confirmationResponse.json();
+        if (confirmationResponse.ok && confirmationData.confirmations) {
+          confirmationData.confirmations.forEach(confirmation => {
+            if (confirmation.status !== 'cancelled' && confirmation.status !== 'rejected') {
+              userBookings.push({
+                date: confirmation.date,
+                time: confirmation.time,
+                sacrament: 'Confirmation',
+                transaction_id: confirmation.transaction_id,
+              });
+            }
+          });
+        }
+
+      } catch (error) {
+        console.error('Error fetching user confirmations:', error);
+      }
+
+      for (const booking of userBookings) {
+        if (!booking.date || !booking.time) continue;
+
+        const bookingDate = new Date(booking.date);
+        const bookingTime = new Date(booking.time);
+        
+        const bookingDateStr = dayjs(bookingDate).format('YYYY-MM-DD');
+        if (bookingDateStr === selectedDateStr) {
+          const bookingDateTime = new Date(bookingDate);
+          bookingDateTime.setHours(bookingTime.getHours());
+          bookingDateTime.setMinutes(bookingTime.getMinutes());
+          bookingDateTime.setSeconds(0);
+          bookingDateTime.setMilliseconds(0);
+
+          const timeDiff = Math.abs(combinedDateTime.getTime() - bookingDateTime.getTime());
+          const hoursDiff = timeDiff / (1000 * 60 * 60);
+
+          if (hoursDiff < 1) {
+            return {
+              hasConflict: true,
+              message: `You already have a ${booking.sacrament} booking on ${dayjs(bookingDate).format('MMMM D, YYYY')} at ${dayjs(bookingDateTime).format('h:mm A')}. Please choose a different date or time.`,
+            };
+          }
+        }
+      }
+
+      try {
+        const allBookingsResponse = await fetch(`${API_BASE_URL}/checkBookingConflict`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            date: selectedDateStr,
+            time: selectedTimeStr,
+            datetime: selectedDateTimeISO,
+          }),
+        });
+
+        if (allBookingsResponse.ok) {
+          const conflictData = await allBookingsResponse.json();
+          if (conflictData.hasConflict) {
+            return {
+              hasConflict: true,
+              message: conflictData.message || `This time slot is already booked. Please choose a different date or time.`,
+            };
+          }
+        }
+
+      } catch (error) {
+        console.log('Conflict check endpoint not available, skipping global conflict check:', error);
+      }
+
+      return { hasConflict: false, message: '' };
+
+    } catch (error) {
+      console.error('Error checking booking conflict:', error);
+      return { hasConflict: false, message: '' };
+
+    } finally {
+      setCheckingConflict(false);
+    }
+  };
+
   const handleClose = () => {
     onClose();
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!selectedSacrament) {
       setErrorMessage('No sacrament selected. Please close and try again.');
       return;
@@ -278,6 +529,14 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
 
     if (!date || !time || !pax) {
       setErrorMessage('Please select a date, time, and number of people.');
+      return;
+    }
+
+    // Check for booking conflicts
+    setErrorMessage('');
+    const conflictCheck = await checkBookingConflict(date, time);
+    if (conflictCheck.hasConflict) {
+      setErrorMessage(conflictCheck.message);
       return;
     }
 
@@ -493,6 +752,16 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
     if (currentPaymentMethod === 'gcash' && !proofOfPayment) {
       Alert.alert('Proof of Payment Required', 'Please upload proof of payment before submitting your booking.');
       return;
+    }
+
+    if (date && time) {
+      const conflictCheck = await checkBookingConflict(date, time);
+      
+      if (conflictCheck.hasConflict) {
+        Alert.alert('Booking Conflict', conflictCheck.message);
+        setSubmitting(false);
+        return;
+      }
     }
 
     setSubmitting(true);
@@ -1273,8 +1542,13 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
                   <TouchableOpacity
                     style={styles.submitButton}
                     onPress={handleNext}
+                    disabled={checkingConflict}
                   >
-                    <Text style={styles.submitButtonText}>Next</Text>
+                    {checkingConflict ? (
+                      <ActivityIndicator size="small" color="#fff" />
+                    ) : (
+                      <Text style={styles.submitButtonText}>Next</Text>
+                    )}
                   </TouchableOpacity>
                 )}
 
