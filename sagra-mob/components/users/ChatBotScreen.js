@@ -8,9 +8,14 @@ import {
   KeyboardAvoidingView,
   Platform,
   Animated,
-  Image
+  Image,
+  Alert,
+  ActivityIndicator
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { io } from 'socket.io-client';
+import axios from 'axios';
+import { API_BASE_URL } from '../../config/API';
 import styles from '../../styles/users/ChatBotStyle';
 
 const predefinedQuestions = [
@@ -93,6 +98,9 @@ export default function ChatBotScreen({ user, onNavigate }) {
   const [showChoices, setShowChoices] = useState(true);
   const [talkToAdmin, setTalkToAdmin] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
+  const [socket, setSocket] = useState(null);
+  const [connecting, setConnecting] = useState(false);
+  const [chatLoaded, setChatLoaded] = useState(false);
 
   const scrollViewRef = useRef(null);
 
@@ -105,7 +113,20 @@ export default function ChatBotScreen({ user, onNavigate }) {
   };
 
   useEffect(() => {
-    if (!showLanding) {
+    if (talkToAdmin && user?.uid && !socket) {
+      initializeAdminChat();
+    }
+
+    return () => {
+      if (socket) {
+        socket.disconnect();
+        setSocket(null);
+      }
+    };
+  }, [talkToAdmin, user?.uid]);
+
+  useEffect(() => {
+    if (!showLanding && !talkToAdmin) {
       const now = new Date();
       const welcomeMsg = {
         id: 0,
@@ -116,7 +137,92 @@ export default function ChatBotScreen({ user, onNavigate }) {
 
       setMessages([welcomeMsg]);
     }
-  }, [showLanding]);
+  }, [showLanding, talkToAdmin]);
+
+  const initializeAdminChat = async () => {
+    try {
+      setConnecting(true);
+
+      const chatResponse = await axios.post(`${API_BASE_URL}/chat/getOrCreateChat`, {
+        userId: user.uid,
+      });
+
+      const chat = chatResponse.data.chat;
+      
+      const socketBaseUrl = API_BASE_URL.replace('/api', '');
+      const newSocket = io(socketBaseUrl, {
+        transports: ['websocket', 'polling'],
+      });
+
+      newSocket.on('connect', () => {
+        console.log('Connected to chat server');
+        setConnecting(false);
+
+        newSocket.emit('join-room', {
+          userId: user.uid,
+          userType: 'user',
+          userName: `${user.first_name} ${user.last_name}`,
+        });
+
+        if (chat && chat.messages && chat.messages.length > 0) {
+          const formattedMessages = chat.messages.map((msg) => ({
+            id: msg._id || Date.now() + Math.random(),
+            text: msg.message,
+            sender: msg.senderType === 'admin' ? 'admin' : 'user',
+            timeSent: formatTime(new Date(msg.timestamp)),
+          }));
+          setMessages(formattedMessages);
+
+        } else {
+          const welcomeMsg = {
+            id: 0,
+            text: 'You are now connected with an admin. How can we help you?',
+            sender: 'admin',
+            timeSent: formatTime(new Date()),
+          };
+          setMessages([welcomeMsg]);
+        }
+        
+        setChatLoaded(true);
+        setTimeout(() => {
+          scrollViewRef.current?.scrollToEnd({ animated: true });
+        }, 100);
+      });
+
+      newSocket.on('disconnect', () => {
+        console.log('Disconnected from chat server');
+        Alert.alert('Disconnected', 'You have been disconnected from the chat. Please try again.');
+      });
+
+      newSocket.on('receive-message', ({ message }) => {
+        if (message.senderType === 'admin') {
+          const newMsg = {
+            id: Date.now() + Math.random(),
+            text: message.message,
+            sender: 'admin',
+            timeSent: formatTime(new Date(message.timestamp)),
+          };
+          setMessages((prev) => [...prev, newMsg]);
+          setTimeout(() => {
+            scrollViewRef.current?.scrollToEnd({ animated: true });
+          }, 100);
+        }
+      });
+
+      newSocket.on('error', ({ message: errorMessage }) => {
+        Alert.alert('Error', errorMessage || 'An error occurred');
+        setConnecting(false);
+      });
+
+      setSocket(newSocket);
+
+    } catch (error) {
+      console.error('Error initializing admin chat:', error);
+      Alert.alert('Error', 'Failed to connect to admin chat. Please try again.');
+      setConnecting(false);
+      setTalkToAdmin(false);
+    }
+  };
 
   const getBotResponse = (userMessage) => {
     const msg = userMessage.toLowerCase();
@@ -176,13 +282,38 @@ export default function ChatBotScreen({ user, onNavigate }) {
     if (!inputText.trim()) return;
 
     const userText = inputText.trim();
-    addMessage(userText, 'user');
-    setShowChoices(false);
-    setInputText('');
+    
+    if (talkToAdmin && socket) {
+      const tempMsg = {
+        id: Date.now() + Math.random(),
+        text: userText,
+        sender: 'user',
+        timeSent: formatTime(new Date()),
+      };
+      setMessages((prev) => [...prev, tempMsg]);
+      setInputText('');
+      
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+      
+      socket.emit('send-message', {
+        userId: user.uid,
+        message: userText,
+        senderId: user.uid,
+        senderType: 'user',
+        senderName: `${user.first_name} ${user.last_name}`,
+      });
 
-    setTimeout(() => {
-      addMessage(getBotResponse(userText), 'bot');
-    }, 500);
+    } else {
+      addMessage(userText, 'user');
+      setShowChoices(false);
+      setInputText('');
+
+      setTimeout(() => {
+        addMessage(getBotResponse(userText), 'bot');
+      }, 500);
+    }
   };
 
   const handleQuestionTap = (text) => {
@@ -274,8 +405,18 @@ export default function ChatBotScreen({ user, onNavigate }) {
           </View>
 
           <View style={styles.chatbotHeaderContainer}>
-            <Text style={styles.chatbotTitleText}>SagradaBot</Text>
-            <Text style={styles.chatbotSubtitleText}>Ask me anything!</Text>
+            <Text style={styles.chatbotTitleText}>
+              {talkToAdmin ? 'Chat with Admin' : 'SagradaBot'}
+            </Text>
+            <Text style={styles.chatbotSubtitleText}>
+              {talkToAdmin 
+                ? (connecting ? 'Connecting...' : chatLoaded ? 'Connected' : 'Connecting to admin...')
+                : 'Ask me anything!'
+              }
+            </Text>
+            {connecting && (
+              <ActivityIndicator size="small" color="#424242" style={{ marginTop: 8 }} />
+            )}
           </View>
 
           <ScrollView
@@ -291,6 +432,8 @@ export default function ChatBotScreen({ user, onNavigate }) {
                     styles.chatbotMessageBubble,
                     msg.sender === 'user'
                       ? styles.chatbotUserMessageBubble
+                      : msg.sender === 'admin'
+                      ? styles.chatbotAdminMessageBubble
                       : styles.chatbotBotMessageBubble,
                   ]}
                 >
@@ -298,6 +441,8 @@ export default function ChatBotScreen({ user, onNavigate }) {
                     style={
                       msg.sender === 'user'
                         ? styles.chatbotUserMessageText
+                        : msg.sender === 'admin'
+                        ? styles.chatbotAdminMessageText
                         : styles.chatbotBotMessageText
                     }
                   >
@@ -309,7 +454,7 @@ export default function ChatBotScreen({ user, onNavigate }) {
                       fontSize: 12,
                       marginTop: 4,
                       alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start',
-                      color: msg.sender === 'user' ? '#fff' : '#141414',
+                      color: msg.sender === 'user' ? '#fff' : msg.sender === 'admin' ? '#fff' : '#141414',
                       fontFamily: 'Poppins_500Medium',
                     }}
                   >
@@ -318,13 +463,16 @@ export default function ChatBotScreen({ user, onNavigate }) {
                 </View>
               ))}
 
-              {showChoices && (
+              {showChoices && !talkToAdmin && (
                 <View style={styles.choiceButtonsContainer}>
                   <Text style={styles.choiceButtonsTitle}>Quick Questions</Text>
 
                   <TouchableOpacity
                     style={styles.choiceButton}
-                    onPress={() => setTalkToAdmin(true)}
+                    onPress={() => {
+                      setTalkToAdmin(true);
+                      setShowChoices(false);
+                    }}
                   >
                     <Ionicons name="people-outline" size={18} style={{ marginRight: 10 }} />
                     <Text style={styles.choiceButtonText}>Chat with Admin</Text>
@@ -353,6 +501,14 @@ export default function ChatBotScreen({ user, onNavigate }) {
                   <Ionicons name="list-outline" size={18} />
                   <Text style={styles.showChoicesButtonText}>Show quick questions</Text>
                 </TouchableOpacity>
+              )}
+
+              {talkToAdmin && !connecting && chatLoaded && messages.length === 1 && (
+                <View style={{ padding: 16, alignItems: 'center' }}>
+                  <Text style={{ color: '#666', fontFamily: 'Poppins_400Regular', textAlign: 'center' }}>
+                    Your message history will appear here. Start the conversation!
+                  </Text>
+                </View>
               )}
             </View>
           </ScrollView>

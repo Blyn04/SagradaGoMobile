@@ -64,6 +64,12 @@ const styles = StyleSheet.create({
     borderColor: '#e0e0e0',
   },
 
+  chatbotAdminMessageBubble: {
+    backgroundColor: '#b87d3e',
+    alignSelf: 'flex-start',
+    borderBottomLeftRadius: 4,
+  },
+
   chatbotUserMessageText: {
     fontSize: 15,
     fontFamily: 'Poppins_500Medium',
@@ -75,6 +81,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: 'Poppins_500Medium',
     color: '#1a1a1a',
+    lineHeight: 20,
+  },
+
+  chatbotAdminMessageText: {
+    fontSize: 15,
+    fontFamily: 'Poppins_500Medium',
+    color: '#ffffff',
     lineHeight: 20,
   },
 

@@ -27,7 +27,8 @@
     "ionicons": "^8.0.13",
     "react": "19.1.0",
     "react-native": "0.81.5",
-    "react-native-dotenv": "^3.4.11"
+    "react-native-dotenv": "^3.4.11",
+    "socket.io-client": "^4.8.1"
   },
   "private": true,
   "devDependencies": {

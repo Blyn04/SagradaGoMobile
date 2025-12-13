@@ -33,7 +33,7 @@ const getBaseURL = () => {
   }
 };
 
-// export const API_BASE_URL = getBaseURL();
-export const API_BASE_URL = 'https://sagradagoapi.onrender.com/api';
+export const API_BASE_URL = getBaseURL();
+// export const API_BASE_URL = 'https://sagradagoapi.onrender.com/api';
 console.log(`🌐 API_BASE_URL configured as: ${API_BASE_URL}`);
 
