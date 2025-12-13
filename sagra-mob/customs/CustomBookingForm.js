@@ -101,6 +101,26 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
   });
 
   const [baptismForm, setBaptismForm] = useState({
+    candidate_first_name: '',
+    candidate_middle_name: '',
+    candidate_last_name: '',
+    candidate_birthday: '',
+    candidate_birth_place: '',
+
+    father_first_name: '',
+    father_middle_name: '',
+    father_last_name: '',
+    father_birth_place: '',
+
+    mother_first_name: '',
+    mother_middle_name: '',
+    mother_last_name: '',
+    mother_birth_place: '',
+
+    marriage_type: '',
+    address: '',
+    contact_number: '',
+
     main_godfather: {},
     main_godmother: {},
     additional_godparents: [],
@@ -154,6 +174,22 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
     });
 
     setBaptismForm({
+      candidate_first_name: '',
+      candidate_middle_name: '',
+      candidate_last_name: '',
+      candidate_birthday: '',
+      candidate_birth_place: '',
+      father_first_name: '',
+      father_middle_name: '',
+      father_last_name: '',
+      father_birth_place: '',
+      mother_first_name: '',
+      mother_middle_name: '',
+      mother_last_name: '',
+      mother_birth_place: '',
+      marriage_type: '',
+      address: '',
+      contact_number: '',
       main_godfather: {},
       main_godmother: {},
       additional_godparents: [],
@@ -194,6 +230,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
       const sacramentDocs = { ...(prev[selectedSacrament] || {}) };
       delete sacramentDocs[requirementId];
       const updated = { ...prev };
+
       if (Object.keys(sacramentDocs).length === 0) {
         delete updated[selectedSacrament];
 
@@ -269,24 +306,82 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
           setErrorMessage('Please upload either a marriage license or marriage contract.');
           return;
         }
+
         if (!hasGroomBaptismal) {
           setErrorMessage('Please upload groom baptismal certificate.');
           return;
         }
+
         if (!hasBrideBaptismal) {
           setErrorMessage('Please upload bride baptismal certificate.');
           return;
         }
+
         if (!hasGroomConfirmation) {
           setErrorMessage('Please upload groom confirmation certificate.');
           return;
         }
+
         if (!hasBrideConfirmation) {
           setErrorMessage('Please upload bride confirmation certificate.');
           return;
         }
 
     } else if (selectedSacrament === 'Baptism') {
+      if (!baptismForm.candidate_first_name || !baptismForm.candidate_last_name) {
+        setErrorMessage('Please fill in candidate first name and last name.');
+        return;
+      }
+      if (!baptismForm.candidate_birthday) {
+        setErrorMessage('Please enter candidate birthday.');
+        return;
+      }
+
+      const birthdayMatch = baptismForm.candidate_birthday.match(/^\d{2}\/\d{2}\/\d{2,4}$/);
+      if (!birthdayMatch) {
+        setErrorMessage('Please enter birthday in MM/DD/YY or MM/DD/YYYY format.');
+        return;
+      }
+
+      if (!baptismForm.candidate_birth_place) {
+        setErrorMessage('Please enter candidate birth place.');
+        return;
+      }
+
+      if (!baptismForm.father_first_name || !baptismForm.father_last_name) {
+        setErrorMessage('Please fill in father first name and last name.');
+        return;
+      }
+
+      if (!baptismForm.father_birth_place) {
+        setErrorMessage('Please enter father birth place.');
+        return;
+      }
+
+      if (!baptismForm.mother_first_name || !baptismForm.mother_last_name) {
+        setErrorMessage('Please fill in mother first name and last name.');
+        return;
+      }
+
+      if (!baptismForm.mother_birth_place) {
+        setErrorMessage('Please enter mother birth place.');
+        return;
+      }
+
+      if (!baptismForm.marriage_type) {
+        setErrorMessage('Please enter marriage type.');
+        return;
+      }
+
+      if (!baptismForm.address) {
+        setErrorMessage('Please enter address.');
+        return;
+      }
+      if (!baptismForm.contact_number) {
+        setErrorMessage('Please enter contact number.');
+        return;
+      }
+
       if (!baptismForm.main_godfather?.name || !baptismForm.main_godmother?.name) {
         setErrorMessage('Please fill in godparent information.');
         return;
@@ -361,6 +456,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
           mimeType: asset.mimeType || 'image/jpeg',
           type: asset.mimeType || 'image/jpeg',
         });
+
         console.log('Proof of payment image selected:', {
           uri: asset.uri,
           fileName: asset.fileName || asset.uri.split('/').pop(),
@@ -380,7 +476,6 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
       return;
     }
 
-    // Ensure overridePaymentMethod is a string, not an event object
     let method = overridePaymentMethod;
     if (method && typeof method !== 'string') {
       method = null;
@@ -388,7 +483,6 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
     
     const currentPaymentMethod = method || paymentMethod || 'in_person';
     
-    // Validate that currentPaymentMethod is actually a string
     if (typeof currentPaymentMethod !== 'string') {
       console.error('Invalid payment method type:', typeof currentPaymentMethod, currentPaymentMethod);
       Alert.alert('Error', 'Payment method error. Please try again.');
@@ -444,11 +538,13 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
             type: proofOfPayment.mimeType || 'image/jpeg',
             name: proofOfPayment.fileName || proofOfPayment.name || 'proof_of_payment.jpg',
           });
+
           console.log('Proof of payment appended successfully:', {
             uri: proofOfPayment.uri,
             type: proofOfPayment.mimeType || 'image/jpeg',
             name: proofOfPayment.fileName || proofOfPayment.name || 'proof_of_payment.jpg',
           });
+
         } catch (uploadError) {
           console.error('Error appending proof of payment:', uploadError);
           Alert.alert('Error', 'Failed to attach proof of payment. Please try again.');
@@ -466,12 +562,12 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
       const docs = uploadedDocuments[selectedSacrament] || {};
       
       if (selectedSacrament === 'Wedding') {
-        // Validate required name fields
         if (!weddingForm.groom_first_name || !weddingForm.groom_last_name) {
           Alert.alert('Validation Error', 'Please fill in groom first name and last name.');
           setSubmitting(false);
           return;
         }
+
         if (!weddingForm.bride_first_name || !weddingForm.bride_last_name) {
           Alert.alert('Validation Error', 'Please fill in bride first name and last name.');
           setSubmitting(false);
@@ -581,9 +677,66 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
           return;
         }
 
-        formData.append('contact_number', user.contact_number || '');
+        if (!baptismForm.candidate_first_name || !baptismForm.candidate_last_name) {
+          Alert.alert('Validation Error', 'Please fill in candidate first name and last name.');
+          setSubmitting(false);
+          return;
+        }
+
+        if (!baptismForm.father_first_name || !baptismForm.father_last_name) {
+          Alert.alert('Validation Error', 'Please fill in father first name and last name.');
+          setSubmitting(false);
+          return;
+        }
+
+        if (!baptismForm.mother_first_name || !baptismForm.mother_last_name) {
+          Alert.alert('Validation Error', 'Please fill in mother first name and last name.');
+          setSubmitting(false);
+          return;
+        }
+
+        let formattedBirthday = '';
+        if (baptismForm.candidate_birthday) {
+          const dateMatch = baptismForm.candidate_birthday.match(/(\d{2})\/(\d{2})\/(\d{2,4})/);
+          if (dateMatch) {
+            const [, month, day, year] = dateMatch;
+            let fullYear = year;
+            if (year.length === 2) {
+              const yearNum = parseInt(year, 10);
+              fullYear = yearNum <= 29 ? `20${year}` : `19${year}`;
+            }
+
+            formattedBirthday = `${fullYear}-${month}-${day}`;
+
+          } else {
+            formattedBirthday = baptismForm.candidate_birthday;
+          }
+        }
+
+        formData.append('candidate_first_name', baptismForm.candidate_first_name);
+        formData.append('candidate_middle_name', baptismForm.candidate_middle_name || '');
+        formData.append('candidate_last_name', baptismForm.candidate_last_name);
+        formData.append('candidate_birthday', formattedBirthday);
+        formData.append('candidate_birth_place', baptismForm.candidate_birth_place || '');
+
+        formData.append('father_first_name', baptismForm.father_first_name);
+        formData.append('father_middle_name', baptismForm.father_middle_name || '');
+        formData.append('father_last_name', baptismForm.father_last_name);
+        formData.append('father_birth_place', baptismForm.father_birth_place || '');
+
+        formData.append('mother_first_name', baptismForm.mother_first_name);
+        formData.append('mother_middle_name', baptismForm.mother_middle_name || '');
+        formData.append('mother_last_name', baptismForm.mother_last_name);
+        formData.append('mother_birth_place', baptismForm.mother_birth_place || '');
+
+        formData.append('marriage_type', baptismForm.marriage_type || '');
+        formData.append('address', baptismForm.address || '');
+        formData.append('contact_number', baptismForm.contact_number || user.contact_number || '');
         
         console.log('Baptism Form Data:');
+        console.log('- candidate:', baptismForm.candidate_first_name, baptismForm.candidate_last_name);
+        console.log('- father:', baptismForm.father_first_name, baptismForm.father_last_name);
+        console.log('- mother:', baptismForm.mother_first_name, baptismForm.mother_last_name);
         console.log('- main_godfather:', baptismForm.main_godfather);
         console.log('- main_godmother:', baptismForm.main_godmother);
         console.log('- additional_godparents:', baptismForm.additional_godparents);
@@ -1093,6 +1246,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
                   <BaptismDocuments
                     baptismForm={baptismForm}
                     setBaptismForm={setBaptismForm}
+                    user={user}
                   />
                 )}
 

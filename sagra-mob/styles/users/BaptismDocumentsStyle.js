@@ -16,6 +16,16 @@ const styles = StyleSheet.create({
     color: '#1a1a1a',
     marginBottom: 15,
   },
+  sectionTitle: {
+    fontSize: 16,
+    fontFamily: 'Poppins_600SemiBold',
+    color: '#1a1a1a',
+    marginTop: 10,
+    marginBottom: 10,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+  },
   inputWrapper: {
     marginBottom: 20,
   },
@@ -34,13 +44,22 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     borderWidth: 1,
     borderColor: '#e0e0e0',
-    height: 50,
+    minHeight: 50,
   },
   textInput: {
     flex: 1,
     fontSize: 16,
     fontFamily: 'Poppins_400Regular',
     color: '#333',
+  },
+  multilineInputContainer: {
+    alignItems: 'flex-start',
+    paddingVertical: 10,
+    minHeight: 80,
+  },
+  multilineTextInput: {
+    minHeight: 60,
+    paddingTop: 0,
   },
   additionalItemContainer: {
     marginBottom: 15,

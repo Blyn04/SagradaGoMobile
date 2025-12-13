@@ -2,9 +2,41 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import styles from '../../styles/users/BaptismDocumentsStyle';
+import CustomPicker from '../../customs/CustomPicker';
 
-export default function BaptismDocuments({ baptismForm, setBaptismForm }) {
+export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) {
   const [showAddGodparent, setShowAddGodparent] = useState(false);
+
+  const updateField = (field, value) => {
+    setBaptismForm({
+      ...baptismForm,
+      [field]: value,
+    });
+  };
+
+  const formatBirthday = (text) => {
+    const cleaned = text.replace(/\D/g, '');
+
+    const limited = cleaned.slice(0, 8);
+    
+    let formatted = limited;
+    if (limited.length > 2) {
+      formatted = `${limited.slice(0, 2)}/${limited.slice(2)}`;
+    }
+
+    if (limited.length > 4) {
+      formatted = `${limited.slice(0, 2)}/${limited.slice(2, 4)}/${limited.slice(4)}`;
+    }
+    
+    updateField('candidate_birthday', formatted);
+  };
+
+  const marriageTypeOptions = [
+    { label: 'Church', value: 'Church' },
+    { label: 'Civil', value: 'Civil' },
+    { label: 'Catholic', value: 'Catholic' },
+    { label: 'Other', value: 'Other' },
+  ];
 
   const updateGodparent = (type, field, value) => {
     setBaptismForm({
@@ -42,12 +74,240 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm }) {
     });
   };
 
+
   return (
     <View style={styles.sacramentFormContainer}>
       <Text style={styles.sacramentFormTitle}>Baptism Information</Text>
 
+      {/* Candidate Information */}
+      <Text style={styles.sectionTitle}>Candidate Information</Text>
+      
       <View style={styles.inputWrapper}>
-        <Text style={styles.inputLabel}>Main Godfather</Text>
+        <Text style={styles.inputLabel}>First Name *</Text>
+        <View style={styles.inputContainer}>
+          <Ionicons name="person-outline" size={20} color="#999" style={{ marginRight: 10 }} />
+          <TextInput
+            style={styles.textInput}
+            value={baptismForm.candidate_first_name || ''}
+            onChangeText={(text) => updateField('candidate_first_name', text)}
+            placeholder="Enter first name"
+          />
+        </View>
+      </View>
+
+      <View style={styles.inputWrapper}>
+        <Text style={styles.inputLabel}>Middle Name</Text>
+        <View style={styles.inputContainer}>
+          <Ionicons name="person-outline" size={20} color="#999" style={{ marginRight: 10 }} />
+          <TextInput
+            style={styles.textInput}
+            value={baptismForm.candidate_middle_name || ''}
+            onChangeText={(text) => updateField('candidate_middle_name', text)}
+            placeholder="Enter middle name"
+          />
+        </View>
+      </View>
+
+      <View style={styles.inputWrapper}>
+        <Text style={styles.inputLabel}>Last Name *</Text>
+        <View style={styles.inputContainer}>
+          <Ionicons name="person-outline" size={20} color="#999" style={{ marginRight: 10 }} />
+          <TextInput
+            style={styles.textInput}
+            value={baptismForm.candidate_last_name || ''}
+            onChangeText={(text) => updateField('candidate_last_name', text)}
+            placeholder="Enter last name"
+          />
+        </View>
+      </View>
+
+      <View style={styles.inputWrapper}>
+        <Text style={styles.inputLabel}>Birthday *</Text>
+        <View style={styles.inputContainer}>
+          <Ionicons name="calendar-outline" size={20} color="#999" style={{ marginRight: 10 }} />
+          <TextInput
+            style={styles.textInput}
+            value={baptismForm.candidate_birthday || ''}
+            onChangeText={formatBirthday}
+            placeholder="MM/DD/YY or MM/DD/YYYY"
+            keyboardType="numeric"
+            maxLength={10}
+          />
+        </View>
+      </View>
+
+      <View style={styles.inputWrapper}>
+        <Text style={styles.inputLabel}>Birth Place *</Text>
+        <View style={styles.inputContainer}>
+          <Ionicons name="location-outline" size={20} color="#999" style={{ marginRight: 10 }} />
+          <TextInput
+            style={styles.textInput}
+            value={baptismForm.candidate_birth_place || ''}
+            onChangeText={(text) => updateField('candidate_birth_place', text)}
+            placeholder="Enter birth place"
+          />
+        </View>
+      </View>
+
+      {/* Father Information */}
+      <Text style={styles.sectionTitle}>Father Information</Text>
+
+      <View style={styles.inputWrapper}>
+        <Text style={styles.inputLabel}>First Name *</Text>
+        <View style={styles.inputContainer}>
+          <Ionicons name="person-outline" size={20} color="#999" style={{ marginRight: 10 }} />
+          <TextInput
+            style={styles.textInput}
+            value={baptismForm.father_first_name || ''}
+            onChangeText={(text) => updateField('father_first_name', text)}
+            placeholder="Enter father's first name"
+          />
+        </View>
+      </View>
+
+      <View style={styles.inputWrapper}>
+        <Text style={styles.inputLabel}>Middle Name</Text>
+        <View style={styles.inputContainer}>
+          <Ionicons name="person-outline" size={20} color="#999" style={{ marginRight: 10 }} />
+          <TextInput
+            style={styles.textInput}
+            value={baptismForm.father_middle_name || ''}
+            onChangeText={(text) => updateField('father_middle_name', text)}
+            placeholder="Enter father's middle name"
+          />
+        </View>
+      </View>
+
+      <View style={styles.inputWrapper}>
+        <Text style={styles.inputLabel}>Last Name *</Text>
+        <View style={styles.inputContainer}>
+          <Ionicons name="person-outline" size={20} color="#999" style={{ marginRight: 10 }} />
+          <TextInput
+            style={styles.textInput}
+            value={baptismForm.father_last_name || ''}
+            onChangeText={(text) => updateField('father_last_name', text)}
+            placeholder="Enter father's last name"
+          />
+        </View>
+      </View>
+
+      <View style={styles.inputWrapper}>
+        <Text style={styles.inputLabel}>Birth Place *</Text>
+        <View style={styles.inputContainer}>
+          <Ionicons name="location-outline" size={20} color="#999" style={{ marginRight: 10 }} />
+          <TextInput
+            style={styles.textInput}
+            value={baptismForm.father_birth_place || ''}
+            onChangeText={(text) => updateField('father_birth_place', text)}
+            placeholder="Enter father's birth place"
+          />
+        </View>
+      </View>
+
+      {/* Mother Information */}
+      <Text style={styles.sectionTitle}>Mother Information</Text>
+
+      <View style={styles.inputWrapper}>
+        <Text style={styles.inputLabel}>First Name *</Text>
+        <View style={styles.inputContainer}>
+          <Ionicons name="person-outline" size={20} color="#999" style={{ marginRight: 10 }} />
+          <TextInput
+            style={styles.textInput}
+            value={baptismForm.mother_first_name || ''}
+            onChangeText={(text) => updateField('mother_first_name', text)}
+            placeholder="Enter mother's first name"
+          />
+        </View>
+      </View>
+
+      <View style={styles.inputWrapper}>
+        <Text style={styles.inputLabel}>Middle Name</Text>
+        <View style={styles.inputContainer}>
+          <Ionicons name="person-outline" size={20} color="#999" style={{ marginRight: 10 }} />
+          <TextInput
+            style={styles.textInput}
+            value={baptismForm.mother_middle_name || ''}
+            onChangeText={(text) => updateField('mother_middle_name', text)}
+            placeholder="Enter mother's middle name"
+          />
+        </View>
+      </View>
+
+      <View style={styles.inputWrapper}>
+        <Text style={styles.inputLabel}>Last Name *</Text>
+        <View style={styles.inputContainer}>
+          <Ionicons name="person-outline" size={20} color="#999" style={{ marginRight: 10 }} />
+          <TextInput
+            style={styles.textInput}
+            value={baptismForm.mother_last_name || ''}
+            onChangeText={(text) => updateField('mother_last_name', text)}
+            placeholder="Enter mother's last name"
+          />
+        </View>
+      </View>
+
+      <View style={styles.inputWrapper}>
+        <Text style={styles.inputLabel}>Birth Place *</Text>
+        <View style={styles.inputContainer}>
+          <Ionicons name="location-outline" size={20} color="#999" style={{ marginRight: 10 }} />
+          <TextInput
+            style={styles.textInput}
+            value={baptismForm.mother_birth_place || ''}
+            onChangeText={(text) => updateField('mother_birth_place', text)}
+            placeholder="Enter mother's birth place"
+          />
+        </View>
+      </View>
+
+      {/* Other Information */}
+      <Text style={styles.sectionTitle}>Other Information</Text>
+
+      <View style={styles.inputWrapper}>
+        <Text style={styles.inputLabel}>Marriage Type *</Text>
+        <CustomPicker
+          value={baptismForm.marriage_type || ''}
+          onValueChange={(value) => updateField('marriage_type', value)}
+          options={marriageTypeOptions}
+          iconName="heart-outline"
+          placeholder="Select marriage type"
+        />
+      </View>
+
+      <View style={styles.inputWrapper}>
+        <Text style={styles.inputLabel}>Address *</Text>
+        <View style={[styles.inputContainer, styles.multilineInputContainer]}>
+          <Ionicons name="home-outline" size={20} color="#999" style={{ marginRight: 10, alignSelf: 'flex-start', marginTop: 12 }} />
+          <TextInput
+            style={[styles.textInput, styles.multilineTextInput]}
+            value={baptismForm.address || ''}
+            onChangeText={(text) => updateField('address', text)}
+            placeholder="Enter address"
+            multiline
+            numberOfLines={3}
+            textAlignVertical="top"
+          />
+        </View>
+      </View>
+
+      <View style={styles.inputWrapper}>
+        <Text style={styles.inputLabel}>Contact Number *</Text>
+        <View style={styles.inputContainer}>
+          <Ionicons name="call-outline" size={20} color="#999" style={{ marginRight: 10 }} />
+          <TextInput
+            style={styles.textInput}
+            value={baptismForm.contact_number || ''}
+            onChangeText={(text) => updateField('contact_number', text)}
+            placeholder="Enter contact number"
+            keyboardType="phone-pad"
+          />
+        </View>
+      </View>
+
+      {/* Godparents Section */}
+      <Text style={styles.sectionTitle}>Godparents</Text>
+
+      <View style={styles.inputWrapper}>
+        <Text style={styles.inputLabel}>Main Godfather *</Text>
         <View style={styles.inputContainer}>
           <Ionicons name="person-outline" size={20} color="#999" style={{ marginRight: 10 }} />
           <TextInput
@@ -69,7 +329,7 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm }) {
       </View>
 
       <View style={styles.inputWrapper}>
-        <Text style={styles.inputLabel}>Main Godmother</Text>
+        <Text style={styles.inputLabel}>Main Godmother *</Text>
         <View style={styles.inputContainer}>
           <Ionicons name="person-outline" size={20} color="#999" style={{ marginRight: 10 }} />
           <TextInput
@@ -79,7 +339,6 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm }) {
             placeholder="Enter godmother's name"
           />
         </View>
-
         <View style={[styles.inputContainer, { marginTop: 10 }]}>
           <Ionicons name="link-outline" size={20} color="#999" style={{ marginRight: 10 }} />
           <TextInput
@@ -159,4 +418,3 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm }) {
     </View>
   );
 }
-
