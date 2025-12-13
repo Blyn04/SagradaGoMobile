@@ -127,6 +127,52 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
 
+  tabContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 30,
+    marginBottom: 10,
+    gap: 10,
+  },
+
+  tab: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    backgroundColor: '#f2f2f2',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  tabActive: {
+    backgroundColor: '#424242',
+  },
+
+  tabText: {
+    fontSize: 16,
+    fontFamily: 'Poppins_600SemiBold',
+    color: '#666',
+  },
+
+  tabTextActive: {
+    color: '#fff',
+  },
+
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 60,
+    paddingHorizontal: 30,
+  },
+
+  emptyText: {
+    fontSize: 16,
+    color: '#666',
+    fontFamily: 'Poppins_500Medium',
+    textAlign: 'center',
+  },
+
 });
 
 export default styles;

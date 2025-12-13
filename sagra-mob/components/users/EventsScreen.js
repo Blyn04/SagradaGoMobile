@@ -44,6 +44,7 @@ export default function EventsScreen({ onNavigate }) {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const [selectedTab, setSelectedTab] = useState("upcoming");
 
   useEffect(() => {
     fetchEvents();
@@ -63,7 +64,22 @@ export default function EventsScreen({ onNavigate }) {
     }
   };
 
-  const filteredEvents = events.filter(e =>
+  const now = new Date();
+  now.setHours(0, 0, 0, 0); 
+
+  const upcomingEvents = events.filter(e => {
+    const eventDate = new Date(e.date);
+    eventDate.setHours(0, 0, 0, 0);
+    return eventDate >= now;
+  });
+
+  const pastEvents = events.filter(e => {
+    const eventDate = new Date(e.date);
+    eventDate.setHours(0, 0, 0, 0);
+    return eventDate < now;
+  });
+
+  const filteredEvents = (selectedTab === "upcoming" ? upcomingEvents : pastEvents).filter(e =>
     e.title.toLowerCase().includes(search.toLowerCase()) ||
     e.location.toLowerCase().includes(search.toLowerCase())
   );
@@ -75,9 +91,13 @@ export default function EventsScreen({ onNavigate }) {
         <View style={styles.header}>
           <Text style={styles.greeting}>Hi, {getUserName()} 👋</Text>
           <Text style={styles.title}>
-            {events.length > 0
-              ? `We have ${events.length} events this month!`
-              : "No upcoming events yet!"}
+            {selectedTab === "upcoming"
+              ? upcomingEvents.length > 0
+                ? `We have ${upcomingEvents.length} upcoming events!`
+                : "No upcoming events yet!"
+              : pastEvents.length > 0
+              ? `We have ${pastEvents.length} past events!`
+              : "No past events yet!"}
           </Text>
         </View>
 
@@ -92,13 +112,47 @@ export default function EventsScreen({ onNavigate }) {
           />
         </View>
 
-        <View style={{ paddingHorizontal: 30, paddingBottom: 20 }}>
-          <Text style={styles.sectiontitle}>What's coming?</Text>
-          <Text style={styles.subtitle}>Upcoming events and activities.</Text>
+        {/* TABS */}
+        <View style={styles.tabContainer}>
+          <TouchableOpacity
+            style={[styles.tab, selectedTab === "upcoming" && styles.tabActive]}
+            onPress={() => setSelectedTab("upcoming")}
+          >
+            <Text style={[styles.tabText, selectedTab === "upcoming" && styles.tabTextActive]}>
+              Upcoming
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.tab, selectedTab === "past" && styles.tabActive]}
+            onPress={() => setSelectedTab("past")}
+          >
+            <Text style={[styles.tabText, selectedTab === "past" && styles.tabTextActive]}>
+              Past
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={{ paddingHorizontal: 30, paddingBottom: 20, paddingTop: 10 }}>
+          <Text style={styles.sectiontitle}>
+            {selectedTab === "upcoming" ? "What's coming?" : "Past events"}
+          </Text>
+          <Text style={styles.subtitle}>
+            {selectedTab === "upcoming"
+              ? "Upcoming events and activities."
+              : "Events that have already happened."}
+          </Text>
         </View>
 
         {loading ? (
           <ActivityIndicator size="large" color="#000" style={{ marginTop: 50 }} />
+        ) : filteredEvents.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>
+              {selectedTab === "upcoming"
+                ? "No upcoming events found."
+                : "No past events found."}
+            </Text>
+          </View>
         ) : (
           <ScrollView
             horizontal
@@ -120,7 +174,7 @@ export default function EventsScreen({ onNavigate }) {
                     <Text style={styles.cardInfo}>{event.location}</Text>
                   </View>
 
-                  {!authUser?.is_priest && (
+                  {!authUser?.is_priest && selectedTab === "upcoming" && (
                     <TouchableOpacity
                       style={styles.cardVolunteerBtn}
                       onPress={() => {
