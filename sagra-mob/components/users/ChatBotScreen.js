@@ -224,46 +224,64 @@ export default function ChatBotScreen({ user, onNavigate }) {
     }
   };
 
-  const getBotResponse = (userMessage) => {
-    const msg = userMessage.toLowerCase();
-
-    if (/(hello|hi|hey)/.test(msg))
-      return 'Hello! Welcome to Sagrada Familia Parish! How can I assist you today?';
-
-    if (msg.includes('booking date') || msg.includes('when can i book') || msg.includes('minimum date')) {
-      let response = 'Here are the minimum booking dates:\n\n';
-      Object.entries(sacramentInfo).forEach(([sacrament, info]) => {
-        response += `• ${sacrament}: ${info.minDate}\n`;
+  const getBotResponse = async (userMessage) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/chat/ai/response`, {
+        userId: user?.uid || 'guest',
+        message: userMessage,
       });
-      return response;
-    }
 
-    for (const sacrament of Object.keys(sacramentInfo)) {
-      if (msg.includes(sacrament.toLowerCase())) {
-        const info = sacramentInfo[sacrament];
-        return `${sacrament} Requirements:\n\nMinimum Booking Date: ${info.minDate}\n\nRequirements:\n${info.requirements.map(r => `• ${r}`).join('\n')}`;
+      if (response.data.success && response.data.message) {
+        return response.data.message;
+
+      } else {
+        return "I'm here to help! You can ask about sacraments, donations, events, volunteering, or the virtual tour.";
       }
+
+    } catch (error) {
+      console.error('AI Chatbot Error:', error);
+      
+      const msg = userMessage.toLowerCase();
+
+      if (/(hello|hi|hey)/.test(msg))
+        return 'Hello! Welcome to Sagrada Familia Parish! How can I assist you today?';
+
+      if (msg.includes('booking date') || msg.includes('when can i book') || msg.includes('minimum date')) {
+        let response = 'Here are the minimum booking dates:\n\n';
+        Object.entries(sacramentInfo).forEach(([sacrament, info]) => {
+          response += `• ${sacrament}: ${info.minDate}\n`;
+        });
+        
+        return response;
+      }
+
+      for (const sacrament of Object.keys(sacramentInfo)) {
+        if (msg.includes(sacrament.toLowerCase())) {
+          const info = sacramentInfo[sacrament];
+          return `${sacrament} Requirements:\n\nMinimum Booking Date: ${info.minDate}\n\nRequirements:\n${info.requirements.map(r => `• ${r}`).join('\n')}`;
+        }
+      }
+
+      if (msg.includes('sacrament') || msg.includes('what sacraments') || msg.includes('booking'))
+        return `You can book the following sacraments: ${Object.keys(sacramentInfo).join(', ')}.`;
+
+      if (msg.includes('donation'))
+        return 'You can make donations through the Donations section in the app.';
+
+      if (msg.includes('event'))
+        return 'You can view our parish events in the Events section.';
+
+      if (msg.includes('volunteer'))
+        return 'You can volunteer through the Events section of the app.';
+
+      if (msg.includes('tour'))
+        return 'The Virtual Tour allows a 360° exploration of the church.';
+
+      if (msg.includes('bye'))
+        return 'Thank you for visiting! God bless! 🙏';
+
+      return "I'm here to help! You can ask about sacraments, donations, events, volunteering, or the virtual tour. If you need more help, try using the 'Chat with Admin' feature.";
     }
-
-    if (msg.includes('sacrament') || msg.includes('what sacraments') || msg.includes('booking'))
-      return `You can book the following sacraments: ${Object.keys(sacramentInfo).join(', ')}.`;
-
-    if (msg.includes('donation'))
-      return 'You can make donations through the Donations section in the app.';
-
-    if (msg.includes('event'))
-      return 'You can view our parish events in the Events section.';
-
-    if (msg.includes('volunteer'))
-      return 'You can volunteer through the Events section of the app.';
-
-    if (msg.includes('tour'))
-      return 'The Virtual Tour allows a 360° exploration of the church.';
-
-    if (msg.includes('bye'))
-      return 'Thank you for visiting! God bless! 🙏';
-
-    return "I'm here to help! You can ask about sacraments, donations, events, volunteering, or the virtual tour.";
   };
 
   const addMessage = (text, sender) => {
@@ -278,7 +296,7 @@ export default function ChatBotScreen({ user, onNavigate }) {
     }, 100);
   };
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (!inputText.trim()) return;
 
     const userText = inputText.trim();
@@ -310,19 +328,99 @@ export default function ChatBotScreen({ user, onNavigate }) {
       setShowChoices(false);
       setInputText('');
 
+      // Show loading indicator
+      const loadingMsg = {
+        id: Date.now() + Math.random(),
+        text: 'Thinking...',
+        sender: 'bot',
+        timeSent: formatTime(new Date()),
+      };
+      setMessages((prev) => [...prev, loadingMsg]);
       setTimeout(() => {
-        addMessage(getBotResponse(userText), 'bot');
-      }, 500);
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+
+      try {
+        // Get AI response
+        const botResponse = await getBotResponse(userText);
+        
+        // Remove loading message and add actual response
+        setMessages((prev) => {
+          const filtered = prev.filter(msg => msg.id !== loadingMsg.id);
+          return [...filtered, {
+            id: Date.now() + Math.random(),
+            text: botResponse,
+            sender: 'bot',
+            timeSent: formatTime(new Date()),
+          }];
+        });
+        
+        setTimeout(() => {
+          scrollViewRef.current?.scrollToEnd({ animated: true });
+        }, 100);
+      } catch (error) {
+        console.error('Error getting bot response:', error);
+        // Remove loading message and add error message
+        setMessages((prev) => {
+          const filtered = prev.filter(msg => msg.id !== loadingMsg.id);
+          return [...filtered, {
+            id: Date.now() + Math.random(),
+            text: "I'm having trouble processing your request. Please try again or use the 'Chat with Admin' feature.",
+            sender: 'bot',
+            timeSent: formatTime(new Date()),
+          }];
+        });
+      }
     }
   };
 
-  const handleQuestionTap = (text) => {
+  const handleQuestionTap = async (text) => {
     addMessage(text, 'user');
     setShowChoices(false);
 
+    // Show loading indicator
+    const loadingMsg = {
+      id: Date.now() + Math.random(),
+      text: 'Thinking...',
+      sender: 'bot',
+      timeSent: formatTime(new Date()),
+    };
+    setMessages((prev) => [...prev, loadingMsg]);
     setTimeout(() => {
-      addMessage(getBotResponse(text), 'bot');
-    }, 500);
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 100);
+
+    try {
+      // Get AI response
+      const botResponse = await getBotResponse(text);
+      
+      // Remove loading message and add actual response
+      setMessages((prev) => {
+        const filtered = prev.filter(msg => msg.id !== loadingMsg.id);
+        return [...filtered, {
+          id: Date.now() + Math.random(),
+          text: botResponse,
+          sender: 'bot',
+          timeSent: formatTime(new Date()),
+        }];
+      });
+      
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+    } catch (error) {
+      console.error('Error getting bot response:', error);
+      // Remove loading message and add error message
+      setMessages((prev) => {
+        const filtered = prev.filter(msg => msg.id !== loadingMsg.id);
+        return [...filtered, {
+          id: Date.now() + Math.random(),
+          text: "I'm having trouble processing your request. Please try again or use the 'Chat with Admin' feature.",
+          sender: 'bot',
+          timeSent: formatTime(new Date()),
+        }];
+      });
+    }
   };
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
