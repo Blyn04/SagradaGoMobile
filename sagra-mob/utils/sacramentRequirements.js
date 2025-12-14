@@ -1,5 +1,10 @@
 export const sacramentRequirements = {
   Wedding: [
+    { id: 'wedding_questionnaires', label: 'Wedding Questionnaires', requiresUpload: false },
+    { id: 'canonical_interview', label: 'Canonical Interview', requiresUpload: false },
+    { id: 'pre_cana_seminar', label: 'Pre-Cana Seminar', requiresUpload: false },
+    { id: 'confession', label: 'Confession', requiresUpload: false },
+    { id: 'invitation_card', label: 'Invitation Card for Motif Reference', requiresUpload: false },
     { id: 'marriage_license', label: 'Marriage License', requiresUpload: true, optionalIfCivillyMarried: true },
     { id: 'marriage_contract', label: 'Marriage Contract', requiresUpload: true, optionalIfCivillyMarried: false, onlyIfCivillyMarried: true },
     { id: 'groom_baptismal_cert', label: 'Groom Baptismal Certificate', requiresUpload: true },
