@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_BASE_URL } from '../config/API';
+import { registerForPushNotificationsAsync } from '../utils/RegisterPushToken';
 
 const AuthContext = createContext();
 
@@ -38,6 +39,17 @@ export const AuthProvider = ({ children }) => {
         
         setUser(userData);
         setIsAuthenticated(true);
+
+        // Register for push notifications when user is loaded from storage
+        try {
+          console.log('[AuthContext] Registering for push notifications (from storage)...');
+          const userForFCM = { id: userData.uid };
+          await registerForPushNotificationsAsync(userForFCM, userData.uid, userData.is_admin ? 'Admin' : 'User');
+          console.log('[AuthContext] Push notification registration completed (from storage)');
+        } catch (fcmError) {
+          console.error('[AuthContext] Error registering for push notifications (from storage):', fcmError);
+          // Don't fail if FCM registration fails
+        }
       }
 
     } catch (error) {
@@ -101,6 +113,18 @@ export const AuthProvider = ({ children }) => {
         await saveUserToStorage(userData);
         setUser(userData);
         setIsAuthenticated(true);
+
+        // Register for push notifications after successful login
+        try {
+          console.log('[AuthContext] Registering for push notifications...');
+          const userForFCM = { id: userData.uid }; // FCM registration expects { id: uid }
+          await registerForPushNotificationsAsync(userForFCM, userData.uid, userData.is_admin ? 'Admin' : 'User');
+          console.log('[AuthContext] Push notification registration completed');
+        } catch (fcmError) {
+          console.error('[AuthContext] Error registering for push notifications:', fcmError);
+          // Don't fail login if FCM registration fails
+        }
+
         return { success: true, user: userData, message: data.message };
 
       } else {

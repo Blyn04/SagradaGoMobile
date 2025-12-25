@@ -16,17 +16,17 @@ const getBaseURL = () => {
   // For physical devices, use IP address from .env file
   // Make sure your phone and computer are on the same Wi-Fi network
   const ipAddress = API_KMC || API_IP;
-  if (ipAddress) {
-    const url = `http://${ipAddress}:8080/api`;
-    console.log(`📱 Using API IP from .env: ${url}`);
-    return url;
-  }
-
-  // if (API_IP) {
-  //   const url = `http://${API_IP}:8080/api`;
-  //   console.log(`📱 Using API_IP from .env: ${url}`);
+  // if (ipAddress) {
+  //   const url = `http://${ipAddress}:8080/api`;
+  //   console.log(`📱 Using API IP from .env: ${url}`);
   //   return url;
   // }
+
+  if (API_IP) {
+    const url = `http://${API_IP}:8080/api`;
+    console.log(`📱 Using API_IP from .env: ${url}`);
+    return url;
+  }
   
   // Fallback to platform-specific defaults if API_IP is not set
   if (Platform.OS === 'android') {
@@ -40,7 +40,7 @@ const getBaseURL = () => {
   }
 };
 
-// export const API_BASE_URL = getBaseURL();
-export const API_BASE_URL = 'https://sagradagoapi-xwxz.onrender.com/api';
+export const API_BASE_URL = getBaseURL();
+// export const API_BASE_URL = 'https://sagradagoapi-xwxz.onrender.com/api';
 console.log(`🌐 API_BASE_URL configured as: ${API_BASE_URL}`);
 

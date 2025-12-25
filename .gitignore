@@ -1,0 +1,9 @@
+# Firebase service account keys (SENSITIVE - NEVER COMMIT!)
+**/firebaseServiceKey.json
+**/config/firebaseServiceKey.json
+firebaseServiceKey.json
+*-firebase-adminsdk-*.json
+
+# If your backend is in SagradaGoAPI folder
+SagradaGoAPI/config/firebaseServiceKey.json
+

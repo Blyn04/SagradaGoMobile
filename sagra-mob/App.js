@@ -3,6 +3,7 @@ import { StyleSheet, View, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
 
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import notificationHandler from './utils/NotificationHandler';
 import GetStartedScreen from './components/GetStarted';
 import LoginScreen from './components/LoginScreen';
 import SignUpScreen from './components/SignUpScreen';
@@ -52,6 +53,13 @@ function AppContent() {
     Poppins_800ExtraBold,
     Poppins_900Black,
   });
+
+  useEffect(() => {
+    // Initialize notification handler when app starts
+    notificationHandler.initialize().catch(err => {
+      console.error('Failed to initialize notification handler:', err);
+    });
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated && user) {

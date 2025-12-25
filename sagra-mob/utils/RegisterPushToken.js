@@ -1,7 +1,7 @@
-import firestore from '@react-native-firebase/firestore';
 import { Platform } from 'react-native';
-import * as Notifications from 'expo-notifications';
 import messaging from '@react-native-firebase/messaging';
+import { getFirestore, doc, setDoc, updateDoc } from 'firebase/firestore';
+import app from '../config/FireBaseConfig';
 
 /**
  * Register for FCM push notifications
@@ -37,23 +37,14 @@ export const registerForPushNotificationsAsync = async (user, userDocId, role) =
       fcmToken = null;
     }
 
-    // Get Expo push token as fallback
-    let expoToken = null;
-    try {
-      const { status } = await Notifications.getPermissionsAsync();
-      if (status === 'granted') {
-        const expoTokenData = await Notifications.getExpoPushTokenAsync();
-        expoToken = expoTokenData.data;
-        console.log("[FCM] Expo Token retrieved:", expoToken);
-      }
-    } catch (expoError) {
-      console.log("[FCM] Expo token error:", expoError.message);
+    if (!fcmToken) {
+      console.log("[FCM] No FCM token available, cannot register for push notifications");
+      return null;
     }
 
-    // Use firestore() directly
+    // Save token to Firestore
     const tokenData = {
       fcmToken: fcmToken,
-      expoPushToken: expoToken,
       userDocId: userDocId,
       role: role || "User",
       platform: Platform.OS,
@@ -62,14 +53,16 @@ export const registerForPushNotificationsAsync = async (user, userDocId, role) =
     };
 
     // Save to Firestore
-    await firestore().collection("pushTokens").doc(user.id).set(tokenData);
+    const db = getFirestore(app);
+    await setDoc(doc(db, "pushTokens", user.id), tokenData);
     console.log("[FCM] Tokens saved to Firestore for user:", user.id);
 
     // Setup token refresh listener
     try {
       messaging().onTokenRefresh(async (newToken) => {
         console.log("[FCM] Token refreshed:", newToken);
-        await firestore().collection("pushTokens").doc(user.id).update({
+        const db = getFirestore(app);
+        await updateDoc(doc(db, "pushTokens", user.id), {
           fcmToken: newToken,
           updatedAt: new Date(),
         });
@@ -80,7 +73,6 @@ export const registerForPushNotificationsAsync = async (user, userDocId, role) =
 
     return {
       fcmToken,
-      expoToken,
       userId: user.id,
     };
 
@@ -97,10 +89,10 @@ export const unregisterPushNotifications = async (user) => {
   try {
     if (!user || !user.id) return;
 
-    // Use firestore() directly
-    await firestore().collection("pushTokens").doc(user.id).update({
+    // Use Firestore directly
+    const db = getFirestore(app);
+    await updateDoc(doc(db, "pushTokens", user.id), {
       fcmToken: null,
-      expoPushToken: null,
       deletedAt: new Date(),
     });
 
