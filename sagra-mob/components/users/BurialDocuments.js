@@ -46,6 +46,7 @@ export default function BurialDocuments({ burialForm, setBurialForm }) {
             value={burialForm.deceased_name || ''}
             onChangeText={(text) => updateField('deceased_name', text)}
             placeholder="Enter deceased name"
+                        placeholderTextColor="#999"
           />
         </View>
       </View>
@@ -60,6 +61,7 @@ export default function BurialDocuments({ burialForm, setBurialForm }) {
             value={burialForm.deceased_age || ''}
             onChangeText={(text) => updateField('deceased_age', text)}
             placeholder="Enter age"
+                        placeholderTextColor="#999"
             keyboardType="numeric"
           />
         </View>
@@ -86,6 +88,7 @@ export default function BurialDocuments({ burialForm, setBurialForm }) {
             value={burialForm.requested_by || ''}
             onChangeText={(text) => updateField('requested_by', text)}
             placeholder="Enter name of person requesting"
+                        placeholderTextColor="#999"
           />
         </View>
       </View>
@@ -100,6 +103,7 @@ export default function BurialDocuments({ burialForm, setBurialForm }) {
             value={burialForm.relationship_to_deceased || ''}
             onChangeText={(text) => updateField('relationship_to_deceased', text)}
             placeholder="e.g., Son, Daughter, Spouse, etc."
+                        placeholderTextColor="#999"
           />
         </View>
       </View>
@@ -116,6 +120,7 @@ export default function BurialDocuments({ burialForm, setBurialForm }) {
             placeholder="Enter address"
             multiline
             numberOfLines={3}
+                        placeholderTextColor="#999"
           />
         </View>
       </View>
@@ -131,6 +136,7 @@ export default function BurialDocuments({ burialForm, setBurialForm }) {
             onChangeText={(text) => updateField('contact_number', text)}
             placeholder="Enter contact number"
             keyboardType="phone-pad"
+                        placeholderTextColor="#999"
           />
         </View>
       </View>
@@ -145,6 +151,7 @@ export default function BurialDocuments({ burialForm, setBurialForm }) {
             value={burialForm.place_of_mass || ''}
             onChangeText={(text) => updateField('place_of_mass', text)}
             placeholder="Enter place of mass"
+                        placeholderTextColor="#999"
           />
         </View>
       </View>
@@ -160,6 +167,7 @@ export default function BurialDocuments({ burialForm, setBurialForm }) {
             onChangeText={(text) => updateField('mass_address', text)}
             placeholder="Enter mass address"
             multiline
+                        placeholderTextColor="#999"
             numberOfLines={3}
           />
         </View>

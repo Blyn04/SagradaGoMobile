@@ -171,6 +171,7 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
             value={baptismForm.father_first_name || ''}
             onChangeText={(text) => updateField('father_first_name', text)}
             placeholder="Enter father's first name"
+                        placeholderTextColor="#999"
           />
         </View>
       </View>
@@ -303,6 +304,7 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
             multiline
             numberOfLines={3}
             textAlignVertical="top"
+                        placeholderTextColor="#999"
           />
         </View>
       </View>
@@ -394,6 +396,7 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
                 value={godparent.name || ''}
                 onChangeText={(text) => updateAdditionalGodparent(index, 'name', text)}
                 placeholder="Godparent name"
+                            placeholderTextColor="#999"
               />
             </View>
 
@@ -404,6 +407,7 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
                 value={godparent.relationship || ''}
                 onChangeText={(text) => updateAdditionalGodparent(index, 'relationship', text)}
                 placeholder="Relationship"
+                            placeholderTextColor="#999"
               />
             </View>
 
@@ -425,6 +429,7 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
               <TextInput
                 style={styles.textInput}
                 placeholder="Enter name"
+                            placeholderTextColor="#999"
                 onChangeText={(text) => {
                   const newGodparent = { name: text, relationship: '' };
                   setBaptismForm({

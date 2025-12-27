@@ -65,7 +65,7 @@ export default function EventsScreen({ onNavigate }) {
   };
 
   const now = new Date();
-  now.setHours(0, 0, 0, 0); 
+  now.setHours(0, 0, 0, 0);
 
   const upcomingEvents = events.filter(e => {
     const eventDate = new Date(e.date);
@@ -96,8 +96,8 @@ export default function EventsScreen({ onNavigate }) {
                 ? `We have ${upcomingEvents.length} upcoming events!`
                 : "No upcoming events yet!"
               : pastEvents.length > 0
-              ? `We have ${pastEvents.length} past events!`
-              : "No past events yet!"}
+                ? `We have ${pastEvents.length} past events!`
+                : "No past events yet!"}
           </Text>
         </View>
 
@@ -108,6 +108,7 @@ export default function EventsScreen({ onNavigate }) {
             style={styles.searchInput}
             placeholder="Search events..."
             value={search}
+            placeholderTextColor="#999"
             onChangeText={setSearch}
           />
         </View>

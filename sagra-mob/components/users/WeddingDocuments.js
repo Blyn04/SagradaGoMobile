@@ -56,7 +56,7 @@ export default function WeddingDocuments({ weddingForm, setWeddingForm }) {
           },
         });
       }
-      
+
     } catch (error) {
       Alert.alert('Error', 'Failed to pick image. Please try again.');
       console.error('Image picker error:', error);
@@ -80,7 +80,7 @@ export default function WeddingDocuments({ weddingForm, setWeddingForm }) {
   return (
     <View style={styles.sacramentFormContainer}>
       <Text style={styles.sacramentFormTitle}>Wedding Information</Text>
-      
+
       <View style={styles.inputWrapper}>
         <Text style={styles.inputLabel}>Contact Number</Text>
         <View style={styles.inputContainer}>
@@ -92,6 +92,7 @@ export default function WeddingDocuments({ weddingForm, setWeddingForm }) {
             placeholder="09XX-XXX-XXXX"
             keyboardType="phone-pad"
             maxLength={13}
+            placeholderTextColor="#999"
           />
         </View>
         <Text style={styles.inputHelperText}>Enter 11-digit PH mobile number (e.g., 09171234567)</Text>
@@ -107,6 +108,7 @@ export default function WeddingDocuments({ weddingForm, setWeddingForm }) {
               value={weddingForm[field.key] || ''}
               onChangeText={(text) => setWeddingForm({ ...weddingForm, [field.key]: text })}
               placeholder={`Enter ${field.label.toLowerCase()}`}
+              placeholderTextColor="#999"
             />
           </View>
         </View>
@@ -123,6 +125,7 @@ export default function WeddingDocuments({ weddingForm, setWeddingForm }) {
                 value={weddingForm[field.key] || ''}
                 onChangeText={(text) => setWeddingForm({ ...weddingForm, [field.key]: text })}
                 placeholder={`Enter ${field.label.toLowerCase()}`}
+                placeholderTextColor="#999"
               />
             </View>
           ) : (
@@ -130,18 +133,18 @@ export default function WeddingDocuments({ weddingForm, setWeddingForm }) {
               style={styles.fileUploadButton}
               onPress={() => pickImage(field.key)}
             >
-              <Ionicons 
-                name={weddingForm[field.key] ? "checkmark-circle" : "document-attach-outline"} 
-                size={20} 
-                color={weddingForm[field.key] ? "#4CAF50" : "#666"} 
-                style={{ marginRight: 10 }} 
+              <Ionicons
+                name={weddingForm[field.key] ? "checkmark-circle" : "document-attach-outline"}
+                size={20}
+                color={weddingForm[field.key] ? "#4CAF50" : "#666"}
+                style={{ marginRight: 10 }}
               />
               <Text style={[
                 styles.fileUploadText,
                 weddingForm[field.key] && styles.fileUploadTextSelected
               ]}>
-                {weddingForm[field.key] 
-                  ? weddingForm[field.key].fileName || 'File Selected' 
+                {weddingForm[field.key]
+                  ? weddingForm[field.key].fileName || 'File Selected'
                   : `Upload ${field.label}`}
               </Text>
             </TouchableOpacity>

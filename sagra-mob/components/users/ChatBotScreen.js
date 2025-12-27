@@ -517,6 +517,7 @@ export default function ChatBotScreen({ user, onNavigate }) {
             <TextInput
               style={styles.chatbotTextInput}
               placeholder="Type a message..."
+                          placeholderTextColor="#999"
               value={inputText}
               onChangeText={setInputText}
               onSubmitEditing={sendMessage}

@@ -39,11 +39,11 @@ export default function VolunteerScreen({ visible, onClose, event }) {
         authUser.middle_name || '',
         authUser.last_name || ''
       ].filter(Boolean).join(' ').trim();
-      
+
       if (fullName) {
         setName(fullName);
       }
-      
+
       if (authUser.contact_number) {
         setContact(authUser.contact_number);
       }
@@ -68,7 +68,7 @@ export default function VolunteerScreen({ visible, onClose, event }) {
       contact: contact,
       role: role,
       eventTitle: event?.title || 'General Volunteer',
-      eventId: event?._id || null, 
+      eventId: event?._id || null,
       user_id: authUser?.id || authUser?._id,
     };
 
@@ -91,11 +91,11 @@ export default function VolunteerScreen({ visible, onClose, event }) {
                   authUser.middle_name || '',
                   authUser.last_name || ''
                 ].filter(Boolean).join(' ').trim();
-                
+
                 if (fullName) {
                   setName(fullName);
                 }
-                
+
                 if (authUser.contact_number) {
                   setContact(authUser.contact_number);
                 }
@@ -108,7 +108,7 @@ export default function VolunteerScreen({ visible, onClose, event }) {
           },
         ]
       );
-      
+
     } else {
       setErrorMessage(result.message || 'Failed to save volunteer information. Please try again.');
       Alert.alert('Error', result.message || 'Failed to save volunteer information. Please try again.');
@@ -167,6 +167,7 @@ export default function VolunteerScreen({ visible, onClose, event }) {
                 placeholder="Name"
                 value={name}
                 onChangeText={setName}
+                placeholderTextColor="#999"
               />
             </View>
 
@@ -175,6 +176,7 @@ export default function VolunteerScreen({ visible, onClose, event }) {
               <TextInput
                 style={styles.input}
                 placeholder="Contact"
+                placeholderTextColor="#999"
                 value={contact}
                 onChangeText={setContact}
                 keyboardType="phone-pad"
@@ -188,8 +190,8 @@ export default function VolunteerScreen({ visible, onClose, event }) {
               placeholder="Role"
             />
 
-            <TouchableOpacity 
-              style={[styles.submitButton, (isSubmitting || loading) && { opacity: 0.6 }]} 
+            <TouchableOpacity
+              style={[styles.submitButton, (isSubmitting || loading) && { opacity: 0.6 }]}
               onPress={handleSubmit}
               disabled={isSubmitting || loading}
             >

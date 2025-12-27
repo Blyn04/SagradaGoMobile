@@ -29,7 +29,7 @@ import * as ImagePicker from 'expo-image-picker';
 const getMinimumBookingDate = (sacrament) => {
   const today = dayjs();
   let minDate;
-  
+
   switch (sacrament) {
     case 'Baptism':
     case 'Wedding':
@@ -47,14 +47,14 @@ const getMinimumBookingDate = (sacrament) => {
     default:
       minDate = today;
   }
-  
+
   return minDate.format('YYYY-MM-DD');
 };
 
 const getMinimumBookingDateDisplay = (sacrament) => {
   const today = dayjs();
   let minDate;
-  
+
   switch (sacrament) {
     case 'Baptism':
     case 'Wedding':
@@ -72,7 +72,7 @@ const getMinimumBookingDateDisplay = (sacrament) => {
     default:
       minDate = today;
   }
-  
+
   return minDate.format('MMMM D, YYYY');
 };
 
@@ -101,7 +101,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [showQRCode, setShowQRCode] = useState(false);
   const [showPaymentMethod, setShowPaymentMethod] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState(null); 
+  const [paymentMethod, setPaymentMethod] = useState(null);
   const [proofOfPayment, setProofOfPayment] = useState(null);
   const [isUploadModalVisible, setIsUploadModalVisible] = useState(false);
   const [uploadedDocuments, setUploadedDocuments] = useState({});
@@ -294,7 +294,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
       } else {
         updated[selectedSacrament] = sacramentDocs;
       }
-      
+
       return updated;
     });
   };
@@ -363,7 +363,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
         setErrorMessage('User information not available. Please try again.');
         return;
       }
-      
+
       const middleName = user.middle_name;
       if (!middleName || middleName.trim() === '') {
         Alert.alert(
@@ -396,62 +396,62 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
     }
 
     if (selectedSacrament === 'Wedding') {
-      if (!weddingForm.groom_first_name || !weddingForm.groom_last_name || 
-          !weddingForm.bride_first_name || !weddingForm.bride_last_name || 
-          !weddingForm.contact_no) {
+      if (!weddingForm.groom_first_name || !weddingForm.groom_last_name ||
+        !weddingForm.bride_first_name || !weddingForm.bride_last_name ||
+        !weddingForm.contact_no) {
         setErrorMessage('Please fill in all required wedding information (groom first & last name, bride first & last name, and contact number).');
         return;
       }
 
-        if (!weddingForm.groom_1x1 || !weddingForm.bride_1x1) {
-          setErrorMessage('Please upload both groom and bride 1x1 photos.');
-          return;
-        }
+      if (!weddingForm.groom_1x1 || !weddingForm.bride_1x1) {
+        setErrorMessage('Please upload both groom and bride 1x1 photos.');
+        return;
+      }
 
-        const weddingDocs = uploadedDocuments[selectedSacrament] || {};
-        const isCivillyMarried = weddingForm.is_civilly_married === 'yes';
+      const weddingDocs = uploadedDocuments[selectedSacrament] || {};
+      const isCivillyMarried = weddingForm.is_civilly_married === 'yes';
 
-        const hasGroomBaptismal = weddingDocs.groom_baptismal_cert;
-        const hasBrideBaptismal = weddingDocs.bride_baptismal_cert;
-        const hasGroomConfirmation = weddingDocs.groom_confirmation_cert;
-        const hasBrideConfirmation = weddingDocs.bride_confirmation_cert;
+      const hasGroomBaptismal = weddingDocs.groom_baptismal_cert;
+      const hasBrideBaptismal = weddingDocs.bride_baptismal_cert;
+      const hasGroomConfirmation = weddingDocs.groom_confirmation_cert;
+      const hasBrideConfirmation = weddingDocs.bride_confirmation_cert;
 
-        if (isCivillyMarried && !weddingDocs.marriage_contract) {
-          setErrorMessage('Please upload marriage contract (required for civilly married couples).');
-          return;
-        }
+      if (isCivillyMarried && !weddingDocs.marriage_contract) {
+        setErrorMessage('Please upload marriage contract (required for civilly married couples).');
+        return;
+      }
 
-        if (!isCivillyMarried && !weddingDocs.marriage_license) {
-          setErrorMessage('Please upload marriage license.');
-          return;
-        }
+      if (!isCivillyMarried && !weddingDocs.marriage_license) {
+        setErrorMessage('Please upload marriage license.');
+        return;
+      }
 
-        if (!hasGroomBaptismal) {
-          setErrorMessage('Please upload groom baptismal certificate.');
-          return;
-        }
+      if (!hasGroomBaptismal) {
+        setErrorMessage('Please upload groom baptismal certificate.');
+        return;
+      }
 
-        if (!hasBrideBaptismal) {
-          setErrorMessage('Please upload bride baptismal certificate.');
-          return;
-        }
+      if (!hasBrideBaptismal) {
+        setErrorMessage('Please upload bride baptismal certificate.');
+        return;
+      }
 
-        if (!hasGroomConfirmation) {
-          setErrorMessage('Please upload groom confirmation certificate.');
-          return;
-        }
+      if (!hasGroomConfirmation) {
+        setErrorMessage('Please upload groom confirmation certificate.');
+        return;
+      }
 
-        if (!hasBrideConfirmation) {
-          setErrorMessage('Please upload bride confirmation certificate.');
-          return;
-        }
+      if (!hasBrideConfirmation) {
+        setErrorMessage('Please upload bride confirmation certificate.');
+        return;
+      }
 
     } else if (selectedSacrament === 'Baptism') {
       if (!baptismForm.candidate_first_name || !baptismForm.candidate_last_name) {
         setErrorMessage('Please fill in Baby first name and last name.');
         return;
       }
-      
+
       if (!baptismForm.candidate_birthday) {
         setErrorMessage('Please enter Baby birthday.');
         return;
@@ -542,7 +542,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
         setErrorMessage('Please enter contact number.');
         return;
       }
-      
+
       const hasSelection = burialForm.funeral_mass || burialForm.death_anniversary ||
         burialForm.funeral_blessing || burialForm.tomb_blessing;
 
@@ -637,7 +637,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
           mimeType: asset.mimeType || 'image/jpeg',
         });
       }
-      
+
     } catch (error) {
       Alert.alert('Error', 'Failed to pick image. Please try again.');
       console.error('Image picker error:', error);
@@ -654,9 +654,9 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
     if (method && typeof method !== 'string') {
       method = null;
     }
-    
+
     const currentPaymentMethod = method || paymentMethod || 'in_person';
-    
+
     if (typeof currentPaymentMethod !== 'string') {
       console.error('Invalid payment method type:', typeof currentPaymentMethod, currentPaymentMethod);
       Alert.alert('Error', 'Payment method error. Please try again.');
@@ -671,7 +671,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
 
     if (date && time) {
       const conflictCheck = await checkBookingConflict(date, time);
-      
+
       if (conflictCheck.hasConflict) {
         Alert.alert('Booking Conflict', conflictCheck.message);
         setSubmitting(false);
@@ -683,7 +683,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
 
     try {
       const formData = new FormData();
-      
+
       formData.append('uid', user.uid);
       formData.append('full_name', fullName);
       formData.append('email', email);
@@ -707,17 +707,17 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
 
       formData.append('date', combinedDateTime.toISOString());
       formData.append('time', timeString);
-      
+
       formData.append('payment_method', currentPaymentMethod);
       formData.append('amount', getSacramentPrice(selectedSacrament).toString());
-      
+
       console.log('Payment method check:', {
         currentPaymentMethod,
         paymentMethodState: paymentMethod,
         hasProofOfPayment: !!proofOfPayment,
         proofOfPaymentUri: proofOfPayment?.uri,
       });
-      
+
       if (currentPaymentMethod === 'gcash' && proofOfPayment && proofOfPayment.uri) {
         try {
           console.log('Attempting to append proof of payment...');
@@ -748,7 +748,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
       }
 
       const docs = uploadedDocuments[selectedSacrament] || {};
-      
+
       if (selectedSacrament === 'Wedding') {
         if (!weddingForm.groom_first_name || !weddingForm.groom_last_name) {
           Alert.alert('Validation Error', 'Please fill in groom first name and last name.');
@@ -764,7 +764,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
 
         const groomFullname = `${weddingForm.groom_first_name} ${weddingForm.groom_middle_name || ''} ${weddingForm.groom_last_name}`.trim();
         const brideFullname = `${weddingForm.bride_first_name} ${weddingForm.bride_middle_name || ''} ${weddingForm.bride_last_name}`.trim();
-        
+
         formData.append('groom_fullname', groomFullname);
         formData.append('bride_fullname', brideFullname);
         formData.append('contact_number', weddingForm.contact_no || user.contact_number || '');
@@ -805,7 +805,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
               type: fileType,
               name: fileName,
             });
-            
+
             console.log(`Appending wedding document: ${reqId}`, {
               uri: fileUri,
               type: fileType,
@@ -921,7 +921,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
         formData.append('marriage_type', baptismForm.marriage_type || '');
         formData.append('address', baptismForm.address || '');
         formData.append('contact_number', baptismForm.contact_number || user.contact_number || '');
-        
+
         console.log('Baptism Form Data:');
         console.log('- candidate:', baptismForm.candidate_first_name, baptismForm.candidate_last_name);
         console.log('- father:', baptismForm.father_first_name, baptismForm.father_last_name);
@@ -933,7 +933,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
         const mainGodfather = baptismForm.main_godfather || {};
         const mainGodmother = baptismForm.main_godmother || {};
         const additionalGodparents = baptismForm.additional_godparents || [];
-        
+
         formData.append('main_godfather', JSON.stringify(mainGodfather));
         formData.append('main_godmother', JSON.stringify(mainGodmother));
         formData.append('additional_godparents', JSON.stringify(additionalGodparents));
@@ -1053,7 +1053,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
             Alert.alert('Success', 'Confession booking submitted successfully!', [
               { text: 'OK', onPress: handleClose }
             ]);
-            
+
           } else {
             throw new Error(data.message || 'Failed to submit Confession booking.');
           }
@@ -1105,7 +1105,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
           console.error('Error message:', err.message);
           console.error('Error stack:', err.stack);
           Alert.alert('Error', err.message || 'Failed to submit Communion booking. Please try again.');
-          throw err; 
+          throw err;
         }
 
       } else if (selectedSacrament === 'Anointing of the Sick') {
@@ -1142,7 +1142,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
             Alert.alert('Success', 'Anointing of the Sick booking submitted successfully!', [
               { text: 'OK', onPress: handleClose }
             ]);
-            
+
           } else {
             throw new Error(data.message || 'Failed to submit Anointing of the Sick booking.');
           }
@@ -1154,7 +1154,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
 
       } else if (selectedSacrament === 'Confirmation') {
         formData.append('contact_number', user.contact_number || '');
-        formData.append('sponsor_name', ''); 
+        formData.append('sponsor_name', '');
 
         const confirmationDocs = {
           'baptismal_certificate': 'baptismal_certificate',
@@ -1207,7 +1207,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
     try {
       console.log('Starting fetch request...');
       console.log('FormData entries count (approximate):', formData._parts ? formData._parts.length : 'unknown');
-      
+
       if (formData._parts) {
         console.log('FormData parts:', formData._parts.map(part => ({
           field: part[0],
@@ -1216,7 +1216,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
           isFile: part[1] && typeof part[1] === 'object' && part[1].uri ? 'file' : 'text'
         })));
       }
-      
+
       response = await fetch(url, {
         method: 'POST',
         body: formData,
@@ -1242,12 +1242,12 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
 
     console.log('Response status:', response.status);
     console.log('Response headers:', JSON.stringify(Object.fromEntries(response.headers.entries())));
-    
+
     let data;
     try {
       const text = await response.text();
       console.log('Response text:', text);
- 
+
       if (text.trim()) {
         try {
           data = JSON.parse(text);
@@ -1269,38 +1269,38 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
 
     if (response.ok) {
       return data;
-      
-      } else {
-        let errorMsg = '';
-        if (response.status === 500 || response.status === 600) {
-          errorMsg = `Server error (${response.status}). ${data.message || 'Please check the server logs for more details.'}\n\n`;
-          errorMsg += `Check:\n`;
-          errorMsg += `- All required fields are provided\n`;
-          errorMsg += `- File formats are correct\n`;
-          errorMsg += `- Server database connection is working\n`;
-          errorMsg += `- All required documents are uploaded\n\n`;
 
-          if (data.error) {
-            errorMsg += `Error details: ${JSON.stringify(data.error)}\n`;
-          }
+    } else {
+      let errorMsg = '';
+      if (response.status === 500 || response.status === 600) {
+        errorMsg = `Server error (${response.status}). ${data.message || 'Please check the server logs for more details.'}\n\n`;
+        errorMsg += `Check:\n`;
+        errorMsg += `- All required fields are provided\n`;
+        errorMsg += `- File formats are correct\n`;
+        errorMsg += `- Server database connection is working\n`;
+        errorMsg += `- All required documents are uploaded\n\n`;
 
-          if (data.stack && __DEV__) {
-            errorMsg += `Stack: ${data.stack.substring(0, 500)}\n`;
-          }
-          
-        } else {
-          errorMsg = data.message || `Failed to submit booking (Status: ${response.status}). Please try again.`;
+        if (data.error) {
+          errorMsg += `Error details: ${JSON.stringify(data.error)}\n`;
         }
-        
-        console.error('Server error response:', {
-          status: response.status,
-          statusText: response.statusText,
-          data: data,
-          fullResponse: JSON.stringify(data, null, 2)
-        });
-        
-        throw new Error(errorMsg);
+
+        if (data.stack && __DEV__) {
+          errorMsg += `Stack: ${data.stack.substring(0, 500)}\n`;
+        }
+
+      } else {
+        errorMsg = data.message || `Failed to submit booking (Status: ${response.status}). Please try again.`;
       }
+
+      console.error('Server error response:', {
+        status: response.status,
+        statusText: response.statusText,
+        data: data,
+        fullResponse: JSON.stringify(data, null, 2)
+      });
+
+      throw new Error(errorMsg);
+    }
   };
 
   const minDate = selectedSacrament
@@ -1443,6 +1443,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
                         onChangeText={setPax}
                         placeholder="Enter number of people"
                         keyboardType="number-pad"
+                        placeholderTextColor="#999"
                       />
                     </View>
                   </View>
@@ -1562,12 +1563,12 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
                 <Ionicons name="close" size={28} color="#333" />
               </TouchableOpacity>
             </View>
-            
+
             <View style={styles.qrCodeContainer}>
               <Text style={styles.qrCodeSubtitle}>
                 Choose your preferred payment method for your {selectedSacrament} booking
               </Text>
-              
+
               {selectedSacrament !== 'Confession' && selectedSacrament !== 'Anointing of the Sick' && (
                 <View style={styles.paymentAmountContainer}>
                   <Text style={styles.paymentAmountLabel}>Amount to Pay:</Text>
@@ -1643,7 +1644,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
                 <Ionicons name="close" size={28} color="#333" />
               </TouchableOpacity>
             </View>
-            
+
             <ScrollView style={styles.qrCodeScrollView} showsVerticalScrollIndicator={false}>
               <View style={styles.qrCodeContainer}>
                 {selectedSacrament !== 'Confession' && selectedSacrament !== 'Anointing of the Sick' && (
@@ -1673,7 +1674,7 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
                   <Text style={styles.proofOfPaymentSubtext}>
                     Please upload a screenshot or photo of your GCash payment confirmation
                   </Text>
-                  
+
                   {proofOfPayment ? (
                     <View style={styles.proofOfPaymentImageContainer}>
                       <Image
