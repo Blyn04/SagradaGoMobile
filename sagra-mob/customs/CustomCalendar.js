@@ -23,6 +23,7 @@ export default function CustomCalendar({
   markedDates = [],
   showNavigation = true,
   initialDate = dayjs(),
+  isPriestView = false,
 }) {
   const getInitialMonth = () => {
     if (selectedDate) {
@@ -101,7 +102,6 @@ export default function CustomCalendar({
   const eventsForDate = (date) => {
     if (!markedDates || markedDates.length === 0) return [];
     return markedDates.filter((event) => {
-
       if (!event) return false;
       const eventDate = dayjs(event.date || event);
       return eventDate.isValid() && eventDate.isSame(date, 'day');
@@ -165,20 +165,71 @@ export default function CustomCalendar({
           {dayEvents.map((event, idx) => {
             let backgroundColor;
 
-            if ((event.status || '').toLowerCase() === 'confirmed') {
-              backgroundColor = '#52c41a';
+            if (isPriestView) {
+              const now = dayjs();
+              let bookingDateTime;
+              
+              if (event.date) {
+                const bookingDate = dayjs(event.date);
+                
+                if (event.time) {
+                  const timeObj = dayjs(event.time);
+                  if (timeObj.isValid()) {
+                    bookingDateTime = bookingDate.hour(timeObj.hour()).minute(timeObj.minute()).second(0);
+                 
+                  } else {
+                    const timeStr = event.time.toString();
+                    const timeMatch = timeStr.match(/(\d{1,2}):(\d{2})/);
+                    if (timeMatch) {
+                      let hours = parseInt(timeMatch[1]);
+                      const minutes = parseInt(timeMatch[2]);
+                      
+                      if (timeStr.toUpperCase().includes('PM') && hours !== 12) {
+                        hours += 12;
+                      
+                      } else if (timeStr.toUpperCase().includes('AM') && hours === 12) {
+                        hours = 0;
+                      }
+                      
+                      bookingDateTime = bookingDate.hour(hours).minute(minutes).second(0);
+                   
+                    } else {
+                      bookingDateTime = bookingDate.endOf('day');
+                    }
+                  }
+
+                } else {
+                  bookingDateTime = bookingDate.endOf('day');
+                }
+
+                if (bookingDateTime.isBefore(now)) {
+                  backgroundColor = '#f5222d'; 
+
+                } else {
+                  backgroundColor = '#52c41a';
+                }
+
+              } else {
+                backgroundColor = '#d9d9d9';
+              }
+
             } else {
-              switch (event.type) {
-                case 'Wedding': backgroundColor = '#52c41a'; break;
-                case 'Baptism': backgroundColor = '#1890ff'; break;
-                case 'Burial': backgroundColor = '#f5222d'; break;
-                case 'First Communion':
-                case 'Communion': backgroundColor = '#faad14'; break;
-                case 'Confirmation': backgroundColor = '#1890ff'; break;
-                case 'Anointing of the Sick':
-                case 'Anointing': backgroundColor = '#faad14'; break;
-                case 'Confession': backgroundColor = '#722ed1'; break;
-                default: backgroundColor = '#d9d9d9'; break;
+              if ((event.status || '').toLowerCase() === 'confirmed') {
+                backgroundColor = '#52c41a';
+                
+              } else {
+                switch (event.type) {
+                  case 'Wedding': backgroundColor = '#52c41a'; break;
+                  case 'Baptism': backgroundColor = '#1890ff'; break;
+                  case 'Burial': backgroundColor = '#f5222d'; break;
+                  case 'First Communion':
+                  case 'Communion': backgroundColor = '#faad14'; break;
+                  case 'Confirmation': backgroundColor = '#1890ff'; break;
+                  case 'Anointing of the Sick':
+                  case 'Anointing': backgroundColor = '#faad14'; break;
+                  case 'Confession': backgroundColor = '#722ed1'; break;
+                  default: backgroundColor = '#d9d9d9'; break;
+                }
               }
             }
 
@@ -189,9 +240,7 @@ export default function CustomCalendar({
                 onPress={() => onDateSelect(event)}
                 activeOpacity={0.7}
               >
-                <Text style={styles.dot}>
-                  {(event.type || event.sacrament) ? '•' : ''}
-                </Text>
+                <View style={[styles.dot, { backgroundColor }]} />
               </TouchableOpacity>
             );
           })}

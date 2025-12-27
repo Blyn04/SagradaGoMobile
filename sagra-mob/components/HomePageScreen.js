@@ -284,13 +284,8 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
             <CustomCalendar
               selectedDate={selectedDate}
               onDateSelect={(date) => setSelectedDate(dayjs(date).format('YYYY-MM-DD'))}
-              markedDates={bookings
-                .filter((booking) => booking.date)
-                .map((booking) => {
-                  const date = dayjs(booking.date);
-                  return date.isValid() ? date.toDate() : null;
-                })
-                .filter(Boolean)}
+              markedDates={bookings.filter((booking) => booking.date)}
+              isPriestView={true}
             />
 
             {/* Bookings for Selected Date */}
