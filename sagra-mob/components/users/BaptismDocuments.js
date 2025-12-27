@@ -18,7 +18,7 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
     const cleaned = text.replace(/\D/g, '');
 
     const limited = cleaned.slice(0, 8);
-    
+
     let formatted = limited;
     if (limited.length > 2) {
       formatted = `${limited.slice(0, 2)}/${limited.slice(2)}`;
@@ -27,7 +27,7 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
     if (limited.length > 4) {
       formatted = `${limited.slice(0, 2)}/${limited.slice(2, 4)}/${limited.slice(4)}`;
     }
-    
+
     updateField('candidate_birthday', formatted);
   };
 
@@ -81,7 +81,7 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
 
       {/* Candidate Information */}
       <Text style={styles.sectionTitle}>Baby Information</Text>
-      
+
       <View style={styles.inputWrapper}>
         <Text style={styles.inputLabel}>First Name *</Text>
         <View style={styles.inputContainer}>
@@ -90,7 +90,9 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
             style={styles.textInput}
             value={baptismForm.candidate_first_name || ''}
             onChangeText={(text) => updateField('candidate_first_name', text)}
-            placeholder="Enter first name"
+            placeholder="Enter First Name"
+            placeholderTextColor="#999"
+
           />
         </View>
       </View>
@@ -103,7 +105,9 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
             style={styles.textInput}
             value={baptismForm.candidate_middle_name || ''}
             onChangeText={(text) => updateField('candidate_middle_name', text)}
-            placeholder="Enter middle name"
+            placeholder="Enter Middle Name"
+            placeholderTextColor="#999"
+
           />
         </View>
       </View>
@@ -116,7 +120,9 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
             style={styles.textInput}
             value={baptismForm.candidate_last_name || ''}
             onChangeText={(text) => updateField('candidate_last_name', text)}
-            placeholder="Enter last name"
+            placeholder="Enter Last Name"
+            placeholderTextColor="#999"
+
           />
         </View>
       </View>
@@ -130,6 +136,8 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
             value={baptismForm.candidate_birthday || ''}
             onChangeText={formatBirthday}
             placeholder="MM/DD/YY or MM/DD/YYYY"
+            placeholderTextColor="#999"
+
             keyboardType="numeric"
             maxLength={10}
           />
@@ -144,7 +152,9 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
             style={styles.textInput}
             value={baptismForm.candidate_birth_place || ''}
             onChangeText={(text) => updateField('candidate_birth_place', text)}
-            placeholder="Enter birth place"
+            placeholder="Enter Birth Place"
+            placeholderTextColor="#999"
+
           />
         </View>
       </View>
@@ -174,6 +184,7 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
             value={baptismForm.father_middle_name || ''}
             onChangeText={(text) => updateField('father_middle_name', text)}
             placeholder="Enter father's middle name"
+            placeholderTextColor="#999"
           />
         </View>
       </View>
@@ -187,6 +198,7 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
             value={baptismForm.father_last_name || ''}
             onChangeText={(text) => updateField('father_last_name', text)}
             placeholder="Enter father's last name"
+            placeholderTextColor="#999"
           />
         </View>
       </View>
@@ -200,6 +212,7 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
             value={baptismForm.father_birth_place || ''}
             onChangeText={(text) => updateField('father_birth_place', text)}
             placeholder="Enter father's birth place"
+            placeholderTextColor="#999"
           />
         </View>
       </View>
@@ -216,6 +229,7 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
             value={baptismForm.mother_first_name || ''}
             onChangeText={(text) => updateField('mother_first_name', text)}
             placeholder="Enter mother's first name"
+            placeholderTextColor="#999"
           />
         </View>
       </View>
@@ -229,6 +243,7 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
             value={baptismForm.mother_middle_name || ''}
             onChangeText={(text) => updateField('mother_middle_name', text)}
             placeholder="Enter mother's middle name"
+            placeholderTextColor="#999"
           />
         </View>
       </View>
@@ -242,6 +257,7 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
             value={baptismForm.mother_last_name || ''}
             onChangeText={(text) => updateField('mother_last_name', text)}
             placeholder="Enter mother's last name"
+            placeholderTextColor="#999"
           />
         </View>
       </View>
@@ -255,6 +271,7 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
             value={baptismForm.mother_birth_place || ''}
             onChangeText={(text) => updateField('mother_birth_place', text)}
             placeholder="Enter mother's birth place"
+            placeholderTextColor="#999"
           />
         </View>
       </View>
@@ -270,6 +287,7 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
           options={marriageTypeOptions}
           iconName="heart-outline"
           placeholder="Select marriage type"
+          placeholderTextColor="#999"
         />
       </View>
 
@@ -299,6 +317,7 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
             onChangeText={(text) => updateField('contact_number', text)}
             placeholder="Enter contact number"
             keyboardType="phone-pad"
+            placeholderTextColor="#999"
           />
         </View>
       </View>
@@ -315,6 +334,7 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
             value={baptismForm.main_godfather?.name || ''}
             onChangeText={(text) => updateGodparent('main_godfather', 'name', text)}
             placeholder="Enter godfather's name"
+            placeholderTextColor="#999"
           />
         </View>
         <View style={[styles.inputContainer, { marginTop: 10 }]}>
@@ -324,6 +344,7 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
             value={baptismForm.main_godfather?.relationship || ''}
             onChangeText={(text) => updateGodparent('main_godfather', 'relationship', text)}
             placeholder="Relationship"
+            placeholderTextColor="#999"
           />
         </View>
       </View>
@@ -337,6 +358,7 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
             value={baptismForm.main_godmother?.name || ''}
             onChangeText={(text) => updateGodparent('main_godmother', 'name', text)}
             placeholder="Enter godmother's name"
+            placeholderTextColor="#999"
           />
         </View>
         <View style={[styles.inputContainer, { marginTop: 10 }]}>
@@ -346,6 +368,7 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
             value={baptismForm.main_godmother?.relationship || ''}
             onChangeText={(text) => updateGodparent('main_godmother', 'relationship', text)}
             placeholder="Relationship"
+            placeholderTextColor="#999"
           />
         </View>
       </View>
@@ -383,7 +406,7 @@ export default function BaptismDocuments({ baptismForm, setBaptismForm, user }) 
                 placeholder="Relationship"
               />
             </View>
-            
+
             <TouchableOpacity
               style={styles.removeButton}
               onPress={() => removeGodparent(index)}

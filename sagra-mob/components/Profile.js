@@ -294,7 +294,7 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
             <TextInput
               style={styles.input}
               placeholder="First Name"
-              placeholderTextColor="#424242"
+              placeholderTextColor="#999"
               editable={isEditing}
               value={formData.first_name}
               onChangeText={(v) => handleInputChange("first_name", v)}
@@ -307,7 +307,7 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
             <TextInput
               style={styles.input}
               placeholder="Middle"
-              placeholderTextColor="#424242"
+              placeholderTextColor="#999"
               editable={isEditing}
               value={formData.middle_name}
               onChangeText={(v) =>
@@ -322,7 +322,7 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
             <TextInput
               style={styles.input}
               placeholder="Last Name"
-              placeholderTextColor="#424242"
+              placeholderTextColor="#999"
               editable={isEditing}
               value={formData.last_name}
               onChangeText={(v) =>
@@ -342,6 +342,7 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
           <TextInput
             style={styles.input}
             placeholder="Contact Number"
+            placeholderTextColor="#999"
             editable={isEditing}
             keyboardType="phone-pad"
             value={formData.contact_number}
@@ -385,6 +386,7 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
           <TextInput
             style={styles.input}
             placeholder="Email"
+            placeholderTextColor="#999"
             autoCapitalize="none"
             editable={isEditing}
             value={formData.email}
