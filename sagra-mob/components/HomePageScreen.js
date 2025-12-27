@@ -521,12 +521,14 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
 
       <CustomNavbar currentScreen="HomePageScreen" onNavigate={onNavigate} />
 
-      <TouchableOpacity
-        style={styles.floatingButton}
-        onPress={() => handleShortcutPress('ChatBotScreen')}
-      >
-        <Ionicons name="chatbubble-ellipses-outline" size={24} color="#424242" />
-      </TouchableOpacity>
+      {!user?.is_priest && (
+        <TouchableOpacity
+          style={styles.floatingButton}
+          onPress={() => handleShortcutPress('ChatBotScreen')}
+        >
+          <Ionicons name="chatbubble-ellipses-outline" size={24} color="#424242" />
+        </TouchableOpacity>
+      )}
 
     </View>
   );
