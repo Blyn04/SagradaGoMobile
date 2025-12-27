@@ -704,7 +704,7 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
         horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.filterContainer}
-        contentContainerStyle={{ paddingRight: 20, marginHorizontal: 20, gap: 10, height: 40, marginTop: 20, marginBottom: 10 }}
+        contentContainerStyle={{ paddingRight: 20, marginHorizontal: 20, gap: 10, height: 40, marginTop: 20 }}
       >
         {['all', 'approved', 'pending', 'rejected', 'cancelled'].map((filter) => (
           <TouchableOpacity
@@ -728,7 +728,7 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
       </ScrollView>
 
       {/* Sacrament and Month Filters */}
-      <View style={[styles.additionalFiltersContainer, { marginTop: -350 }]}>
+      <View style={[styles.additionalFiltersContainer, { marginTop: -360 }]}>
         <View style={styles.pickerContainer}>
           <CustomPicker
             value={sacramentOptions.find(opt => opt.value === selectedSacrament)?.label}
@@ -736,7 +736,7 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
             options={sacramentOptions}
             placeholder="All Sacraments"
             iconName="water-outline"
-            style={[styles.customPicker, { fontSize: 15 }]}
+            style={[styles.customPicker]}
           />
         </View>
         <View style={styles.pickerContainer}>
@@ -746,7 +746,7 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
             options={monthOptions}
             placeholder="All Months"
             iconName="calendar-outline"
-            style={[styles.customPicker, { fontSize: 15 }]}
+            style={[styles.customPicker]}
           />
         </View>
       </View>
