@@ -172,6 +172,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: "Poppins_500Medium",
     fontSize: 15,
+    color: '#333',
   },
 
   errorText: {
