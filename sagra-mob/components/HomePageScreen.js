@@ -64,7 +64,7 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
 
       const fullName = [
         capitalize(currentUser?.first_name),
-        capitalize(currentUser?.last_name)
+        // capitalize(currentUser?.last_name)
       ].filter(Boolean).join(' ');
 
       if (user.is_priest) {
@@ -177,11 +177,28 @@ export default function HomePageScreen({ user, onLogout, onNavigate }) {
     (event) => dayjs(event.date).format('YYYY-MM-DD') === selectedDate
   );
 
-  const bookingsForSelectedDate = bookings.filter((booking) => {
-    if (!booking.date) return false;
-    const bookingDate = dayjs(booking.date).format('YYYY-MM-DD');
-    return bookingDate === selectedDate;
-  });
+  const bookingsForSelectedDate = bookings
+    .filter((booking) => {
+      if (!booking.date) return false;
+      const bookingDate = dayjs(booking.date).format('YYYY-MM-DD');
+      return bookingDate === selectedDate;
+    })
+    .sort((a, b) => {
+      if (user && user.is_priest) {
+        const timeA = a.time ? (dayjs(a.time).isValid() ? dayjs(a.time) : null) : null;
+        const timeB = b.time ? (dayjs(b.time).isValid() ? dayjs(b.time) : null) : null;
+
+        if (timeA && timeB) {
+          return timeA.valueOf() - timeB.valueOf();
+        }
+
+        if (timeA && !timeB) return -1;
+        if (!timeA && timeB) return 1;
+        return 0;
+      }
+
+      return 0;
+    });
 
   const handleShortcutPress = (screen) => {
     if (onNavigate) {
