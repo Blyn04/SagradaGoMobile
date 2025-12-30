@@ -24,6 +24,61 @@ export const AuthProvider = ({ children }) => {
       if (storedUser) {
         const userData = JSON.parse(storedUser);
         
+        // Check if account is disabled (even if cached)
+        if (userData.is_active === false) {
+          // Account was disabled, clear storage and don't authenticate
+          await removeUserFromStorage();
+          setUser(null);
+          setIsAuthenticated(false);
+          setLoading(false);
+          return;
+        }
+        
+        // Verify user status with backend to ensure account is still active
+        try {
+          const response = await fetch(`${API_BASE_URL}/findUser`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ uid: userData.uid }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const currentUserData = data.user;
+            
+            // Check if account is disabled on backend
+            if (currentUserData.is_active === false) {
+              await removeUserFromStorage();
+              setUser(null);
+              setIsAuthenticated(false);
+              setLoading(false);
+              return;
+            }
+            
+            // Update cached user data with latest from backend
+            const updatedUserData = {
+              ...userData,
+              ...currentUserData,
+              is_active: currentUserData.is_active !== false,
+            };
+            await saveUserToStorage(updatedUserData);
+            userData.is_active = updatedUserData.is_active;
+          }
+        } catch (verifyError) {
+          console.error('Error verifying user status:', verifyError);
+          // If verification fails, still allow login with cached data
+          // but check the cached is_active value
+          if (userData.is_active === false) {
+            await removeUserFromStorage();
+            setUser(null);
+            setIsAuthenticated(false);
+            setLoading(false);
+            return;
+          }
+        }
+        
         // if (!userData.profilePicture && userData.gender) {
         //   const gender = userData.gender.toLowerCase();
 
@@ -98,6 +153,14 @@ export const AuthProvider = ({ children }) => {
 
       if (response.ok) {
         const userData = data.user;
+
+        // Check if account is disabled
+        if (userData.is_active === false) {
+          return { 
+            success: false, 
+            message: 'Your account has been disabled. Please contact the administrator for assistance.' 
+          };
+        }
 
         // if (!userData.profilePicture && userData.gender) {
         //   const gender = userData.gender.toLowerCase();
