@@ -18,6 +18,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from '../contexts/AuthContext';
 import { API_BASE_URL } from '../config/API';
 import { Alert } from 'react-native';
+import axios from 'axios';
 
 export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) {
   const { updateUser: updateUserProfile, user: authUser } = useAuth();
@@ -27,6 +28,9 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [showVolunteerLogModal, setShowVolunteerLogModal] = useState(false);
+  const [volunteerRecords, setVolunteerRecords] = useState([]);
+  const [loadingVolunteers, setLoadingVolunteers] = useState(false);
+  const [activityFilter, setActivityFilter] = useState('all'); // 'all', 'event', 'activity'
   const [alertModal, setAlertModal] = useState({ visible: false, title: '', message: '', type: 'error' });
 
   const currentUser = authUser || user;
@@ -69,6 +73,52 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
       });
     }
   }, [currentUser]);
+
+  const fetchVolunteerRecords = async () => {
+    if (!currentUser?.uid) return;
+    
+    try {
+      setLoadingVolunteers(true);
+      const response = await axios.post(`${API_BASE_URL}/getUserVolunteers`, {
+        user_id: currentUser.uid,
+      });
+      const volunteers = response.data.volunteers || [];
+   
+      const volunteersWithEvents = await Promise.all(
+        volunteers.map(async (volunteer) => {
+          if (volunteer.event_id) {
+            try {
+              const eventResponse = await axios.get(`${API_BASE_URL}/getEvent/${volunteer.event_id}`);
+              return {
+                ...volunteer,
+                event: eventResponse.data.event,
+              };
+
+            } catch (error) {
+              console.error(`Error fetching event ${volunteer.event_id}:`, error);
+              return volunteer;
+            }
+          }
+          return volunteer;
+        })
+      );
+      
+      setVolunteerRecords(volunteersWithEvents);
+
+    } catch (error) {
+      console.error("Error fetching volunteer records:", error);
+
+    } finally {
+      setLoadingVolunteers(false);
+    }
+  };
+
+  useEffect(() => {
+    if (showVolunteerLogModal && currentUser?.uid) {
+      fetchVolunteerRecords();
+      setActivityFilter('all');
+    }
+  }, [showVolunteerLogModal, currentUser?.uid]);
 
   const validateField = (field, value) => {
     let error = '';
@@ -439,14 +489,14 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
           </TouchableOpacity>
         )}
 
-        {/* Volunteer Log Button (HIDE IF PRIEST) */}
+        {/* Activity Log Button (HIDE IF PRIEST) */}
         {!currentUser?.is_priest && (
           <TouchableOpacity
             style={styles.bookingHistoryButton}
             onPress={() => setShowVolunteerLogModal(true)}
           >
             <Ionicons name="people-outline" size={20} color="#424242" style={{ marginRight: 8 }} />
-            <Text style={styles.bookingHistoryButtonText}>Volunteer Log</Text>
+            <Text style={styles.bookingHistoryButtonText}>Activity Log</Text>
             <Ionicons name="chevron-forward" size={20} color="#424242" />
           </TouchableOpacity>
         )}
@@ -501,7 +551,7 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
         <View style={styles.volunteerLogModalOverlay}>
           <View style={styles.volunteerLogModalContent}>
             <View style={styles.volunteerLogModalHeader}>
-              <Text style={styles.volunteerLogModalTitle}>Volunteer Log</Text>
+              <Text style={styles.volunteerLogModalTitle}>Activity Log</Text>
               <TouchableOpacity
                 onPress={() => setShowVolunteerLogModal(false)}
                 style={styles.volunteerLogModalCloseButton}
@@ -510,9 +560,64 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
               </TouchableOpacity>
             </View>
 
+            {/* Filter Buttons */}
+            <View style={{ flexDirection: 'row', paddingHorizontal: 20, paddingTop: 15, paddingBottom: 10, gap: 10 }}>
+              <TouchableOpacity
+                style={[
+                  styles.filterButton,
+                  activityFilter === 'all' && styles.filterButtonActive
+                ]}
+                onPress={() => setActivityFilter('all')}
+              >
+                <Text style={[
+                  styles.filterButtonText,
+                  activityFilter === 'all' && styles.filterButtonTextActive
+                ]}>All</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.filterButton,
+                  activityFilter === 'event' && styles.filterButtonActive
+                ]}
+                onPress={() => setActivityFilter('event')}
+              >
+                <Text style={[
+                  styles.filterButtonText,
+                  activityFilter === 'event' && styles.filterButtonTextActive
+                ]}>Events</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.filterButton,
+                  activityFilter === 'activity' && styles.filterButtonActive
+                ]}
+                onPress={() => setActivityFilter('activity')}
+              >
+                <Text style={[
+                  styles.filterButtonText,
+                  activityFilter === 'activity' && styles.filterButtonTextActive
+                ]}>Activities</Text>
+              </TouchableOpacity>
+            </View>
+
             <ScrollView style={styles.volunteerLogScrollView}>
-              {currentUser?.volunteers && Array.isArray(currentUser.volunteers) && currentUser.volunteers.length > 0 ? (
-                currentUser.volunteers.map((item, index) => {
+              {loadingVolunteers ? (
+                <View style={styles.volunteerLogEmptyContainer}>
+                  <ActivityIndicator size="large" color="#FFC942" />
+                  <Text style={styles.volunteerLogEmptyText}>Loading your events...</Text>
+                </View>
+              ) : (() => {
+                // Filter records based on activityFilter
+                const filteredRecords = volunteerRecords.filter(item => {
+                  if (activityFilter === 'all') return true;
+                  const event = item.event || {};
+                  if (activityFilter === 'event') return event.type === 'event';
+                  if (activityFilter === 'activity') return event.type === 'activity';
+                  return true;
+                });
+
+                return filteredRecords.length > 0 ? (
+                  filteredRecords.map((item, index) => {
                   const capitalize = (str) =>
                     str ? str.trim().charAt(0).toUpperCase() + str.trim().slice(1).toLowerCase() : '';
 
@@ -522,18 +627,103 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
                     capitalize(currentUser?.last_name)
                   ].filter(Boolean).join(' ');
 
+                  const event = item.event || {};
+                  const eventDate = event.date ? new Date(event.date) : null;
+                  const now = new Date();
+                  now.setHours(0, 0, 0, 0);
+                  const isPast = eventDate && eventDate < now;
+                  const isToday = eventDate && eventDate.toDateString() === now.toDateString();
+                  
+                  let statusText = '';
+                  let statusColor = '#666';
+                  if (isPast) {
+                    statusText = 'Finished';
+                    statusColor = '#999';
+                  } else if (isToday) {
+                    statusText = 'Ongoing';
+                    statusColor = '#4CAF50';
+                  } else {
+                    statusText = 'Registered';
+                    statusColor = '#2196F3';
+                  }
+
                   return (
                     <View key={item._id || item.id || index} style={styles.volunteerLogItem}>
                       <View style={styles.volunteerLogItemHeader}>
-                        <Ionicons name="person-outline" size={20} color="#FFC942" style={{ marginRight: 8 }} />
-                        <Text style={styles.volunteerLogItemName}>{currentFullName || item.name}</Text>
+                        <Ionicons 
+                          name={event.type === "activity" ? "hand-left-outline" : "calendar-outline"} 
+                          size={20} 
+                          color="#FFC942" 
+                          style={{ marginRight: 8 }} 
+                        />
+                        <View style={{ flex: 1 }}>
+                          <Text style={styles.volunteerLogItemName}>
+                            {event.title || item.eventTitle || 'General Volunteer'}
+                          </Text>
+                          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+                            <View style={{ 
+                              backgroundColor: statusColor + '20', 
+                              paddingHorizontal: 8, 
+                              paddingVertical: 2, 
+                              borderRadius: 12 
+                            }}>
+                              <Text style={{ 
+                                fontSize: 12, 
+                                fontFamily: 'Poppins_600SemiBold', 
+                                color: statusColor 
+                              }}>
+                                {statusText}
+                              </Text>
+                            </View>
+                            {event.type && (
+                              <View style={{ 
+                                backgroundColor: event.type === "event" ? '#2196F320' : '#4CAF5020', 
+                                paddingHorizontal: 8, 
+                                paddingVertical: 2, 
+                                borderRadius: 12,
+                                marginLeft: 8
+                              }}>
+                                <Text style={{ 
+                                  fontSize: 12, 
+                                  fontFamily: 'Poppins_500Medium', 
+                                  color: event.type === "event" ? '#2196F3' : '#4CAF50'
+                                }}>
+                                  {event.type === "event" ? "Event" : "Activity"}
+                                </Text>
+                              </View>
+                            )}
+                          </View>
+                        </View>
                       </View>
-                      {item.eventTitle && (
-                        <Text style={styles.volunteerLogItemEvent}>Event: {item.eventTitle}</Text>
+                      
+                      {eventDate && (
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
+                          <Ionicons name="calendar-outline" size={16} color="#666" style={{ marginRight: 6 }} />
+                          <Text style={styles.volunteerLogItemEvent}>
+                            {eventDate.toLocaleDateString('en-US', {
+                              weekday: 'short',
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric'
+                            })}
+                          </Text>
+                        </View>
                       )}
-                      <Text style={styles.volunteerLogItemContact}>Contact: {item.contact}</Text>
+                      
+                      {event.location && (
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+                          <Ionicons name="location-outline" size={16} color="#666" style={{ marginRight: 6 }} />
+                          <Text style={styles.volunteerLogItemEvent}>{event.location}</Text>
+                        </View>
+                      )}
+                      
+                      <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+                        <Ionicons name="person-outline" size={16} color="#666" style={{ marginRight: 6 }} />
+                        <Text style={styles.volunteerLogItemContact}>{currentFullName || item.name}</Text>
+                      </View>
+                      
                       <Text style={styles.volunteerLogItemDate}>
-                        {item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-US', {
+                        Registered: {item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',
                           year: 'numeric'
@@ -541,14 +731,25 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
                       </Text>
                     </View>
                   );
-                })
-              ) : (
-                <View style={styles.volunteerLogEmptyContainer}>
-                  <Ionicons name="people-outline" size={48} color="#ccc" style={{ marginBottom: 10 }} />
-                  <Text style={styles.volunteerLogEmptyText}>No volunteer records yet.</Text>
-                  <Text style={styles.volunteerLogEmptySubtext}>Start volunteering at events to see your log here!</Text>
-                </View>
-              )}
+                  })
+                ) : (
+                  <View style={styles.volunteerLogEmptyContainer}>
+                    <Ionicons name="people-outline" size={48} color="#ccc" style={{ marginBottom: 10 }} />
+                    <Text style={styles.volunteerLogEmptyText}>
+                      {activityFilter === 'all' 
+                        ? 'No activity records yet.' 
+                        : activityFilter === 'event'
+                        ? 'No event registrations yet.'
+                        : 'No activity registrations yet.'}
+                    </Text>
+                    <Text style={styles.volunteerLogEmptySubtext}>
+                      {activityFilter === 'all'
+                        ? 'Start volunteering at events to see your log here!'
+                        : `Start ${activityFilter === 'event' ? 'registering for events' : 'volunteering for activities'} to see them here!`}
+                    </Text>
+                  </View>
+                );
+              })()}
             </ScrollView>
           </View>
         </View>

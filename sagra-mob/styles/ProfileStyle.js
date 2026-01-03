@@ -367,6 +367,33 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 
+  filterButton: {
+    flex: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    backgroundColor: '#f2f2f2',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+
+  filterButtonActive: {
+    backgroundColor: '#424242',
+    borderColor: '#424242',
+  },
+
+  filterButtonText: {
+    fontSize: 14,
+    fontFamily: 'Poppins_600SemiBold',
+    color: '#666',
+  },
+
+  filterButtonTextActive: {
+    color: '#fff',
+  },
+
 });
 
 export default styles;

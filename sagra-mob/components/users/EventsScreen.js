@@ -81,6 +81,7 @@ export default function EventsScreen({ onNavigate }) {
       });
       const volunteers = response.data.volunteers || [];
       
+      // Fetch event details for each volunteer record
       const volunteersWithEvents = await Promise.all(
         volunteers.map(async (volunteer) => {
           if (volunteer.event_id) {
@@ -90,22 +91,18 @@ export default function EventsScreen({ onNavigate }) {
                 ...volunteer,
                 event: eventResponse.data.event,
               };
-
             } catch (error) {
               console.error(`Error fetching event ${volunteer.event_id}:`, error);
               return volunteer;
             }
           }
-
           return volunteer;
         })
       );
       
       setVolunteerEvents(volunteersWithEvents);
-
     } catch (error) {
       console.error("Error fetching user volunteers:", error);
-
     } finally {
       setLoadingVolunteers(false);
     }
@@ -125,7 +122,8 @@ export default function EventsScreen({ onNavigate }) {
     eventDate.setHours(0, 0, 0, 0);
     return eventDate < now;
   });
-  
+
+  // Categorize volunteer events
   const finishedVolunteers = volunteerEvents.filter(v => {
     if (!v.event || !v.event.date) return false;
     const eventDate = new Date(v.event.date);
