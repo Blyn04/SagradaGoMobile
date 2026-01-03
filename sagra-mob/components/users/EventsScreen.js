@@ -389,14 +389,29 @@ export default function EventsScreen({ onNavigate }) {
                     <View style={{ flexDirection: 'row', marginTop: 10 }}>
                       {event.type === "event" && (
                         <TouchableOpacity
-                          style={[styles.cardVolunteerBtn, { flex: 1, backgroundColor: '#4CAF50', marginRight: 5 }]}
+                          style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            backgroundColor: '#FFC942',
+                            paddingVertical: 10,
+                            paddingHorizontal: 12,
+                            borderRadius: 10,
+                            justifyContent: 'center',
+                            flex: 1,
+                            marginRight: 5
+                          }}
                           onPress={() => {
                             setSelectedEvent(event);
                             setShowVolunteerModal(true);
                           }}
                         >
-                          <Ionicons name="checkmark-circle-outline" size={20} color="#fff" />
-                          <Text style={styles.cardVolunteerText}>Register</Text>
+                          <Ionicons name="checkmark-circle-outline" size={20} color="#424242" />
+                          <Text style={{
+                            color: '#424242',
+                            fontFamily: 'Poppins_600SemiBold',
+                            marginLeft: 6,
+                            fontSize: 15
+                          }}>Register</Text>
                         </TouchableOpacity>
                       )}
                       <TouchableOpacity
