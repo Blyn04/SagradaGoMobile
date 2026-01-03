@@ -30,7 +30,7 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
   const [showVolunteerLogModal, setShowVolunteerLogModal] = useState(false);
   const [volunteerRecords, setVolunteerRecords] = useState([]);
   const [loadingVolunteers, setLoadingVolunteers] = useState(false);
-  const [activityFilter, setActivityFilter] = useState('all'); // 'all', 'event', 'activity'
+  const [statusFilter, setStatusFilter] = useState('registered'); 
   const [alertModal, setAlertModal] = useState({ visible: false, title: '', message: '', type: 'error' });
 
   const currentUser = authUser || user;
@@ -116,7 +116,7 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
   useEffect(() => {
     if (showVolunteerLogModal && currentUser?.uid) {
       fetchVolunteerRecords();
-      setActivityFilter('all');
+      setStatusFilter('registered');
     }
   }, [showVolunteerLogModal, currentUser?.uid]);
 
@@ -560,43 +560,43 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
               </TouchableOpacity>
             </View>
 
-            {/* Filter Buttons */}
+            {/* Status Filter Buttons */}
             <View style={{ flexDirection: 'row', paddingHorizontal: 20, paddingTop: 15, paddingBottom: 10, gap: 10 }}>
               <TouchableOpacity
                 style={[
                   styles.filterButton,
-                  activityFilter === 'all' && styles.filterButtonActive
+                  statusFilter === 'finished' && styles.filterButtonActive
                 ]}
-                onPress={() => setActivityFilter('all')}
+                onPress={() => setStatusFilter('finished')}
               >
                 <Text style={[
                   styles.filterButtonText,
-                  activityFilter === 'all' && styles.filterButtonTextActive
-                ]}>All</Text>
+                  statusFilter === 'finished' && styles.filterButtonTextActive
+                ]}>Finished</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
                   styles.filterButton,
-                  activityFilter === 'event' && styles.filterButtonActive
+                  statusFilter === 'ongoing' && styles.filterButtonActive
                 ]}
-                onPress={() => setActivityFilter('event')}
+                onPress={() => setStatusFilter('ongoing')}
               >
                 <Text style={[
                   styles.filterButtonText,
-                  activityFilter === 'event' && styles.filterButtonTextActive
-                ]}>Events</Text>
+                  statusFilter === 'ongoing' && styles.filterButtonTextActive
+                ]}>Ongoing</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
                   styles.filterButton,
-                  activityFilter === 'activity' && styles.filterButtonActive
+                  statusFilter === 'registered' && styles.filterButtonActive
                 ]}
-                onPress={() => setActivityFilter('activity')}
+                onPress={() => setStatusFilter('registered')}
               >
                 <Text style={[
                   styles.filterButtonText,
-                  activityFilter === 'activity' && styles.filterButtonTextActive
-                ]}>Activities</Text>
+                  statusFilter === 'registered' && styles.filterButtonTextActive
+                ]}>Registered</Text>
               </TouchableOpacity>
             </View>
 
@@ -607,12 +607,23 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
                   <Text style={styles.volunteerLogEmptyText}>Loading your events...</Text>
                 </View>
               ) : (() => {
-                // Filter records based on activityFilter
+                // Filter records based on statusFilter
+                const now = new Date();
+                now.setHours(0, 0, 0, 0);
+                
                 const filteredRecords = volunteerRecords.filter(item => {
-                  if (activityFilter === 'all') return true;
                   const event = item.event || {};
-                  if (activityFilter === 'event') return event.type === 'event';
-                  if (activityFilter === 'activity') return event.type === 'activity';
+                  const eventDate = event.date ? new Date(event.date) : null;
+                  
+                  if (!eventDate) return false;
+                  
+                  eventDate.setHours(0, 0, 0, 0);
+                  const isPast = eventDate < now;
+                  const isToday = eventDate.getTime() === now.getTime();
+                  
+                  if (statusFilter === 'finished') return isPast;
+                  if (statusFilter === 'ongoing') return isToday;
+                  if (statusFilter === 'registered') return eventDate > now;
                   return true;
                 });
 
@@ -629,10 +640,14 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
 
                   const event = item.event || {};
                   const eventDate = event.date ? new Date(event.date) : null;
-                  const now = new Date();
-                  now.setHours(0, 0, 0, 0);
-                  const isPast = eventDate && eventDate < now;
-                  const isToday = eventDate && eventDate.toDateString() === now.toDateString();
+                  const eventDateForStatus = event.date ? new Date(event.date) : null;
+                  if (eventDateForStatus) {
+                    eventDateForStatus.setHours(0, 0, 0, 0);
+                  }
+                  const nowForStatus = new Date();
+                  nowForStatus.setHours(0, 0, 0, 0);
+                  const isPast = eventDateForStatus && eventDateForStatus < nowForStatus;
+                  const isToday = eventDateForStatus && eventDateForStatus.getTime() === nowForStatus.getTime();
                   
                   let statusText = '';
                   let statusColor = '#666';
@@ -657,15 +672,16 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
                           style={{ marginRight: 8 }} 
                         />
                         <View style={{ flex: 1 }}>
-                          <Text style={styles.volunteerLogItemName}>
-                            {event.title || item.eventTitle || 'General Volunteer'}
-                          </Text>
-                          <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+                          <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap' }}>
+                            <Text style={[styles.volunteerLogItemName, { flex: 1, marginRight: 8 }]}>
+                              {event.title || item.eventTitle || 'General Volunteer'}
+                            </Text>
                             <View style={{ 
                               backgroundColor: statusColor + '20', 
                               paddingHorizontal: 8, 
                               paddingVertical: 2, 
-                              borderRadius: 12 
+                              borderRadius: 12,
+                              marginRight: 8
                             }}>
                               <Text style={{ 
                                 fontSize: 12, 
@@ -680,8 +696,7 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
                                 backgroundColor: event.type === "event" ? '#2196F320' : '#4CAF5020', 
                                 paddingHorizontal: 8, 
                                 paddingVertical: 2, 
-                                borderRadius: 12,
-                                marginLeft: 8
+                                borderRadius: 12
                               }}>
                                 <Text style={{ 
                                   fontSize: 12, 
@@ -749,16 +764,18 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
                   <View style={styles.volunteerLogEmptyContainer}>
                     <Ionicons name="people-outline" size={48} color="#ccc" style={{ marginBottom: 10 }} />
                     <Text style={styles.volunteerLogEmptyText}>
-                      {activityFilter === 'all' 
-                        ? 'No activity records yet.' 
-                        : activityFilter === 'event'
-                        ? 'No event registrations yet.'
-                        : 'No activity registrations yet.'}
+                      {statusFilter === 'finished'
+                        ? 'No finished volunteer activities found.'
+                        : statusFilter === 'ongoing'
+                        ? 'No ongoing volunteer activities found.'
+                        : 'No registered volunteer activities found.'}
                     </Text>
                     <Text style={styles.volunteerLogEmptySubtext}>
-                      {activityFilter === 'all'
-                        ? 'Start volunteering at events to see your log here!'
-                        : `Start ${activityFilter === 'event' ? 'registering for events' : 'volunteering for activities'} to see them here!`}
+                      {statusFilter === 'finished'
+                        ? "Activities you've completed as a volunteer."
+                        : statusFilter === 'ongoing'
+                        ? "Activities currently happening that you're volunteering for."
+                        : "Upcoming activities you're registered to volunteer for."}
                     </Text>
                   </View>
                 );
