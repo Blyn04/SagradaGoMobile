@@ -20,6 +20,7 @@ export default function EventsScreen({ onNavigate }) {
   const { user: authUser } = useAuth();
   const [showVolunteerModal, setShowVolunteerModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [registrationType, setRegistrationType] = useState('volunteer'); // 'participant' or 'volunteer'
 
   const getUserName = () => {
     if (authUser) {
@@ -402,6 +403,7 @@ export default function EventsScreen({ onNavigate }) {
                           }}
                           onPress={() => {
                             setSelectedEvent(event);
+                            setRegistrationType('participant');
                             setShowVolunteerModal(true);
                           }}
                         >
@@ -418,6 +420,7 @@ export default function EventsScreen({ onNavigate }) {
                         style={[styles.cardVolunteerBtn, { flex: event.type === "event" ? 1 : 1, marginLeft: event.type === "event" ? 5 : 0 }]}
                         onPress={() => {
                           setSelectedEvent(event);
+                          setRegistrationType('volunteer');
                           setShowVolunteerModal(true);
                         }}
                       >
@@ -441,8 +444,10 @@ export default function EventsScreen({ onNavigate }) {
         onClose={() => {
           setShowVolunteerModal(false);
           setSelectedEvent(null);
+          setRegistrationType('volunteer');
         }}
         event={selectedEvent}
+        registrationType={registrationType}
       />
     </View>
   );

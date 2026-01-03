@@ -15,7 +15,7 @@ import styles from '../../styles/users/VolunteerStyle';
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from '../../contexts/AuthContext';
 
-export default function VolunteerScreen({ visible, onClose, event }) {
+export default function VolunteerScreen({ visible, onClose, event, registrationType = 'volunteer' }) {
   const { user: authUser, addVolunteer, loading } = useAuth();
   const [name, setName] = useState('');
   const [contact, setContact] = useState('');
@@ -59,6 +59,7 @@ export default function VolunteerScreen({ visible, onClose, event }) {
       eventTitle: event?.title || 'General Volunteer',
       eventId: event?._id || null,
       user_id: authUser?.id || authUser?._id,
+      registration_type: registrationType, // 'participant' or 'volunteer'
     };
 
     const result = await addVolunteer(newVolunteer);
