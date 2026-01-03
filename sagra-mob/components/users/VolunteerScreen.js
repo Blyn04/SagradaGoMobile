@@ -140,7 +140,28 @@ export default function VolunteerScreen({ visible, onClose, event }) {
                 resizeMode="contain"
               />
               {event && event.title ? (
-                <Text style={styles.subtitle}>Volunteering for: {event.title}</Text>
+                <>
+                  <Text style={styles.subtitle}>Volunteering for: {event.title}</Text>
+                  {event.date && (
+                    <Text style={[styles.subtitle, { fontSize: 14, marginTop: 5, color: '#666' }]}>
+                      {new Date(event.date).toDateString()}
+                    </Text>
+                  )}
+                  {(event.time_start || event.time_end) && (
+                    <Text style={[styles.subtitle, { fontSize: 14, marginTop: 2, color: '#666' }]}>
+                      {event.time_start && event.time_end
+                        ? `${event.time_start} - ${event.time_end}`
+                        : event.time_start
+                        ? `${event.time_start} -`
+                        : `- ${event.time_end}`}
+                    </Text>
+                  )}
+                  {event.location && (
+                    <Text style={[styles.subtitle, { fontSize: 14, marginTop: 2, color: '#666' }]}>
+                      📍 {event.location}
+                    </Text>
+                  )}
+                </>
               ) : (
                 <Text style={styles.subtitle}>Fill in all necessary information.</Text>
               )}

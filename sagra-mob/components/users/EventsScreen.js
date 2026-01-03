@@ -323,6 +323,15 @@ export default function EventsScreen({ onNavigate }) {
                             {new Date(event.date).toDateString()}
                           </Text>
                         )}
+                        {(event.time_start || event.time_end) && (
+                          <Text style={styles.cardInfo}>
+                            {event.time_start && event.time_end
+                              ? `${event.time_start} - ${event.time_end}`
+                              : event.time_start
+                              ? `${event.time_start} -`
+                              : `- ${event.time_end}`}
+                          </Text>
+                        )}
                         {event.location && (
                           <Text style={styles.cardInfo}>{event.location}</Text>
                         )}
@@ -364,6 +373,15 @@ export default function EventsScreen({ onNavigate }) {
                     <Text style={styles.cardInfo}>
                       {new Date(event.date).toDateString()}
                     </Text>
+                    {(event.time_start || event.time_end) && (
+                      <Text style={styles.cardInfo}>
+                        {event.time_start && event.time_end
+                          ? `${event.time_start} - ${event.time_end}`
+                          : event.time_start
+                          ? `${event.time_start} -`
+                          : `- ${event.time_end}`}
+                      </Text>
+                    )}
                     <Text style={styles.cardInfo}>{event.location}</Text>
                   </View>
 

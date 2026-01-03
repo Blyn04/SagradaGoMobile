@@ -710,6 +710,19 @@ export default function Profile({ user, onNavigate, onLogout, onBack, onSave }) 
                         </View>
                       )}
                       
+                      {(event.time_start || event.time_end) && (
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+                          <Ionicons name="time-outline" size={16} color="#666" style={{ marginRight: 6 }} />
+                          <Text style={styles.volunteerLogItemEvent}>
+                            {event.time_start && event.time_end
+                              ? `${event.time_start} - ${event.time_end}`
+                              : event.time_start
+                              ? `${event.time_start} -`
+                              : `- ${event.time_end}`}
+                          </Text>
+                        </View>
+                      )}
+                      
                       {event.location && (
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
                           <Ionicons name="location-outline" size={16} color="#666" style={{ marginRight: 6 }} />
