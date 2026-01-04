@@ -144,6 +144,15 @@ export default function DonationsScreen({ user, onNavigate }) {
     }
   }, [paymentMethod]);
 
+  const handleAmountChange = (text) => {
+    if (paymentMethod === 'In Kind') {
+      setAmount('0');
+      
+    } else {
+      setAmount(text);
+    }
+  };
+
  const handleConfirmDonation = async () => {
   if (!amount || !paymentMethod) {
     Alert.alert('Error', 'Please enter amount and select payment method');
@@ -573,7 +582,7 @@ export default function DonationsScreen({ user, onNavigate }) {
               placeholder="Enter Amount"
               placeholderTextColor="#999"
               value={amount}
-              onChangeText={setAmount}
+              onChangeText={handleAmountChange}
               keyboardType="numeric"
               editable={paymentMethod !== 'In Kind'}
             />

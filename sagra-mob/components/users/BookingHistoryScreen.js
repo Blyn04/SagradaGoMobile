@@ -427,6 +427,13 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
     }
   }, [user?.uid]);
 
+  // Reset filter to 'all' if priest has a removed filter selected
+  useEffect(() => {
+    if (user?.is_priest && ['approved', 'pending', 'rejected'].includes(selectedFilter)) {
+      setSelectedFilter('all');
+    }
+  }, [user?.is_priest, selectedFilter]);
+
   const sacramentMap = {
     Wedding: "Wedding",
     Baptism: "Baptism",
@@ -713,25 +720,33 @@ export default function BookingHistoryScreen({ user, onNavigate }) {
         style={styles.filterContainer}
         contentContainerStyle={{ paddingRight: 20, marginHorizontal: 20, gap: 10, height: 40, marginTop: 20 }}
       >
-        {['all', 'approved', 'pending', 'rejected', 'cancelled'].map((filter) => (
-          <TouchableOpacity
-            key={filter}
-            style={[
-              styles.filterButton,
-              selectedFilter === filter && styles.filterButtonActive
-            ]}
-            onPress={() => setSelectedFilter(filter)}
-          >
-            <Text
+        {(() => {
+          // For priests, only show 'all' filter. For regular users, show all filters.
+          const allFilters = ['all', 'approved', 'pending', 'rejected', 'cancelled'];
+          const filtersToShow = user?.is_priest 
+            ? ['all']
+            : allFilters;
+          
+          return filtersToShow.map((filter) => (
+            <TouchableOpacity
+              key={filter}
               style={[
-                styles.filterButtonText,
-                selectedFilter === filter && styles.filterButtonTextActive
+                styles.filterButton,
+                selectedFilter === filter && styles.filterButtonActive
               ]}
+              onPress={() => setSelectedFilter(filter)}
             >
-              {filter.charAt(0).toUpperCase() + filter.slice(1)}
-            </Text>
-          </TouchableOpacity>
-        ))}
+              <Text
+                style={[
+                  styles.filterButtonText,
+                  selectedFilter === filter && styles.filterButtonTextActive
+                ]}
+              >
+                {filter.charAt(0).toUpperCase() + filter.slice(1)}
+              </Text>
+            </TouchableOpacity>
+          ));
+        })()}
       </ScrollView>
 
       {/* Sacrament and Month Filters */}
