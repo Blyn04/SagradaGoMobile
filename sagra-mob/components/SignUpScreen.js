@@ -597,45 +597,81 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
                 <View style={styles.datePickerContainer}>
                   <View style={styles.pickerColumn}>
                     <Text style={styles.pickerLabel}>Year</Text>
-                    <Picker
-                      selectedValue={selectedYear}
-                      onValueChange={(itemValue) => setSelectedYear(itemValue)}
-                      style={styles.datePicker}
-                    >
-                      {generateYears().map(year => (
-                        <Picker.Item key={year} label={String(year)} value={year} />
-                      ))}
-                    </Picker>
+                    <View style={{ borderWidth: 1, borderColor: '#ddd', borderRadius: 8, overflow: 'hidden', backgroundColor: '#fff' }}>
+                      <Picker
+                        selectedValue={selectedYear}
+                        onValueChange={(itemValue) => setSelectedYear(itemValue)}
+                        style={[styles.datePicker, { 
+                          color: '#000000', 
+                          fontSize: 12,
+                          fontWeight: '600'
+                        }]}
+                        itemStyle={Platform.OS === 'ios' ? { 
+                          color: '#000000', 
+                          fontSize: 14
+                        } : undefined}
+                        dropdownIconColor={Platform.OS === 'android' ? '#000000' : undefined}
+                      >
+                        {generateYears().map(year => (
+                          <Picker.Item key={year} label={String(year)} value={year} />
+                        ))}
+                      </Picker>
+                    </View>
                   </View>
 
                   <View style={styles.pickerColumn}>
                     <Text style={styles.pickerLabel}>Month</Text>
-                    <Picker
-                      selectedValue={selectedMonth}
-                      onValueChange={(itemValue) => setSelectedMonth(itemValue)}
-                      style={styles.datePicker}
-                    >
-                      {generateMonths().map(month => (
-                        <Picker.Item
-                          key={month}
-                          label={new Date(2000, month - 1).toLocaleString('default', { month: 'long' })}
-                          value={month}
-                        />
-                      ))}
-                    </Picker>
+                    <View style={{ borderWidth: 1, borderColor: '#ddd', borderRadius: 8, overflow: 'hidden', backgroundColor: '#fff' }}>
+                      <Picker
+                        selectedValue={selectedMonth}
+                        onValueChange={(itemValue) => setSelectedMonth(itemValue)}
+                        style={[styles.datePicker, { 
+                          color: '#000000', 
+                          fontSize: 12,
+                          fontWeight: '600'
+                        }]}
+                        itemStyle={Platform.OS === 'ios' ? { 
+                          color: '#000000', 
+                          fontSize: 14
+                        } : undefined}
+                        dropdownIconColor={Platform.OS === 'android' ? '#000000' : undefined}
+                      >
+                        {generateMonths().map(month => {
+                          const monthName = new Date(2000, month - 1).toLocaleString('default', { month: 'short' });
+                          return (
+                            <Picker.Item
+                              key={month}
+                              label={monthName}
+                              value={month}
+                            />
+                          );
+                        })}
+                      </Picker>
+                    </View>
                   </View>
 
                   <View style={styles.pickerColumn}>
                     <Text style={styles.pickerLabel}>Day</Text>
-                    <Picker
-                      selectedValue={selectedDay}
-                      onValueChange={(itemValue) => setSelectedDay(itemValue)}
-                      style={styles.datePicker}
-                    >
-                      {generateDays(selectedYear, selectedMonth).map(day => (
-                        <Picker.Item key={day} label={String(day)} value={day} />
-                      ))}
-                    </Picker>
+                    <View style={{ borderWidth: 1, borderColor: '#ddd', borderRadius: 8, overflow: 'hidden', backgroundColor: '#fff' }}>
+                      <Picker
+                        selectedValue={selectedDay}
+                        onValueChange={(itemValue) => setSelectedDay(itemValue)}
+                        style={[styles.datePicker, { 
+                          color: '#000000', 
+                          fontSize: 12,
+                          fontWeight: '600'
+                        }]}
+                        itemStyle={Platform.OS === 'ios' ? { 
+                          color: '#000000', 
+                          fontSize: 14
+                        } : undefined}
+                        dropdownIconColor={Platform.OS === 'android' ? '#000000' : undefined}
+                      >
+                        {generateDays(selectedYear, selectedMonth).map(day => (
+                          <Picker.Item key={day} label={String(day)} value={day} />
+                        ))}
+                      </Picker>
+                    </View>
                   </View>
                 </View>
 

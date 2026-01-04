@@ -181,6 +181,10 @@ const styles = StyleSheet.create({
 
   datePicker: {
     height: 150,
+    color: '#000000',
+    backgroundColor: '#ffffff',
+    fontSize: 12,
+    fontWeight: '600',
   },
 
   modalButtons: {
@@ -205,11 +209,11 @@ const styles = StyleSheet.create({
   },
 
   modalButtonConfirm: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#FFC942',
   },
 
   modalButtonText: {
-    color: '#fff',
+    color: '#424242',
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -312,6 +316,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     fontFamily: 'Poppins_600SemiBold',
+    color: '#333',
   },
 
 });
