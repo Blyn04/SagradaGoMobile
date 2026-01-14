@@ -431,7 +431,7 @@ export const AuthProvider = ({ children }) => {
   const addVolunteer = async (volunteerData) => {
     try {
       setLoading(true);
-      
+
       if (!user || !user.uid) {
         return { success: false, message: 'User not found. Please login again.' };
       }
@@ -442,39 +442,32 @@ export const AuthProvider = ({ children }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          uid: user.uid,
-          volunteer: volunteerData,
+          name: volunteerData.name,
+          contact: volunteerData.contact,
+          user_id: user.uid,
+          eventId: volunteerData.eventId || volunteerData.event_id || null,
+          eventTitle: volunteerData.eventTitle || volunteerData.event_title || 'General Volunteer',
+          registration_type: volunteerData.registration_type || 'volunteer',
         }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        const updatedUser = data.user;
-
-        if (!updatedUser.profilePicture && updatedUser.gender) {
-          const gender = updatedUser.gender.toLowerCase();
-
-          if (gender === 'female') {
-            updatedUser.profilePicture = 'female-avatar';
-            
-          } else if (gender === 'male') {
-            updatedUser.profilePicture = 'male-avatar';
-          }
-        }
-        
-        await saveUserToStorage(updatedUser);
-        setUser(updatedUser);
-        return { success: true, user: updatedUser, message: data.message || 'Volunteer information saved successfully.' };
-
+        return {
+          success: true,
+          volunteer: data.volunteer,
+          message: data.message || 'Volunteer information saved successfully.',
+        };
       } else {
-        return { success: false, message: data.message || 'Failed to save volunteer information. Please try again.' };
+        return {
+          success: false,
+          message: data.message || 'Failed to save volunteer information. Please try again.',
+        };
       }
-
     } catch (error) {
       console.error('Add volunteer error:', error);
       return { success: false, message: 'Network error. Please check your connection and try again.' };
-
     } finally {
       setLoading(false);
     }

@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontSize: 16,
     fontFamily: 'Poppins_500Medium',
+    color: '#000',
   },
 
   title: {
