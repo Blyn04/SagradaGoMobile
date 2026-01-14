@@ -575,129 +575,72 @@ export default function DonationsScreen({ user, onNavigate }) {
           style={styles.modalOverlay}
         >
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Make a Donation</Text>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingBottom: 20 }}
+            >
+              <Text style={styles.modalTitle}>Make a Donation</Text>
 
-            <TextInput
-              style={[
-                styles.modalInput,
-                paymentMethod === 'In Kind' && { color: '#333', opacity: 0.7 }
-              ]}
-              placeholder="Enter Amount"
-              placeholderTextColor="#999"
-              value={amount}
-              onChangeText={handleAmountChange}
-              keyboardType="numeric"
-              editable={paymentMethod !== 'In Kind'}
-            />
+              <TextInput
+                style={[
+                  styles.modalInput,
+                  paymentMethod === 'In Kind' && { color: '#333', opacity: 0.7 }
+                ]}
+                placeholder="Enter Amount"
+                placeholderTextColor="#999"
+                value={amount}
+                onChangeText={handleAmountChange}
+                keyboardType="numeric"
+                editable={paymentMethod !== 'In Kind'}
+              />
 
-            <View style={styles.paymentMethodContainer}>
-              {paymentMethods.map((method) => (
-                <TouchableOpacity
-                  key={method}
-                  style={[
-                    styles.paymentMethodOption,
-                    paymentMethod === method && styles.paymentMethodOptionSelected,
-                  ]}
-                  onPress={() => setPaymentMethod(method)}
-                >
-                  <Text
+              <View style={styles.paymentMethodContainer}>
+                {paymentMethods.map((method) => (
+                  <TouchableOpacity
+                    key={method}
                     style={[
-                      styles.paymentMethodText,
-                      paymentMethod === method && styles.paymentMethodTextSelected,
+                      styles.paymentMethodOption,
+                      paymentMethod === method && styles.paymentMethodOptionSelected,
                     ]}
+                    onPress={() => setPaymentMethod(method)}
                   >
-                    {method}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            <TextInput
-              style={[styles.modalInput, styles.modalInputMultiline]}
-              placeholder="Donation Intercession (Optional)"
-              placeholderTextColor="#999"
-              value={intercession}
-              onChangeText={setIntercession}
-              multiline
-              numberOfLines={2}
-              textAlignVertical="top"
-            />
-
-            {paymentMethod === 'In Kind' && (
-              <View style={styles.imageUploadContainer}>
-                <Text style={styles.imageUploadLabel}>Upload Image of Donation</Text>
-                
-                {donationImage ? (
-                  <View style={styles.imagePreviewContainer}>
-                    <Image
-                      source={{ uri: donationImage.uri }}
-                      style={styles.imagePreview}
-                      resizeMode="cover"
-                    />
-                    <TouchableOpacity
-                      style={styles.removeImageButton}
-                      onPress={removeImage}
+                    <Text
+                      style={[
+                        styles.paymentMethodText,
+                        paymentMethod === method && styles.paymentMethodTextSelected,
+                      ]}
                     >
-                      <Ionicons name="close-circle" size={24} color="#F44336" />
-                    </TouchableOpacity>
-                  </View>
-                ) : (
-                  <TouchableOpacity
-                    style={styles.uploadImageButton}
-                    onPress={pickImage}
-                  >
-                    <Ionicons name="image-outline" size={24} color="#424242" style={{ marginRight: 8 }} />
-                    <Text style={styles.uploadImageButtonText}>Upload Image</Text>
+                      {method}
+                    </Text>
                   </TouchableOpacity>
-                )}
+                ))}
               </View>
-            )}
 
-            {/* GCash Section - Only show when "GCash" is selected */}
-            {paymentMethod === 'GCash' && (
-              <View style={styles.gcashContainer}>
-                <Text style={styles.gcashSectionTitle}>GCash Payment Details</Text>
-                
-                {/* GCash Number with Copy Button */}
-                <View style={styles.gcashNumberContainer}>
-                  <View style={styles.gcashNumberWrapper}>
-                    <Ionicons name="call-outline" size={20} color="#424242" style={{ marginRight: 8 }} />
-                    <Text style={styles.gcashNumberText}>{GCASH_NUMBER}</Text>
-                  </View>
-                  <TouchableOpacity
-                    style={styles.copyButton}
-                    onPress={copyGcashNumber}
-                  >
-                    <Ionicons name="copy-outline" size={20} color="#424242" />
-                  </TouchableOpacity>
-                </View>
+              <TextInput
+                style={[styles.modalInput, styles.modalInputMultiline]}
+                placeholder="Donation Intercession (Optional)"
+                placeholderTextColor="#999"
+                value={intercession}
+                onChangeText={setIntercession}
+                multiline
+                numberOfLines={2}
+                textAlignVertical="top"
+              />
 
-                {/* QR Code Image */}
-                <View style={styles.qrCodeContainer}>
-                  <Text style={styles.qrCodeLabel}>Scan QR Code to Pay</Text>
-                  <View style={styles.qrCodeImageWrapper}>
-                    <Image
-                      source={require('../../assets/qrCodes/qr-1.png')}
-                      style={styles.qrCodeImage}
-                      resizeMode="contain"
-                    />
-                  </View>
-                </View>
-
-                {/* Receipt Upload */}
-                <View style={styles.receiptUploadContainer}>
-                  <Text style={styles.receiptUploadLabel}>Upload Payment Receipt</Text>
+              {paymentMethod === 'In Kind' && (
+                <View style={styles.imageUploadContainer}>
+                  <Text style={styles.imageUploadLabel}>Upload Image of Donation</Text>
                   
-                  {gcashReceiptImage ? (
+                  {donationImage ? (
                     <View style={styles.imagePreviewContainer}>
                       <Image
-                        source={{ uri: gcashReceiptImage.uri }}
+                        source={{ uri: donationImage.uri }}
                         style={styles.imagePreview}
                         resizeMode="cover"
                       />
                       <TouchableOpacity
                         style={styles.removeImageButton}
-                        onPress={removeReceiptImage}
+                        onPress={removeImage}
                       >
                         <Ionicons name="close-circle" size={24} color="#F44336" />
                       </TouchableOpacity>
@@ -705,35 +648,97 @@ export default function DonationsScreen({ user, onNavigate }) {
                   ) : (
                     <TouchableOpacity
                       style={styles.uploadImageButton}
-                      onPress={pickReceiptImage}
+                      onPress={pickImage}
                     >
-                      <Ionicons name="receipt-outline" size={24} color="#424242" style={{ marginRight: 8 }} />
-                      <Text style={styles.uploadImageButtonText}>Upload Receipt</Text>
+                      <Ionicons name="image-outline" size={24} color="#424242" style={{ marginRight: 8 }} />
+                      <Text style={styles.uploadImageButtonText}>Upload Image</Text>
                     </TouchableOpacity>
                   )}
                 </View>
-              </View>
-            )}
+              )}
 
-            <View style={styles.modalButtonContainer}>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.cancelButton]}
-                onPress={handleCloseModal}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.confirmButton, submitting && { opacity: 0.6 }]}
-                onPress={handleConfirmDonation}
-                disabled={submitting}
-              >
-                {submitting ? (
-                  <ActivityIndicator size="small" color="#fff" />
-                ) : (
-                  <Text style={styles.confirmButtonText}>Confirm</Text>
-                )}
-              </TouchableOpacity>
-            </View>
+              {/* GCash Section - Only show when "GCash" is selected */}
+              {paymentMethod === 'GCash' && (
+                <View style={styles.gcashContainer}>
+                  <Text style={styles.gcashSectionTitle}>GCash Payment Details</Text>
+                  
+                  {/* GCash Number with Copy Button */}
+                  <View style={styles.gcashNumberContainer}>
+                    <View style={styles.gcashNumberWrapper}>
+                      <Ionicons name="call-outline" size={20} color="#424242" style={{ marginRight: 8 }} />
+                      <Text style={styles.gcashNumberText}>{GCASH_NUMBER}</Text>
+                    </View>
+                    <TouchableOpacity
+                      style={styles.copyButton}
+                      onPress={copyGcashNumber}
+                    >
+                      <Ionicons name="copy-outline" size={20} color="#424242" />
+                    </TouchableOpacity>
+                  </View>
+
+                  {/* QR Code Image */}
+                  <View style={styles.qrCodeContainer}>
+                    <Text style={styles.qrCodeLabel}>Scan QR Code to Pay</Text>
+                    <View style={styles.qrCodeImageWrapper}>
+                      <Image
+                        source={require('../../assets/qrCodes/qr-1.png')}
+                        style={styles.qrCodeImage}
+                        resizeMode="contain"
+                      />
+                    </View>
+                  </View>
+
+                  {/* Receipt Upload */}
+                  <View style={styles.receiptUploadContainer}>
+                    <Text style={styles.receiptUploadLabel}>Upload Payment Receipt</Text>
+                    
+                    {gcashReceiptImage ? (
+                      <View style={styles.imagePreviewContainer}>
+                        <Image
+                          source={{ uri: gcashReceiptImage.uri }}
+                          style={styles.imagePreview}
+                          resizeMode="cover"
+                        />
+                        <TouchableOpacity
+                          style={styles.removeImageButton}
+                          onPress={removeReceiptImage}
+                        >
+                          <Ionicons name="close-circle" size={24} color="#F44336" />
+                        </TouchableOpacity>
+                      </View>
+                    ) : (
+                      <TouchableOpacity
+                        style={styles.uploadImageButton}
+                        onPress={pickReceiptImage}
+                      >
+                        <Ionicons name="receipt-outline" size={24} color="#424242" style={{ marginRight: 8 }} />
+                        <Text style={styles.uploadImageButtonText}>Upload Receipt</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                </View>
+              )}
+
+              <View style={styles.modalButtonContainer}>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.cancelButton]}
+                  onPress={handleCloseModal}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.confirmButton, submitting && { opacity: 0.6 }]}
+                  onPress={handleConfirmDonation}
+                  disabled={submitting}
+                >
+                  {submitting ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                  ) : (
+                    <Text style={styles.confirmButtonText}>Confirm</Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
           </View>
         </KeyboardAvoidingView>
       </Modal>
