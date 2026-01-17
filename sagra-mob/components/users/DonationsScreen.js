@@ -573,11 +573,14 @@ export default function DonationsScreen({ user, onNavigate }) {
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.modalOverlay}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
         >
           <View style={styles.modalContent}>
             <ScrollView
-              showsVerticalScrollIndicator={false}
+              showsVerticalScrollIndicator={true}
               contentContainerStyle={{ paddingBottom: 20 }}
+              nestedScrollEnabled={true}
+              keyboardShouldPersistTaps="handled"
             >
               <Text style={styles.modalTitle}>Make a Donation</Text>
 
