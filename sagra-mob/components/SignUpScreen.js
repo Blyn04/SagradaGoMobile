@@ -426,8 +426,11 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
       }
 
       if (response.ok) {
-        showModal('Account created successfully! A verification email has been sent.', 'success');
-        onSwitchToLogin && onSwitchToLogin();
+        showModal('Successfully signed up! Please check your email spam folder to verify your account.', 'success');
+        // Don't automatically switch to login - let user close modal first
+        setTimeout(() => {
+          onSwitchToLogin && onSwitchToLogin();
+        }, 3000);
       } else {
         const errorMessage = data.message || 'Failed to create account in database. Please try again.';
         console.error('MongoDB creation failed:', errorMessage);

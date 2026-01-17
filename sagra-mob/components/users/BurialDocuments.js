@@ -133,10 +133,16 @@ export default function BurialDocuments({ burialForm, setBurialForm }) {
           <TextInput
             style={styles.textInput}
             value={burialForm.contact_number || ''}
-            onChangeText={(text) => updateField('contact_number', text)}
+            onChangeText={(text) => {
+              const numericOnly = text.replace(/\D/g, '');
+              if (numericOnly.length <= 11) {
+                updateField('contact_number', numericOnly);
+              }
+            }}
             placeholder="Enter contact number"
             keyboardType="phone-pad"
-                        placeholderTextColor="#999"
+            maxLength={11}
+            placeholderTextColor="#999"
           />
         </View>
       </View>
