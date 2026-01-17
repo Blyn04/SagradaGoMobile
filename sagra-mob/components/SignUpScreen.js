@@ -425,6 +425,11 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
         data = { message: 'Server returned an invalid response' };
       }
 
+      //  if (response.ok) {
+      //   showModal('Account created successfully! A verification email has been sent.', 'success');
+      //   onSwitchToLogin && onSwitchToLogin();
+      // } else {
+
       if (response.ok) {
         showModal('Successfully signed up! Please check your email spam folder to verify your account.', 'success');
         // Don't automatically switch to login - let user close modal first
