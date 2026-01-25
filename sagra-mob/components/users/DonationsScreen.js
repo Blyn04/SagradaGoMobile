@@ -35,7 +35,6 @@ export default function DonationsScreen({ user, onNavigate }) {
   const [donationImage, setDonationImage] = useState(null);
   const [gcashReceiptImage, setGcashReceiptImage] = useState(null);
 
-  // GCash number - update this with the actual GCash number
   const GCASH_NUMBER = '09123456789';
 
   const paymentMethods = ['GCash', 'Cash', 'In Kind'];
@@ -153,158 +152,156 @@ export default function DonationsScreen({ user, onNavigate }) {
     }
   };
 
- const handleConfirmDonation = async () => {
-  if (!amount || !paymentMethod) {
-    Alert.alert('Error', 'Please enter amount and select payment method');
-    return;
+  const handleConfirmDonation = async () => {
+    if (!amount || !paymentMethod) {
+      Alert.alert('Error', 'Please enter amount and select payment method');
+      return;
   }
 
   const amountNum = parseFloat(amount);
-  if (isNaN(amountNum) || (paymentMethod !== 'In Kind' && amountNum <= 0)) {
-    Alert.alert('Error', 'Please enter a valid amount');
-    return;
-  }
-
-  if (!user?.uid) {
-    Alert.alert('Error', 'User not found. Please log in again.');
-    return;
-  }
-
-  if (paymentMethod === 'In Kind' && !donationImage) {
-    Alert.alert('Error', 'Please upload an image of your donation');
-    return;
-  }
-
-  if (paymentMethod === 'GCash' && !gcashReceiptImage) {
-    Alert.alert('Error', 'Please upload your GCash receipt');
-    return;
-  }
-
-  setSubmitting(true);
-
-  try {
-    const formData = new FormData();
-    formData.append('uid', user.uid);
-    formData.append('amount', amountNum.toString());
-    formData.append('paymentMethod', paymentMethod);
-    formData.append('intercession', intercession || '');
-
-    if (donationImage) {
-      // React Native FormData file upload format
-      // expo-image-picker returns URIs in the correct format already
-      const imageUri = donationImage.uri;
-      const imageName = donationImage.fileName || imageUri.split('/').pop() || 'donation-image.jpg';
-      const imageType = donationImage.type || 'image/jpeg';
-      
-      console.log('Appending image to FormData:', {
-        uri: imageUri,
-        type: imageType,
-        name: imageName,
-      });
-      
-      // React Native FormData expects this exact structure
-      formData.append('image', {
-        uri: imageUri,
-        type: imageType,
-        name: imageName,
-      });
+    if (isNaN(amountNum) || (paymentMethod !== 'In Kind' && amountNum <= 0)) {
+      Alert.alert('Error', 'Please enter a valid amount');
+      return;
     }
 
-    if (gcashReceiptImage) {
-      // React Native FormData file upload format
-      // expo-image-picker returns URIs in the correct format already
-      const receiptUri = gcashReceiptImage.uri;
-      const receiptName = gcashReceiptImage.fileName || receiptUri.split('/').pop() || 'gcash-receipt.jpg';
-      const receiptType = gcashReceiptImage.type || 'image/jpeg';
-      
-      console.log('Appending receipt to FormData:', {
-        uri: receiptUri,
-        type: receiptType,
-        name: receiptName,
-      });
-      
-      // React Native FormData expects this exact structure
-      formData.append('receipt', {
-        uri: receiptUri,
-        type: receiptType,
-        name: receiptName,
-      });
+    if (!user?.uid) {
+      Alert.alert('Error', 'User not found. Please log in again.');
+      return;
     }
 
-    // Debug log to verify FormData
-    console.log('Submitting donation with FormData:');
-    console.log('- uid:', user.uid);
-    console.log('- amount:', amountNum);
-    console.log('- paymentMethod:', paymentMethod);
-    console.log('- hasImage:', !!donationImage);
-    console.log('- hasReceipt:', !!gcashReceiptImage);
-    console.log('- API URL:', `${API_BASE_URL}/createDonation`);
+    if (paymentMethod === 'In Kind' && !donationImage) {
+      Alert.alert('Error', 'Please upload an image of your donation');
+      return;
+    }
 
-    // Create AbortController for timeout
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    if (paymentMethod === 'GCash' && !gcashReceiptImage) {
+      Alert.alert('Error', 'Please upload your GCash receipt');
+      return;
+    }
 
-    let response;
+    setSubmitting(true);
+
     try {
-      response = await fetch(`${API_BASE_URL}/createDonation`, {
-        method: 'POST',
-        body: formData,
-        signal: controller.signal,
-        // Do NOT set 'Content-Type' header - let fetch set it automatically with boundary
-      });
-      clearTimeout(timeoutId);
-    } catch (fetchError) {
-      clearTimeout(timeoutId);
-      console.error('Fetch error details:', fetchError);
-      if (fetchError.name === 'AbortError') {
-        throw new Error('Request timeout. Please check your connection and try again.');
-      }
-      if (fetchError.message === 'Network request failed') {
-        throw new Error('Cannot connect to server. Please check:\n1. Your internet connection\n2. The backend server is running\n3. The API URL is correct');
-      }
-      throw fetchError;
-    }
+      const formData = new FormData();
+      formData.append('uid', user.uid);
+      formData.append('amount', amountNum.toString());
+      formData.append('paymentMethod', paymentMethod);
+      formData.append('intercession', intercession || '');
 
-    console.log('Response status:', response.status);
-    
-    let data;
-    try {
-      const text = await response.text();
-      console.log('Response text:', text);
-      data = JSON.parse(text);
-    } catch (parseError) {
-      console.error('Error parsing response:', parseError);
-      throw new Error('Invalid response from server');
-    }
+      if (donationImage) {
+        const imageUri = donationImage.uri;
+        const imageName = donationImage.fileName || imageUri.split('/').pop() || 'donation-image.jpg';
+        const imageType = donationImage.type || 'image/jpeg';
+        
+        console.log('Appending image to FormData:', {
+          uri: imageUri,
+          type: imageType,
+          name: imageName,
+        });
 
-    if (response.ok) {
-      Alert.alert('Success', 'Donation submitted successfully!', [
-        {
-          text: 'OK',
-          onPress: async () => {
-            setShowDonationModal(false);
-            setAmount('');
-            setIntercession('');
-            setPaymentMethod('');
-            setDonationImage(null);
-            setGcashReceiptImage(null);
-            await fetchDonations();
-            fetchDonationStats();
+        formData.append('image', {
+          uri: imageUri,
+          type: imageType,
+          name: imageName,
+        });
+      }
+
+      if (gcashReceiptImage) {
+        const receiptUri = gcashReceiptImage.uri;
+        const receiptName = gcashReceiptImage.fileName || receiptUri.split('/').pop() || 'gcash-receipt.jpg';
+        const receiptType = gcashReceiptImage.type || 'image/jpeg';
+        
+        console.log('Appending receipt to FormData:', {
+          uri: receiptUri,
+          type: receiptType,
+          name: receiptName,
+        });
+
+        formData.append('receipt', {
+          uri: receiptUri,
+          type: receiptType,
+          name: receiptName,
+        });
+      }
+
+      console.log('Submitting donation with FormData:');
+      console.log('- uid:', user.uid);
+      console.log('- amount:', amountNum);
+      console.log('- paymentMethod:', paymentMethod);
+      console.log('- hasImage:', !!donationImage);
+      console.log('- hasReceipt:', !!gcashReceiptImage);
+      console.log('- API URL:', `${API_BASE_URL}/createDonation`);
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); 
+
+      let response;
+      try {
+        response = await fetch(`${API_BASE_URL}/createDonation`, {
+          method: 'POST',
+          body: formData,
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+
+      } catch (fetchError) {
+        clearTimeout(timeoutId);
+        console.error('Fetch error details:', fetchError);
+
+        if (fetchError.name === 'AbortError') {
+          throw new Error('Request timeout. Please check your connection and try again.');
+        }
+
+        if (fetchError.message === 'Network request failed') {
+          throw new Error('Cannot connect to server. Please check:\n1. Your internet connection\n2. The backend server is running\n3. The API URL is correct');
+        }
+
+        throw fetchError;
+      }
+
+      console.log('Response status:', response.status);
+      
+      let data;
+      try {
+        const text = await response.text();
+        console.log('Response text:', text);
+        data = JSON.parse(text);
+
+      } catch (parseError) {
+        console.error('Error parsing response:', parseError);
+        throw new Error('Invalid response from server');
+      }
+
+      if (response.ok) {
+        Alert.alert('Success', 'Donation submitted successfully!', [
+          {
+            text: 'OK',
+            onPress: async () => {
+              setShowDonationModal(false);
+              setAmount('');
+              setIntercession('');
+              setPaymentMethod('');
+              setDonationImage(null);
+              setGcashReceiptImage(null);
+              await fetchDonations();
+              fetchDonationStats();
+            },
           },
-        },
-      ]);
-    } else {
-      console.error('Donation creation failed:', data);
-      Alert.alert('Error', data.message || 'Failed to submit donation. Please try again.');
-    }
-  } catch (error) {
-    console.error('Error creating donation:', error);
-    Alert.alert('Error', error.message || 'Network error. Please check your connection and try again.');
-  } finally {
-    setSubmitting(false);
-  }
-};
+        ]);
 
+      } else {
+        console.error('Donation creation failed:', data);
+        Alert.alert('Error', data.message || 'Failed to submit donation. Please try again.');
+      }
+
+    } catch (error) {
+      console.error('Error creating donation:', error);
+      Alert.alert('Error', error.message || 'Network error. Please check your connection and try again.');
+      
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const handleCloseModal = () => {
     setShowDonationModal(false);
@@ -321,7 +318,6 @@ export default function DonationsScreen({ user, onNavigate }) {
         'Image Picker Not Available',
         'Please install expo-image-picker: npx expo install expo-image-picker'
       );
-
       return;
     }
 
@@ -368,6 +364,7 @@ export default function DonationsScreen({ user, onNavigate }) {
     try {
       await Clipboard.setStringAsync(GCASH_NUMBER);
       Alert.alert('Copied!', 'GCash number copied to clipboard');
+
     } catch (error) {
       console.error('Error copying to clipboard:', error);
       Alert.alert('Error', 'Failed to copy number');
@@ -503,10 +500,13 @@ export default function DonationsScreen({ user, onNavigate }) {
                 switch (status.toLowerCase()) {
                   case 'confirmed':
                     return '#4CAF50';
+
                   case 'pending':
                     return '#FF9800';
+
                   case 'cancelled':
                     return '#F44336';
+
                   default:
                     return '#FF9800';
                 }
@@ -515,10 +515,13 @@ export default function DonationsScreen({ user, onNavigate }) {
                 switch (status.toLowerCase()) {
                   case 'confirmed':
                     return 'Confirmed';
+
                   case 'pending':
                     return 'Pending';
+
                   case 'cancelled':
                     return 'Cancelled';
+
                   default:
                     return 'Pending';
                 }
