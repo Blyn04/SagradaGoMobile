@@ -1027,12 +1027,22 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
           return;
         }
 
+        const hours = time.getHours().toString().padStart(2, '0');
+        const minutes = time.getMinutes().toString().padStart(2, '0');
+        const timeString = `${hours}:${minutes}`;
+
+        const combinedDateTime = new Date(date);
+        combinedDateTime.setHours(time.getHours());
+        combinedDateTime.setMinutes(time.getMinutes());
+        combinedDateTime.setSeconds(0);
+        combinedDateTime.setMilliseconds(0);
+
         const payload = {
           uid: user.uid,
           full_name: fullName || '',
           email: email || '',
-          date: date.toISOString(),
-          time: time.toISOString(),
+          date: combinedDateTime.toISOString(),
+          time: timeString,
           attendees: 1,
           transaction_id: `CONF-${Date.now()}`,
           status: 'pending',
@@ -1114,12 +1124,22 @@ export default function CustomBookingForm({ visible, onClose, selectedSacrament:
           return;
         }
 
+        const anointHours = time.getHours().toString().padStart(2, '0');
+        const anointMinutes = time.getMinutes().toString().padStart(2, '0');
+        const anointTimeString = `${anointHours}:${anointMinutes}`;
+
+        const anointCombinedDateTime = new Date(date);
+        anointCombinedDateTime.setHours(time.getHours());
+        anointCombinedDateTime.setMinutes(time.getMinutes());
+        anointCombinedDateTime.setSeconds(0);
+        anointCombinedDateTime.setMilliseconds(0);
+
         const payload = {
           uid: user.uid,
           full_name: fullName || '',
           email: email || '',
-          date: date.toISOString(),
-          time: time.toISOString(),
+          date: anointCombinedDateTime.toISOString(),
+          time: anointTimeString,
           attendees: 1,
           contact_number: user.contact_number || '',
           medical_condition: '',
