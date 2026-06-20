@@ -31,7 +31,8 @@
     "react": "19.1.0",
     "react-native": "0.81.5",
     "react-native-dotenv": "^3.4.11",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "webdriverio": "^9.29.0"
   },
   "private": true,
   "devDependencies": {
