@@ -21,7 +21,7 @@ export default function GetStartedScreen({ onLoginPress, onSignUpPress }) {
             <Text style={styles.subtitle}>Your digital guide to connection, events, and the church.</Text>
 
             <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.yellowButton} onPress={onLoginPress}>
+                <TouchableOpacity style={styles.yellowButton} onPress={onLoginPress} testID="login-with-account-button" accessibilityLabel="Log In with Account">
                     <Text style={styles.yellowButtonText}>Log In with Account</Text>
                 </TouchableOpacity>
 
