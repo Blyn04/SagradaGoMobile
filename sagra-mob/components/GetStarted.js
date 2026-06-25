@@ -25,7 +25,7 @@ export default function GetStartedScreen({ onLoginPress, onSignUpPress }) {
                     <Text style={styles.yellowButtonText}>Log In with Account</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.darkButton} onPress={onSignUpPress}>
+                <TouchableOpacity style={styles.darkButton} onPress={onSignUpPress} testID="signup-getstarted-button" accessibilityLabel="Sign Up">
                     <Text style={styles.darkButtonText}>Sign Up</Text>
                 </TouchableOpacity>
             </View>

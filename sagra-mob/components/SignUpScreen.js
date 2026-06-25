@@ -502,6 +502,8 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
                 onChangeText={(value) => handleInputChange('first_name', value)}
                 onBlur={() => handleBlur('first_name')}
                 editable={!loading}
+                testID="signup-first-name-input"
+                accessibilityLabel="First Name"
               />
             </View>
 
@@ -516,6 +518,8 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
                 onChangeText={(value) => handleInputChange('last_name', value)}
                 onBlur={() => handleBlur('last_name')}
                 editable={!loading}
+                testID="signup-last-name-input"
+                accessibilityLabel="Last Name"
               />
             </View>
           </View>
@@ -535,6 +539,8 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
               onBlur={() => handleBlur('contact_number')}
               keyboardType="phone-pad"
               editable={!loading}
+              testID="signup-contact-input"
+              accessibilityLabel="Contact Number"
             />
           </View>
           {errors.contact_number && <Text style={styles.errorText}>{errors.contact_number}</Text>}
@@ -573,6 +579,8 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
           <TouchableOpacity
             onPress={openDatePicker}
             disabled={loading}
+            testID="signup-birthday-button"
+            accessibilityLabel="Birthday"
             style={[
               styles.datePickerButton,
               errors.birthday && styles.inputContainerError,
@@ -716,6 +724,8 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
               autoCapitalize="none"
               autoCorrect={false}
               editable={!loading}
+              testID="signup-email-input"
+              accessibilityLabel="Email"
             />
           </View>
           {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
@@ -756,6 +766,8 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
               secureTextEntry={!showPassword}
               autoCapitalize="none"
               editable={!loading}
+              testID="signup-password-input"
+              accessibilityLabel="Password"
             />
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
               <Ionicons
@@ -782,6 +794,8 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
               secureTextEntry={!showPassword}
               autoCapitalize="none"
               editable={!loading}
+              testID="signup-confirm-password-input"
+              accessibilityLabel="Confirm Password"
             />
             <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
               <Ionicons
@@ -814,6 +828,8 @@ export default function SignUpScreen({ onSignUpSuccess, onSwitchToLogin, onBack 
             style={[styles.yellowButton, loading && styles.buttonDisabled]}
             onPress={handleSignUp}
             disabled={loading}
+            testID="signup-submit-button"
+            accessibilityLabel="Sign Up Submit"
           >
             {loading ? (
               <ActivityIndicator color="#fff" />

@@ -9,24 +9,24 @@
 <table>
 <tr><th>Test</th><th># Passed</th><th># Skipped</th><th># Retried</th><th># Failed</th><th>Time (ms)</th><th>Included Groups</th><th>Excluded Groups</th></tr>
 <tr><th colspan="8">Surefire suite</th></tr>
-<tr><td><a href="#t0">Surefire test</a></td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num attn">1</td><td class="num">57,725</td><td></td><td></td></tr>
+<tr><td><a href="#t0">Surefire test</a></td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num attn">1</td><td class="num">45,852</td><td></td><td></td></tr>
 </table>
-<table id='summary'><thead><tr><th>Class</th><th>Method</th><th>Start</th><th>Time (ms)</th></tr></thead><tbody><tr><th colspan="4">Surefire suite</th></tr></tbody><tbody id="t0"><tr><th colspan="4">Surefire test &#8212; failed</th></tr><tr class="failedeven"><td rowspan="1">tests.LoginTest</td><td><a href="#m0">loginFlow</a></td><td rowspan="1">1782384908816</td><td rowspan="1">51909</td></tr></tbody>
+<table id='summary'><thead><tr><th>Class</th><th>Method</th><th>Start</th><th>Time (ms)</th></tr></thead><tbody><tr><th colspan="4">Surefire suite</th></tr></tbody><tbody id="t0"><tr><th colspan="4">Surefire test &#8212; failed</th></tr><tr class="failedeven"><td rowspan="1">tests.SignUpTest</td><td><a href="#m0">signUpFlow</a></td><td rowspan="1">1782385619694</td><td rowspan="1">39529</td></tr></tbody>
 </table>
-<h2>Surefire test</h2><h3 id="m0">tests.LoginTest#loginFlow</h3><table class="result"><tr><th>Exception</th></tr><tr><td><div class="stacktrace">org.openqa.selenium.TimeoutException: Expected condition failed: waiting for presence of element located by: By.xpath: //*[contains(@text,&apos;Welcome,&apos;)] (tried for 20 second(s) with 500 milliseconds interval)
+<h2>Surefire test</h2><h3 id="m0">tests.SignUpTest#signUpFlow</h3><table class="result"><tr><th>Exception</th></tr><tr><td><div class="stacktrace">org.openqa.selenium.TimeoutException: Expected condition failed: waiting for presence of element located by: By.xpath: //*[@text=&apos;Create a new account&apos;] (tried for 25 second(s) with 500 milliseconds interval)
 	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
-	at pages.LoginPage.assertLoginSuccess(LoginPage.java:138)
-	at tests.LoginTest.loginFlow(LoginTest.java:30)
+	at pages.SignUpPage.goToSignUpScreen(SignUpPage.java:51)
+	at tests.SignUpTest.signUpFlow(SignUpTest.java:28)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
 Caused by: org.openqa.selenium.NoSuchElementException: An element could not be located on the page using the given search parameters.
 For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
 Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
 System info: os.name: &apos;Windows 11&apos;, os.arch: &apos;amd64&apos;, os.version: &apos;10.0&apos;, java.version: &apos;22.0.2&apos;
 Driver info: io.appium.java_client.android.AndroidDriver
-Command: [7f7f1aab-dbcc-43fe-a8e4-8bf29b771f9f, findElement {using=xpath, value=//*[contains(@text,&apos;Welcome,&apos;)]}]
+Command: [c31e8ad7-ea42-4ae2-a164-0703d54489fa, findElement {using=xpath, value=//*[@text=&apos;Create a new account&apos;]}]
 Capabilities {appium:appActivity: com.sagradago.sagramob.Main..., appium:appPackage: com.sagradago.sagramob, appium:automationName: UiAutomator2, appium:databaseEnabled: false, appium:desired: {appActivity: com.sagradago.sagramob.Main..., appPackage: com.sagradago.sagramob, automationName: UiAutomator2, deviceName: Android Emulator, noReset: true, platformName: ANDROID}, appium:deviceApiLevel: 35, appium:deviceManufacturer: Google, appium:deviceModel: sdk_gphone64_x86_64, appium:deviceName: emulator-5554, appium:deviceScreenDensity: 420, appium:deviceScreenSize: 1080x2400, appium:deviceUDID: emulator-5554, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: true, appium:noReset: true, appium:pixelRatio: 2.625, appium:platformVersion: 15, appium:statBarHeight: 63, appium:takesScreenshot: true, appium:viewportRect: {height: 2337, left: 0, top: 63, width: 1080}, appium:warnings: {}, appium:webStorageEnabled: false, platformName: ANDROID}
-Session ID: 7f7f1aab-dbcc-43fe-a8e4-8bf29b771f9f
+Session ID: c31e8ad7-ea42-4ae2-a164-0703d54489fa
 	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.createException(W3CHttpResponseCodec.java:200)
 	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:133)
 	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:52)

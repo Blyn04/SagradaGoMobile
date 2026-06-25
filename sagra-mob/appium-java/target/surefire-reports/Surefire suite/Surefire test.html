@@ -57,9 +57,9 @@ function toggleAllBoxes() {
 <tr>
 <td>Tests passed/Failed/Skipped:</td><td>0/1/0</td>
 </tr><tr>
-<td>Started on:</td><td>Thu Jun 25 18:55:03 PST 2026</td>
+<td>Started on:</td><td>Thu Jun 25 19:06:53 PST 2026</td>
 </tr>
-<tr><td>Total time:</td><td>57 seconds (57725 ms)</td>
+<tr><td>Total time:</td><td>45 seconds (45852 ms)</td>
 </tr><tr>
 <td>Included groups:</td><td></td>
 </tr><tr>
@@ -76,21 +76,21 @@ function toggleAllBoxes() {
 <td><b>Instance</b></td>
 </tr>
 <tr>
-<td title='tests.LoginTest.loginFlow()'><b>loginFlow</b><br>Test class: tests.LoginTest</td>
-<td><div><pre>org.openqa.selenium.TimeoutException: Expected condition failed: waiting for presence of element located by: By.xpath: //*[contains(@text,&apos;Welcome,&apos;)] (tried for 20 second(s) with 500 milliseconds interval)
+<td title='tests.SignUpTest.signUpFlow()'><b>signUpFlow</b><br>Test class: tests.SignUpTest</td>
+<td><div><pre>org.openqa.selenium.TimeoutException: Expected condition failed: waiting for presence of element located by: By.xpath: //*[@text=&apos;Create a new account&apos;] (tried for 25 second(s) with 500 milliseconds interval)
 	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
-	at pages.LoginPage.assertLoginSuccess(LoginPage.java:138)
-	at tests.LoginTest.loginFlow(LoginTest.java:30)
+	at pages.SignUpPage.goToSignUpScreen(SignUpPage.java:51)
+	at tests.SignUpTest.signUpFlow(SignUpTest.java:28)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
 Caused by: org.openqa.selenium.NoSuchElementException: An element could not be located on the page using the given search parameters.
 For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
 Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
 System info: os.name: &apos;Windows 11&apos;, os.arch: &apos;amd64&apos;, os.version: &apos;10.0&apos;, java.version: &apos;22.0.2&apos;
 Driver info: io.appium.java_client.android.AndroidDriver
-Command: [7f7f1aab-dbcc-43fe-a8e4-8bf29b771f9f, findElement {using=xpath, value=//*[contains(@text,&apos;Welcome,&apos;)]}]
+Command: [c31e8ad7-ea42-4ae2-a164-0703d54489fa, findElement {using=xpath, value=//*[@text=&apos;Create a new account&apos;]}]
 Capabilities {appium:appActivity: com.sagradago.sagramob.Main..., appium:appPackage: com.sagradago.sagramob, appium:automationName: UiAutomator2, appium:databaseEnabled: false, appium:desired: {appActivity: com.sagradago.sagramob.Main..., appPackage: com.sagradago.sagramob, automationName: UiAutomator2, deviceName: Android Emulator, noReset: true, platformName: ANDROID}, appium:deviceApiLevel: 35, appium:deviceManufacturer: Google, appium:deviceModel: sdk_gphone64_x86_64, appium:deviceName: emulator-5554, appium:deviceScreenDensity: 420, appium:deviceScreenSize: 1080x2400, appium:deviceUDID: emulator-5554, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: true, appium:noReset: true, appium:pixelRatio: 2.625, appium:platformVersion: 15, appium:statBarHeight: 63, appium:takesScreenshot: true, appium:viewportRect: {height: 2337, left: 0, top: 63, width: 1080}, appium:warnings: {}, appium:webStorageEnabled: false, platformName: ANDROID}
-Session ID: 7f7f1aab-dbcc-43fe-a8e4-8bf29b771f9f
+Session ID: c31e8ad7-ea42-4ae2-a164-0703d54489fa
 	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.createException(W3CHttpResponseCodec.java:200)
 	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:133)
 	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:52)
@@ -105,12 +105,12 @@ Session ID: 7f7f1aab-dbcc-43fe-a8e4-8bf29b771f9f
 	at org.openqa.selenium.support.ui.ExpectedConditions$6.apply(ExpectedConditions.java:168)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:205)
 	... 33 more
-... Removed 33 stack frames</pre></div><a href='#' onClick='toggleBox("stack-trace924393200", this, "Click to show all stack frames", "Click to hide stack frames")'>Click to show all stack frames</a>
-<div class='stack-trace' id='stack-trace924393200'><pre>org.openqa.selenium.TimeoutException: Expected condition failed: waiting for presence of element located by: By.xpath: //*[contains(@text,&apos;Welcome,&apos;)] (tried for 20 second(s) with 500 milliseconds interval)
+... Removed 33 stack frames</pre></div><a href='#' onClick='toggleBox("stack-trace32737623", this, "Click to show all stack frames", "Click to hide stack frames")'>Click to show all stack frames</a>
+<div class='stack-trace' id='stack-trace32737623'><pre>org.openqa.selenium.TimeoutException: Expected condition failed: waiting for presence of element located by: By.xpath: //*[@text=&apos;Create a new account&apos;] (tried for 25 second(s) with 500 milliseconds interval)
 	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
-	at pages.LoginPage.assertLoginSuccess(LoginPage.java:138)
-	at tests.LoginTest.loginFlow(LoginTest.java:30)
+	at pages.SignUpPage.goToSignUpScreen(SignUpPage.java:51)
+	at tests.SignUpTest.signUpFlow(SignUpTest.java:28)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
 	at org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:141)
@@ -135,8 +135,8 @@ Session ID: 7f7f1aab-dbcc-43fe-a8e4-8bf29b771f9f
 	at org.testng.TestNG.runSuites(TestNG.java:1112)
 	at org.testng.TestNG.run(TestNG.java:1079)
 	at org.apache.maven.surefire.testng.TestNGExecutor.run(TestNGExecutor.java:155)
-	at org.apache.maven.surefire.testng.TestNGDirectoryTestSuite.executeMulti(TestNGDirectoryTestSuite.java:169)
-	at org.apache.maven.surefire.testng.TestNGDirectoryTestSuite.execute(TestNGDirectoryTestSuite.java:88)
+	at org.apache.maven.surefire.testng.TestNGDirectoryTestSuite.executeSingleClass(TestNGDirectoryTestSuite.java:102)
+	at org.apache.maven.surefire.testng.TestNGDirectoryTestSuite.execute(TestNGDirectoryTestSuite.java:91)
 	at org.apache.maven.surefire.testng.TestNGProvider.invoke(TestNGProvider.java:137)
 	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:385)
 	at org.apache.maven.surefire.booter.ForkedBooter.execute(ForkedBooter.java:162)
@@ -147,9 +147,9 @@ For documentation on this error, please visit: https://www.selenium.dev/document
 Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
 System info: os.name: &apos;Windows 11&apos;, os.arch: &apos;amd64&apos;, os.version: &apos;10.0&apos;, java.version: &apos;22.0.2&apos;
 Driver info: io.appium.java_client.android.AndroidDriver
-Command: [7f7f1aab-dbcc-43fe-a8e4-8bf29b771f9f, findElement {using=xpath, value=//*[contains(@text,&apos;Welcome,&apos;)]}]
+Command: [c31e8ad7-ea42-4ae2-a164-0703d54489fa, findElement {using=xpath, value=//*[@text=&apos;Create a new account&apos;]}]
 Capabilities {appium:appActivity: com.sagradago.sagramob.Main..., appium:appPackage: com.sagradago.sagramob, appium:automationName: UiAutomator2, appium:databaseEnabled: false, appium:desired: {appActivity: com.sagradago.sagramob.Main..., appPackage: com.sagradago.sagramob, automationName: UiAutomator2, deviceName: Android Emulator, noReset: true, platformName: ANDROID}, appium:deviceApiLevel: 35, appium:deviceManufacturer: Google, appium:deviceModel: sdk_gphone64_x86_64, appium:deviceName: emulator-5554, appium:deviceScreenDensity: 420, appium:deviceScreenSize: 1080x2400, appium:deviceUDID: emulator-5554, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: true, appium:noReset: true, appium:pixelRatio: 2.625, appium:platformVersion: 15, appium:statBarHeight: 63, appium:takesScreenshot: true, appium:viewportRect: {height: 2337, left: 0, top: 63, width: 1080}, appium:warnings: {}, appium:webStorageEnabled: false, platformName: ANDROID}
-Session ID: 7f7f1aab-dbcc-43fe-a8e4-8bf29b771f9f
+Session ID: c31e8ad7-ea42-4ae2-a164-0703d54489fa
 	at java.base/jdk.internal.reflect.DirectConstructorHandleAccessor.newInstance(DirectConstructorHandleAccessor.java:62)
 	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:502)
 	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:486)
@@ -168,8 +168,8 @@ Session ID: 7f7f1aab-dbcc-43fe-a8e4-8bf29b771f9f
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:205)
 	... 33 more
 </pre></div></td>
-<td>51</td>
-<td>tests.LoginTest@6a400542</td></tr>
+<td>39</td>
+<td>tests.SignUpTest@79b06cab</td></tr>
 </table><p>
 </body>
 </html>

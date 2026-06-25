@@ -103,7 +103,7 @@
                     <div class="method-list-content failed suite-Surefire_suite">
                       <span>
                         <img src="failed.png" width="3%"/>
-                        <a href="#" panel-name="suite-Surefire_suite" title="tests.LoginTest" class="method navigator-link" hash-for-method="loginFlow">loginFlow</a> <!-- method navigator-link -->
+                        <a href="#" panel-name="suite-Surefire_suite" title="tests.SignUpTest" class="method navigator-link" hash-for-method="signUpFlow">signUpFlow</a> <!-- method navigator-link -->
                       </span>
                       <br/>
                     </div> <!-- method-list-content failed suite-Surefire_suite -->
@@ -121,28 +121,28 @@
           <div class="suite-Surefire_suite-class-failed">
             <div class="main-panel-header rounded-window-top">
               <img src="failed.png"/>
-              <span class="class-name">tests.LoginTest</span>
+              <span class="class-name">tests.SignUpTest</span>
             </div> <!-- main-panel-header rounded-window-top -->
             <div class="main-panel-content rounded-window-bottom">
               <div class="method">
                 <div class="method-content">
-                  <a name="loginFlow">
-                  </a> <!-- loginFlow -->
-                  <span class="method-name">loginFlow</span>
-                  <div class="stack-trace">org.openqa.selenium.TimeoutException: Expected condition failed: waiting for presence of element located by: By.xpath: //*[contains(@text,&apos;Welcome,&apos;)] (tried for 20 second(s) with 500 milliseconds interval)
+                  <a name="signUpFlow">
+                  </a> <!-- signUpFlow -->
+                  <span class="method-name">signUpFlow</span>
+                  <div class="stack-trace">org.openqa.selenium.TimeoutException: Expected condition failed: waiting for presence of element located by: By.xpath: //*[@text=&apos;Create a new account&apos;] (tried for 25 second(s) with 500 milliseconds interval)
 	at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:84)
 	at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:230)
-	at pages.LoginPage.assertLoginSuccess(LoginPage.java:138)
-	at tests.LoginTest.loginFlow(LoginTest.java:30)
+	at pages.SignUpPage.goToSignUpScreen(SignUpPage.java:51)
+	at tests.SignUpTest.signUpFlow(SignUpTest.java:28)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
 Caused by: org.openqa.selenium.NoSuchElementException: An element could not be located on the page using the given search parameters.
 For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
 Build info: version: &apos;4.13.0&apos;, revision: &apos;ba948ece5b*&apos;
 System info: os.name: &apos;Windows 11&apos;, os.arch: &apos;amd64&apos;, os.version: &apos;10.0&apos;, java.version: &apos;22.0.2&apos;
 Driver info: io.appium.java_client.android.AndroidDriver
-Command: [7f7f1aab-dbcc-43fe-a8e4-8bf29b771f9f, findElement {using=xpath, value=//*[contains(@text,&apos;Welcome,&apos;)]}]
+Command: [c31e8ad7-ea42-4ae2-a164-0703d54489fa, findElement {using=xpath, value=//*[@text=&apos;Create a new account&apos;]}]
 Capabilities {appium:appActivity: com.sagradago.sagramob.Main..., appium:appPackage: com.sagradago.sagramob, appium:automationName: UiAutomator2, appium:databaseEnabled: false, appium:desired: {appActivity: com.sagradago.sagramob.Main..., appPackage: com.sagradago.sagramob, automationName: UiAutomator2, deviceName: Android Emulator, noReset: true, platformName: ANDROID}, appium:deviceApiLevel: 35, appium:deviceManufacturer: Google, appium:deviceModel: sdk_gphone64_x86_64, appium:deviceName: emulator-5554, appium:deviceScreenDensity: 420, appium:deviceScreenSize: 1080x2400, appium:deviceUDID: emulator-5554, appium:javascriptEnabled: true, appium:locationContextEnabled: false, appium:networkConnectionEnabled: true, appium:noReset: true, appium:pixelRatio: 2.625, appium:platformVersion: 15, appium:statBarHeight: 63, appium:takesScreenshot: true, appium:viewportRect: {height: 2337, left: 0, top: 63, width: 1080}, appium:warnings: {}, appium:webStorageEnabled: false, platformName: ANDROID}
-Session ID: 7f7f1aab-dbcc-43fe-a8e4-8bf29b771f9f
+Session ID: c31e8ad7-ea42-4ae2-a164-0703d54489fa
 	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.createException(W3CHttpResponseCodec.java:200)
 	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:133)
 	at org.openqa.selenium.remote.codec.w3c.W3CHttpResponseCodec.decode(W3CHttpResponseCodec.java:52)
@@ -174,8 +174,6 @@ Session ID: 7f7f1aab-dbcc-43fe-a8e4-8bf29b771f9f
 &lt;suite name=&quot;Surefire suite&quot; verbose=&quot;0&quot;&gt;
   &lt;test thread-count=&quot;5&quot; name=&quot;Surefire test&quot; verbose=&quot;0&quot;&gt;
     &lt;classes&gt;
-      &lt;class name=&quot;base.BaseTest&quot;/&gt;
-      &lt;class name=&quot;tests.LoginTest&quot;/&gt;
       &lt;class name=&quot;tests.SignUpTest&quot;/&gt;
     &lt;/classes&gt;
   &lt;/test&gt; &lt;!-- Surefire test --&gt;
@@ -190,7 +188,7 @@ Session ID: 7f7f1aab-dbcc-43fe-a8e4-8bf29b771f9f
           <div class="main-panel-content rounded-window-bottom">
             <ul>
               <li>
-                <span class="test-name">Surefire test (3 classes)</span>
+                <span class="test-name">Surefire test (1 class)</span>
               </li>
             </ul>
           </div> <!-- main-panel-content rounded-window-bottom -->
@@ -218,14 +216,14 @@ data.addColumn('string', 'Class');
 data.addColumn('number', 'Time (ms)');
 data.addRows(1);
 data.setCell(0, 0, 0)
-data.setCell(0, 1, 'loginFlow')
-data.setCell(0, 2, 'tests.LoginTest')
-data.setCell(0, 3, 51909);
+data.setCell(0, 1, 'signUpFlow')
+data.setCell(0, 2, 'tests.SignUpTest')
+data.setCell(0, 3, 39529);
 window.suiteTableData['Surefire_suite']= { tableData: data, tableDiv: 'times-div-Surefire_suite'}
 return data;
 }
               </script>
-              <span class="suite-total-time">Total running time: 51 seconds</span>
+              <span class="suite-total-time">Total running time: 39 seconds</span>
               <div id="times-div-Surefire_suite">
               </div> <!-- times-div-Surefire_suite -->
             </div> <!-- times-div -->
@@ -251,7 +249,7 @@ return data;
           </div> <!-- main-panel-header rounded-window-top -->
           <div class="main-panel-content rounded-window-bottom">
             <div class="chronological-class">
-              <div class="chronological-class-name">tests.LoginTest</div> <!-- chronological-class-name -->
+              <div class="chronological-class-name">tests.SignUpTest</div> <!-- chronological-class-name -->
               <div class="configuration-method before">
                 <span class="method-name">setup</span>
                 <span class="method-start">0 ms</span>
@@ -259,12 +257,12 @@ return data;
               <div class="test-method">
                 <img src="failed.png">
                 </img>
-                <span class="method-name">loginFlow</span>
-                <span class="method-start">5343 ms</span>
+                <span class="method-name">signUpFlow</span>
+                <span class="method-start">5726 ms</span>
               </div> <!-- test-method -->
               <div class="configuration-method after">
                 <span class="method-name">tearDown</span>
-                <span class="method-start">57259 ms</span>
+                <span class="method-start">45263 ms</span>
               </div> <!-- configuration-method after -->
           </div> <!-- main-panel-content rounded-window-bottom -->
         </div> <!-- panel -->
